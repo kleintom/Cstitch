@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file alias="overview.html">doc/overview.html</file>
+  <file alias="colorChooser.html">doc/colorChooser.html</file>
+  <file alias="colorCompare.html">doc/colorCompare.html</file>
+  <file alias="square.html">doc/square.html</file>
+  <file alias="pattern.html">doc/pattern.html</file>
+</qresource>
+</RCC>

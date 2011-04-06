@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+import sys, subprocess, re
+
+###############################################################################
+# get the current version
+###############################################################################
+# determine the current git sequence number
+gitHashListString = subprocess.Popen(["git", "rev-list", "HEAD"],
+                                     stdout=subprocess.PIPE).communicate()[0]
+gitCount = str(gitHashListString.count("\n"))
+
+# and the latest git tag number (\d.\d.\d)
+gitVersionBase = (
+    subprocess.Popen(["git", "describe", "--tags", "--abbrev=0"],
+                     stdout=subprocess.PIPE).communicate()[0].rstrip())
+gitVersion = gitVersionBase + "." + gitCount
+
+###############################################################################
+# update the program's stored version number
+###############################################################################
+versionFilename = "main.cpp"
+versionFile = open(versionFilename)
+# (if a cpp file is too big for readlines to be reasonable, then something is
+# wrong with the cpp file...)
+fileLines = versionFile.readlines()
+versionFile.close()
+
+# match .*(.*).*// @GIT-VERSION, as in, for example,
+# winManager.setVersion("1.0.0.63"); // @GIT-VERSION - don't touch this comment
+setVersionRE = re.compile(r'^(.*\().*(\).*// @GIT-VERSION - don\'t touch this comment)')
+for i in range(len(fileLines)):
+    reMatch = setVersionRE.search(fileLines[i])
+    if reMatch:
+        print "Setting new version: " + gitVersion
+        fileLines[i] = reMatch.group(1) + '"' + gitVersion + '"' + reMatch.group(2) + '\n'
+        break
+
+newVersionFile = open(versionFilename, 'w')
+newVersionFile.writelines(fileLines)
+
+# exit non-zero to abort the commit
+#sys.exit(1)

@@ -86,7 +86,7 @@ windowManager::windowManager() : originalImageColorCount_(0),
                                    this);
   autoShowQuickHelp_->setCheckable(true);
   // restore the autoShowQuickHelp_ setting if it exists
-  const QSettings settings("stitch", "stitch");
+  const QSettings settings("cstitch", "cstitch");
   if (settings.contains("auto_show_quick_help")) {
     const bool checked = settings.value("auto_show_quick_help").toBool();
     autoShowQuickHelp_->setChecked(checked);
@@ -275,7 +275,7 @@ void windowManager::saveAs(const QString projectFilename) {
   }
 
   QDomDocument doc;
-  QDomElement root = doc.createElement("stitch");
+  QDomElement root = doc.createElement("cstitch");
   // version
   root.setAttribute("version", version_);
   doc.appendChild(root);

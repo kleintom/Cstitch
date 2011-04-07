@@ -137,7 +137,7 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   setLayout(widgetLayout_);
 
   // load any saved fields
-  const QSettings settings("stitch", "stitch");
+  const QSettings settings("cstitch", "cstitch");
   loadSettings(settings, titleSettingsKey_, titleEdit_);
   loadSettings(settings, patternBySettingsKey_, patternByEdit_);
   loadSettings(settings, photoBySettingsKey_, photoByEdit_);
@@ -187,7 +187,7 @@ void patternMetadata::loadSettings(const QSettings& settings,
 
 void patternMetadata::saveSettings() const {
 
-  QSettings settings("stitch", "stitch");
+  QSettings settings("cstitch", "cstitch");
   settings.setValue(titleSettingsKey_, titleEdit_->toPlainText());
   settings.setValue(patternBySettingsKey_, patternByEdit_->toPlainText());
   settings.setValue(photoBySettingsKey_, photoByEdit_->toPlainText());

@@ -315,7 +315,7 @@ void imageZoomWindow::helpAbout() {
   aboutBox.setWindowTitle(tr("About"));
   const QString version = winManager()->getVersion();
   aboutBox.setText(tr("<b>Stitch</b><br />Version: ") + version +
-                      tr("<br />Tom Klein<br />email:...<br />http://..."));
+                      tr("<br />Tom Klein<br />email: tomklein@users.sourceforge.net<br />http://cstitch.sourceforge.net/"));
   aboutBox.setIconPixmap(QPixmap(":aboutIcon.png"));
   aboutBox.exec();
 }

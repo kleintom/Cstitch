@@ -1,24 +1,33 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
   <title>Color Compare</title>
-  <meta http-equiv="content-type" 
-	content="text/html;charset=utf-8" />
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <style type="text/css">
-    h1 {color: #00B300; }
-    h2 {color: #009900; }
-    h3 {color: #004D00; }
-    .h2 {margin-left: 15px;}
-    .h3 {margin-left: 30px;}
+h1 {color: #00B300; }
+h2 {color: #009900; }
+h3 {color: #004D00; }
+div.h2Div {margin-left: 15px;}
+div.h3Div {margin-left: 30px;}
+body {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}
   </style>
 </head>
 
 <body>
 
-Next: <a href="square.html">The square edit panel</a>;
-Previous: <a href="colorChooser.html">The color choosing panel</a>;
+<p>
+Previous: <a href="colorChooser.html">The color chooser panel</a>;
+Next: <a href="square.html">The Square panel</a>;
 Top: <a href="overview.html">Overview</a>
+</p>
 
-<h1>The Color Compare Panel</h1>&nbsp;
+<h1 id="colorCompare">The Color Compare Panel</h1>&nbsp;
 <img src=":colorCompare_active.png" />
 
 <p>
@@ -37,7 +46,7 @@ on both sides, so you will only be able to change a side if you have
 created more than one image from the <i>Color Chooser Panel</i>.)
 </p>
 
-<div class="h2">
+<div class="h2Div">
 <h2>Hiding and Showing Images</h2>
 <p>
 You can hide an image by unchecking the <i>Show image</i> box in the
@@ -54,7 +63,7 @@ menu.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>Deleting Images</h2>
 <p>
 If you choose <i>Delete image</i> from one of the image menus, the
@@ -62,8 +71,8 @@ image cannot be recovered.  You can't delete the original image.
 </p>
 </div>
 
-<div class="h2">
-<a name="keyboard_shortcuts"></a>
+<div class="h2Div">
+<a id="color_compare_keyboard_shortcuts"></a>
 <h2>Keyboard shortcuts</h2>
 <p>
 You can press "Shift + Left Arrow" (i.e. hold down the shift key and
@@ -74,12 +83,12 @@ Arrow" to move down in the image list for the active side.  The same
 shortcuts apply in the square edit panel.
 </p>
 <p>
-See the <a href="overview.html#keyboard_shortcuts">overview</a> for
-application-wide keyboard shortcut information.
+See the <a href="overview.html#overview_keyboard_shortcuts">overview</a>
+for application-wide keyboard shortcut information.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>Dual Scrolling</h2> 
 <p>
 By default, if scrollbars are necessary for
@@ -90,7 +99,7 @@ the <i>Image</i> menu.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>Dual Zooming</h2> 
 <p>
 By default, zooming the active image will apply the same zooming to
@@ -100,7 +109,7 @@ unchecking or checking the <i>Dual zooming</i> box from the
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>Selecting the Squaring Parameters</h2> 
 <p>
 The processing that occurs in this step turns a smoothly colored image
@@ -129,7 +138,7 @@ possible values.
 </p>
 </div>
 
-<div class="h3">
+<div class="h3Div">
 <h3>1. Median Mode [default]</h3> 
 <p>
 Under median mode, roughly speaking, the representative color of a
@@ -140,7 +149,7 @@ block, and generally gives the best results.
 </p>
 </div>
 
-<div class="h3">
+<div class="h3Div">
 <h3>2. Mode Mode</h3>
 <p>
 Mode mode chooses the representative color of a given block to be the
@@ -148,7 +157,7 @@ color that appears most often in that block.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>Proceeding to the Square Editing Panel</h2>
 <p>
  Once you have chosen the <i>squaring mode</i> and <i>square</i>
@@ -162,10 +171,12 @@ You can return to this panel, change your options, and click Square as
 many times as you like.
 </p>
 </div>
-
-Next: <a href="square.html">The square edit panel</a>;
-Previous: <a href="colorChooser.html">The color choosing panel</a>;
+<p>
+Previous: <a href="colorChooser.html">The color chooser panel</a>;
+Next: <a href="square.html">The Square panel</a>;
 Top: <a href="overview.html">Overview</a>
+</p>
 
 </body>
+
 </html>

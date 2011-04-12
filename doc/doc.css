@@ -1,0 +1,10 @@
+h1 {color: #00B300; }
+h2 {color: #009900; }
+h3 {color: #004D00; }
+div.h2Div {margin-left: 15px;}
+div.h3Div {margin-left: 30px;}
+body {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}

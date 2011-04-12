@@ -1,19 +1,29 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
   <title>Overview</title>
-  <meta http-equiv="content-type" 
-	content="text/html;charset=utf-8" />
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <style type="text/css">
-    h1 {color: #00B300; }
-    h2 {color: #009900; }
-    h3 {color: #004D00; }
-    .h2 {margin-left: 15px;}
-    .h3 {margin-left: 30px;}
+h1 {color: #00B300; }
+h2 {color: #009900; }
+h3 {color: #004D00; }
+div.h2Div {margin-left: 15px;}
+div.h3Div {margin-left: 30px;}
+body {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}
   </style>
 </head>
 
 <body>
 
+<p>
+Next: <a href="colorChooser.html">The Color Chooser panel</a>
+</p>
 <h1>A Note On DMC Color Names</h1>
 <p>
   DMC is a well known manufacturer of floss (cross stitch thread).
@@ -27,7 +37,7 @@
     available suppliers of floss.
 </p>
 
-<h1>Overview</h1>
+<h1 id="overview">Overview</h1>
 
 <p>
 Stitch turns an image into a cross stitch pattern and allows you to
@@ -38,7 +48,7 @@ stitch pattern and a list of the colors in the pattern.
 <p>
   The transformation is a four step process.
 
-<div class="h2">
+<div class="h2Div">
 <h2>1. <a href="colorChooser.html"><i>Choose your colors</i></a></h2>
   &nbsp;<a href="colorChooser.html"><img src=":colorChooser_active.png" /></a>
 <p>
@@ -53,7 +63,7 @@ stitch pattern and a list of the colors in the pattern.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>2. <a href="colorCompare.html"><i>Compare color choices</i></a></h2>
   &nbsp;<a href="colorCompare.html"><img src=":colorCompare_active.png" /></a>
 <p>
@@ -66,7 +76,7 @@ stitch pattern and a list of the colors in the pattern.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>3. <a href="square.html"><i>Square your image and edit</i></a></h2>
   &nbsp;<a href="square.html"><img src=":squareImage_active.png" /></a>
 <p>
@@ -77,7 +87,7 @@ stitch pattern and a list of the colors in the pattern.
 </p>
 </div>
 
-<div class="h2">
+<div class="h2Div">
 <h2>4. <a href="pattern.html"><i>Create the pattern and edit</i></a></h2>
 &nbsp;<a href="pattern.html"><img src=":patternImage_active.png" /></a>
 <p>
@@ -102,20 +112,20 @@ satisfied with the symbols, save your pattern to a pdf.
 <p>
 The first three stages provide two sets of zooming operations.  The
 first set appears on the toolbar (and also from the <i>Image</i> menu)
-and consists of a "Zoom to fit" option <img src=":zoomToImage.png">
+and consists of a "Zoom to fit" option <img src=":zoomToImage.png" />
 that zooms the image to be as large as possible and still fit in the
-available space, a "Zoom to width" option <img src=":zoomToWidth.png">
+available space, a "Zoom to width" option <img src=":zoomToWidth.png" />
 that zooms the image to fit the available width, and a "Zoom to
-height" option <img src=":zoomToHeight.png"> that zooms the image to
+height" option <img src=":zoomToHeight.png" /> that zooms the image to
 fit the available height.  (There's a caveat for square images - see
 <a href="square.html#zoom_caveat">this</a> for details.)
 </p>
 <p>
 The second set of zoom options is available from the <i>Image</i> menu
-and consists of a "Zoom in" option <img src=":zoomIn.png"> that
+and consists of a "Zoom in" option <img src=":zoomIn.png" /> that
 increases the zoom by a fixed amount, a "Zoom out"
-option <img src=":zoomOut.png"> that decreases the zoom by a fixed
-amount, and an "Original size" option <img src=":zoomToOriginal.png">
+option <img src=":zoomOut.png" /> that decreases the zoom by a fixed
+amount, and an "Original size" option <img src=":zoomToOriginal.png" />
 that zooms the image to its original size.
 </p>
 <p>
@@ -132,7 +142,7 @@ processing.
 <p>
 You can save the active image at any time as a jpg, png, pdf, or any
 of several other formats, by clicking on the save
-icon <img src=":saveImage.png"> on the toolbar or by choosing <i>Save
+icon <img src=":saveImage.png" /> on the toolbar or by choosing <i>Save
 Image</i> from the <i>File</i> menu (not available from the first
 panel since the only image there is the original!).
 </p>
@@ -164,7 +174,7 @@ your project.
 <h1>Saving and restoring projects</h1>
 <p>
 You can save your work at any time by clicking on the save project
-icon <img src=":saveProject.png"> on the toolbar or by
+icon <img src=":saveProject.png" /> on the toolbar or by
 choosing <i>Save Project</i> (or <i>Save Project As</i>) from
 the <i>File</i> menu.  "Project" here refers to all of the images in
 all of the panels, as well as various settings in those panels.  We
@@ -184,24 +194,25 @@ to delete them before saving your project.)
 
 <p>
 To restore your work from a saved project file, just click on the open
-project icon <img src=":openProject.png"> on the toolbar or
+project icon <img src=":openProject.png" /> on the toolbar or
 choose <i>Open Project</i> from the <i>File</i> menu and open the
 project file you saved above.
 </p>
 
-<a name="keyboard_shortcuts"></a>
+<a id="overview_keyboard_shortcuts"></a>
 <h1>Keyboard shortcuts</h1>
 <p>
 In addition to keyboard shortcuts listed in the menus, you can press
 "Ctrl+Enter" (i.e. hold down the control key and then press enter) at
 any time to process the current stage and move on to the next.  Other
 panel-specific keyboard shortcuts are
-listed <a href="colorCompare.html#keyboard_shortcuts">here</a> for the
-color compare panel,
-<a href="square.html#keyboard_shortcuts">here</a> for the square edit
+listed <a href="colorCompare.html#color_compare_keyboard_shortcuts">here</a>
+for the color compare panel,
+<a href="square.html#square_keyboard_shortcuts">here</a> for the square edit
 panel, and
-<a href="pattern.html#keyboard_shortcuts">here</a> for the pattern
+<a href="pattern.html#pattern_keyboard_shortcuts">here</a> for the pattern
 edit panel.
+</p>
 
 <h1>Panel specific help</h1>
 <p>
@@ -209,11 +220,14 @@ Selecting "Help" from the Help menu will always display help for
 whichever of the four panels you're currently on.
 </p>
 
-<div class="h2"><a href="colorChooser.html"><i>The color chooser panel</i></a></h2></div>
-<div class="h2"><a href="colorCompare.html"><i>The color compare panel</i></a></div>
-<div class="h2"><a href="square.html"><i>The square edit panel</i></a></div>
-<div class="h2"><a href="pattern.html"><i>The pattern edit panel</i></a></div>
-<br />
+<div class="h2Div"><a href="colorChooser.html"><i>The color chooser panel</i></a></div>
+<div class="h2Div"><a href="colorCompare.html"><i>The color compare panel</i></a></div>
+<div class="h2Div"><a href="square.html"><i>The square edit panel</i></a></div>
+<div class="h2Div"><a href="pattern.html"><i>The pattern edit panel</i></a></div>
+<p>
+Next: <a href="colorChooser.html">The Color Chooser panel</a>
+</p>
 
 </body>
+
 </html>

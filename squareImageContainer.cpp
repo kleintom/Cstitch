@@ -74,7 +74,7 @@ void mutableSquareImageContainer::removeColor(const triC& color) {
 void mutableSquareImageContainer::removeColorNoDmcUpdate(const triC& color) {
 
   const int foundIndex = colors_.indexOf(color);
-  if (foundIndex) {
+  if (foundIndex != -1) {
     colors_.remove(foundIndex);
   }
 }

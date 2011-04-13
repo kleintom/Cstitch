@@ -1027,13 +1027,16 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
     curImage_->squareImage().width()/curImage_->squareDimension();
   const int yBoxes =
     curImage_->squareImage().height()/curImage_->squareDimension();
-  painter->drawText(0, yused + 2*fontHeight,
+  QRect textBoundingRect;
+  painter->drawText(QRect(0, yused + fontHeight, printerWidth, 4*fontHeight),
+                    Qt::TextWordWrap,
                     "The pattern uses " + ::itoqs(curImage_->colors().size()) +
                     " colors and is " + ::itoqs(xBoxes) + " squares wide by " +
-                    ::itoqs(yBoxes) + " squares high.");
-  yused += 2*fontHeight;
+                    ::itoqs(yBoxes) + " squares high.", &textBoundingRect);
+  yused += textBoundingRect.height() + fontHeight;
   if (!colorsAreDmc(curImage_->colors())) {
     // line wrap the explanation for non-DMC colors
+    // (or just use the QRect version of drawText as above)
     const QString nonDmcString("For any color that isn't DMC, the Code column gives the RGB value of the color"
                                " and the Name column gives the code and DMC name of the nearest DMC color.");
     const QStringList partsList = nonDmcString.split(" ");

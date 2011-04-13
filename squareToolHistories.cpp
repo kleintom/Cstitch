@@ -301,7 +301,7 @@ performHistoryEdit(mutableSquareImageContainer* container,
     container->addColors(colorsToAdd);
     return dockListUpdate(colorsToAdd);
   }
-  else {
+  else { // forward
     QVector<triC> colorsToRemove;
     for (int i = 0, size = items_.size(); i < size; ++i) {
       const colorChange thisColorChange = items_[i];

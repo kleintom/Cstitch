@@ -19,8 +19,6 @@
 
 #include "rareColorsDialog.h"
 
-#include <QtCore/QDebug>
-
 #include <QtGui/QLabel>
 #include <QtGui/QSpinBox>
 #include <QtGui/QHBoxLayout>
@@ -217,7 +215,6 @@ QList<QRgbPair> rareColorsDialog::colorsToChange() const {
                                           matches[6].toInt())));
     }
   }
-  qDebug() << "size" << returnPairs.size();
   return returnPairs;
 }
 

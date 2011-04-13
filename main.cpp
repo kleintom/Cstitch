@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   // the version is updated by the git pre-commit script based on the
   // current git label and the current git revision count 
   // (if you change @GIT-VERSION you'll need to change the script too)
-  winManager.setVersion("0.9.0.1"); // @GIT-VERSION - don't touch this comment
+  winManager.setVersion("0.9.0.2"); // @GIT-VERSION - don't touch this comment
 
   colorChooser colorChooserWindow(&winManager);
   colorChooserWindow.show();

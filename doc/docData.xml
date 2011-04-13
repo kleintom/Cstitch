@@ -24,7 +24,8 @@
   <intro></intro>
 
   <mainBody><![CDATA[
-<h1>A Note On DMC Color Names</h1>
+<div class="note">
+<h1 class="note_title">A Note On DMC Color Names</h1>
 <p>
   DMC is a well known manufacturer of floss (cross stitch thread).
     Each floss that DMC sells has a color name and code, but DMC
@@ -36,8 +37,9 @@
     particularly endorse DMC: they just seem to be one of the more
     available suppliers of floss.
 </p>
+</div>
 
-<h1 id="overview">Overview</h1>
+<h1 id="overview" class="section">Overview</h1>
 
 <p>
 Cstitch turns an image into a cross stitch pattern and allows you to
@@ -49,8 +51,8 @@ stitch pattern and a list of the colors in the pattern.
   The transformation is a four step process.
 
 <div class="h2Div">
-<h2>1. <a href="colorChooser"><i>Choose your colors</i></a></h2>
-  &nbsp;<a href="colorChooser"><img src="colorChooser_active.png" /></a>
+<h2>1. <a href="colorChooser"><i>Choose your colors</i></a>
+<a href="colorChooser"><img src="colorChooser_active.png" /></a></h2>
 <p>
   There are three modes for choosing the colors to appear in your
   pattern, including choosing your own colors from the original image,
@@ -64,8 +66,8 @@ stitch pattern and a list of the colors in the pattern.
 </div>
 
 <div class="h2Div">
-<h2>2. <a href="colorCompare"><i>Compare color choices</i></a></h2>
-  &nbsp;<a href="colorCompare"><img src="colorCompare_active.png" /></a>
+<h2>2. <a href="colorCompare"><i>Compare color choices</i></a>
+<a href="colorCompare"><img src="colorCompare_active.png" /></a></h2>
 <p>
   At this stage your original image has been transformed into a new
   image using your color choices.  This step is used to compare your
@@ -77,8 +79,8 @@ stitch pattern and a list of the colors in the pattern.
 </div>
 
 <div class="h2Div">
-<h2>3. <a href="square"><i>Square your image and edit</i></a></h2>
-  &nbsp;<a href="square"><img src="squareImage_active.png" /></a>
+<h2>3. <a href="square"><i>Square your image and edit</i></a>
+<a href="square"><img src="square_active.png" /></a></h2>
 <p>
   Your colored image has now been transformed into a "squared" or
   "grided" image as in the final cross stitch pattern.  Here you can
@@ -88,8 +90,8 @@ stitch pattern and a list of the colors in the pattern.
 </div>
 
 <div class="h2Div">
-<h2>4. <a href="pattern"><i>Create the pattern and edit</i></a></h2>
-&nbsp;<a href="pattern"><img src="patternImage_active.png" /></a>
+<h2>4. <a href="pattern"><i>Create the pattern and edit</i></a>
+<a href="pattern"><img src="pattern_active.png" /></a></h2>
 <p>
 The squared color image has now had colors replaced with symbols,
 which you can change from among those available.  When you're
@@ -260,8 +262,8 @@ this documentation for the <i>Color Choosing Panel</i>.
   </intro>
 
   <mainBody><![CDATA[
-<h1 id="colorChooser">The Color Choosing Panel</h1>&nbsp;
-<img src="colorChooser_active.png" />
+<h1 id="colorChooser" class="section">The Color Choosing Panel
+<img src="colorChooser_active.png" /></h1>
 
 <p>
 Start a new project by opening a saved image from your files, either
@@ -404,8 +406,8 @@ compare results.
 
   <mainBody><![CDATA[
 
-<h1 id="colorCompare">The Color Compare Panel</h1>&nbsp;
-<img src="colorCompare_active.png" />
+<h1 id="colorCompare" class="section">The Color Compare Panel
+<img src="colorCompare_active.png" /></h1>
 
 <p>
 The color compare panel allows you to compare your new image with the
@@ -564,8 +566,8 @@ many times as you like.
 
   <mainBody><![CDATA[
 
-<h1 id="square">The Square Edit Panel</h1>&nbsp;
-<img src="squareImage_active.png" />
+<h1 id="square" class="section">The Square Edit Panel
+<img src="square_active.png" /></h1>
 
 <p>
 The square edit panel allows you to edit your pattern by changing
@@ -584,8 +586,7 @@ you can use the tools to choose colors from the original image.
 </div>
 
 <div class="h3">
-<h3>Selection mode</h3>&nbsp;
-<img src="cursor.png" />
+<h3>Selection mode <img src="cursor.png" /></h3>
 <p>
 Click on the selection mode icon to be able to select an image with
 the mouse (if other tools are active, a mouse click may mean something
@@ -600,8 +601,7 @@ button <img src="rightImage.png" /> on the toolbar.
 
 <div class="h3">
 <a name="change_a_color_tool"></a>
-<h3>The Change a Color Tool</h3>&nbsp;
-<img src="changeAll.png" />
+<h3>The Change a Color Tool <img src="changeAll.png" /></h3>
 <p>
 Use this tool to change a color in your image.  You can also change a
 color by right clicking on it at any time in the color list and
@@ -706,8 +706,7 @@ In DMC only mode this option is unavailable.
 </div>
 
 <div class="h3">
-<h3>The Draw Tool</h3>&nbsp;
-<img src="draw.png" />
+<h3>The Draw Tool <img src="draw.png" /></h3>
 <p>
 Use the draw tool to freehand draw on your image by holding down the
 left mouse button while dragging the mouse.  The drawing color is
@@ -717,8 +716,7 @@ described under the <i>Change a color tool</i> directions.
 </div>
 
 <div class="h3">
-<h3>The Fill Region Tool</h3>&nbsp;
- <img src="fill.png" /> 
+<h3>The Fill Region Tool <img src="fill.png" /></h3>
 <p>
 Use the fill region tool to change the color of a specific region in
 the image by left clicking in the region.  The new color is determined
@@ -727,8 +725,7 @@ just as for the <i>Change a color tool</i>.
 </div>
 
 <div class="h3">
-<h3>The Detail Tool</h3>&nbsp;
- <img src="detail.png" /> 
+<h3>The Detail Tool <img src="detail.png" /></h3>
 <p>
 The detail tool is intended to be used to restore color to small
 detail areas of an image that may not have received adequate treatment
@@ -895,8 +892,8 @@ many times as you like.
 
   <mainBody><![CDATA[
 
-<h1 id="pattern">The Pattern Edit Panel</h1>&nbsp;
-<img src="patternImage_active.png" />
+<h1 id="pattern" class="section">The Pattern Edit Panel
+<img src="pattern_active.png" /></h1>
 
 <p>
 The pattern edit panel allows you to change color symbols and to save

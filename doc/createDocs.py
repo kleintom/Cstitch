@@ -82,8 +82,8 @@ class singleWebParts(parts):
 
     def cleanData(self):
         for part in ["intro", "mainBody", "outro"]:
-            # image names start with images/
-            newValue = re.sub(r'(<img[^>]+src=")', r'\1images/', getattr(self, part))
+            # image names start with images/32x32_
+            newValue = re.sub(r'(<img[^>]+src=")', r'\1images/32x32_', getattr(self, part))
             # anchor refs are all to anchors in this file
             newValue = re.sub(r'(<a href=")[\w]+#', r'\1#', newValue)
             # non-anchored refs need to become anchored, because they
@@ -118,9 +118,6 @@ class sectionsProcessor:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        self.cssFilename = 'doc.css'
-
     @abstractmethod
     def processSections(self): pass
 
@@ -148,11 +145,19 @@ class qtPageProcessor(sectionsProcessor):
     """Processor for producing Qt multi page docs"""
 
     def __init__(self, xmlFilename):
-        sectionsProcessor.__init__(self)
         self.sections = sections(xmlFilename, "multi")
 
     def css(self):
-        return open(self.cssFilename).read()
+        return """h1 {color: #00B300; }
+h2 {color: #009900; }
+h3 {color: #004D00; }
+div.h2Div {margin-left: 15px;}
+div.h3Div {margin-left: 30px;}
+body {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}"""
 
     def writeNav(self, direction, href, title):
         """Return a "navigation" string used to navigate through the
@@ -213,7 +218,7 @@ class singleWebProcessor(sectionsProcessor):
     """Processor for producing single webpage docs"""
 
     def __init__(self, xmlFilename):
-        sectionsProcessor.__init__(self)
+        self.cssFilename = 'doc.css'
         self.sections = sections(xmlFilename, "singleWeb")
 
     def processSections(self):

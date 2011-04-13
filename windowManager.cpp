@@ -50,17 +50,17 @@ windowManager::windowManager() : originalImageColorCount_(0),
                                     chooserText, this);
   colorCompareAction_ = new QAction(QIcon(":colorCompare.png"),
                                     compareText, this);
-  squareWindowAction_ = new QAction(QIcon(":squareImage.png"),
+  squareWindowAction_ = new QAction(QIcon(":square.png"),
                                      squareText, this);
-  patternWindowAction_ = new QAction(QIcon(":patternImage.png"),
+  patternWindowAction_ = new QAction(QIcon(":pattern.png"),
                                      patternText, this);
   activeColorChooserAction_ = new QAction(QIcon(":colorChooser_active.png"),
                                           chooserText, this);
   activeColorCompareAction_ = new QAction(QIcon(":colorCompare_active.png"),
                                           compareText, this);
-  activeSquareWindowAction_ = new QAction(QIcon(":squareImage_active.png"),
+  activeSquareWindowAction_ = new QAction(QIcon(":square_active.png"),
                                            squareText, this);
-  activePatternWindowAction_ = new QAction(QIcon(":patternImage_active.png"),
+  activePatternWindowAction_ = new QAction(QIcon(":pattern_active.png"),
                                            patternText, this);
   colorChooserAction_->setEnabled(false);
   colorChooserAction_->setShortcut(QKeySequence(QString(tr("Ctrl+1"))));
@@ -265,7 +265,7 @@ void windowManager::saveAs(const QString projectFilename) {
   //const QString fileString = "test.xst";
   if (projectFilename.isNull()) {
     const QString fileString =
-      QFileDialog::getSaveFileName(activeWindow(), tr("Save project"), ".", "Stitch files (*.xst)\nAll files (*.*)");
+      QFileDialog::getSaveFileName(activeWindow(), tr("Save project"), ".", "Cstitch files (*.xst)\nAll files (*.*)");
     if (!fileString.isNull()) {
       projectFilename_ = fileString;
     }
@@ -383,7 +383,7 @@ void windowManager::openProject() {
 
   //const QString fileString = "test.out";
   const QString fileString =
-    QFileDialog::getOpenFileName(activeWindow(), tr("Open project"), ".", "Stitch files (*.xst)\nAll files (*.*)");
+    QFileDialog::getOpenFileName(activeWindow(), tr("Open project"), ".", "Cstitch files (*.xst)\nAll files (*.*)");
   if (fileString.isEmpty()) {
     return;
   }
@@ -395,7 +395,8 @@ void windowManager::openProject() {
   QString inString;
   QString thisString;
   inString = textInStream.readLine() + "\n";
-  if (!inString.startsWith("<stitch version=")) { // uh oh
+  if (!inString.startsWith("<cstitch version=") &&
+      !inString.startsWith("<stitch version=")) { // uh oh
     QMessageBox::critical(NULL, tr("Bad project file"),
                           tr("Sorry, ") + fileString +
                           tr(" is not a valid project file ") +
@@ -876,7 +877,7 @@ void windowManager::patternWindowImageDeleted(int imageIndex) {
 
 void windowManager::autoShowQuickHelp(bool show) {
 
-  QSettings settings("stitch", "stitch");
+  QSettings settings("cstitch", "cstitch");
   settings.setValue("auto_show_quick_help", show);
   activeWindow()->showHideQuickHelp(show);
 }

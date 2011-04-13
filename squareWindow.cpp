@@ -84,7 +84,7 @@ void squareWindow::constructActionsAndMenus() {
 
   removeRareColorsAction_ = new QAction(tr("Remove rare colors"), this);
 
-  patternButton_ = new QPushButton(QIcon(":patternImage.png"),
+  patternButton_ = new QPushButton(QIcon(":pattern.png"),
                                    tr("Pattern (3/4)"), this);
   patternButton_->setShortcut(QKeySequence("Ctrl+return"));
   patternButton_->setToolTip(tr("Create a patterned image from the currently selected image"));

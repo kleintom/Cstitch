@@ -105,7 +105,7 @@ void colorCompare::createSquaringOptions() {
   squareModeBox_->setItemData(1, tr("Make the new color of a given square the color that occurs most often in that square"), Qt::ToolTipRole);
   squareMode_ = SQ_MEDIAN;
 
-  squareButton_ = new QPushButton(QIcon(":squareImage.png"),
+  squareButton_ = new QPushButton(QIcon(":square.png"),
                                   tr("Square (2/4)"), this);
   squareButton_->setShortcut(QKeySequence("Ctrl+return"));
   squareButton_->setToolTip(tr("Square the currently selected image"));

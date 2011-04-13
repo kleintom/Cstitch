@@ -133,7 +133,7 @@ void quickHelp::loadModeHelp(helpMode mode) {
       "You can return to this stage at any time to choose a different square size by clicking on the <img src=\":colorCompare.png\"> icon on the toolbar.";
     break;
   case(helpMode::H_SQUARE):
-    pixmap = ":squareImage.png";
+    pixmap = ":square.png";
     title = "<h1>Stage 3 of 4: Compare and edit square images</h1>";
     helpText = "Use Stage 3 to compare images (just as in stage 2) and to edit square images.<br/><br/>"
       "You can use the editing tools to change colors, freehand draw, fill regions, and redetail areas - "
@@ -141,10 +141,10 @@ void quickHelp::loadModeHelp(helpMode mode) {
       "but if this is your first time through you may want to just skip editing for now and move on to Stage 4.<br/><br/>"
       "When you're ready to move on, select an image by clicking on it (make sure the tool is set to <i>Select</i>, which is the default), "
       "and then click the \"Pattern\" button, which will replace colors with pattern symbols and display the result in Stage 4.<br/><br/>"
-      "You can return to this stage at any time by clicking on the <img src=\":squareImage.png\"> icon on the toolbar.";
+      "You can return to this stage at any time by clicking on the <img src=\":square.png\"> icon on the toolbar.";
     break;
   case(helpMode::H_PATTERN):
-    pixmap = ":patternImage.png";
+    pixmap = ":pattern.png";
     title = "<h1>Stage 4 of 4: Set symbol size and create a pdf pattern</h1>";
     helpText = "In this final stage you can change the symbols to appear in your final pattern and then create a pdf pattern.<br/><br/>"
       "To change a symbol, either click on it in the image or right click on it in the symbol list and choose \"Change symbol\".  "
@@ -154,7 +154,7 @@ void quickHelp::loadModeHelp(helpMode mode) {
       "When the pdf pattern file is created, the size of the squares in the file will be basically the same size as the squares on the screen, "
       "so before you create the pdf you should use the zoom icons on the toolbar to zoom the symbol image to the smallest size where you can still "
       "differentiate all of the symbols.  Once that's been done, click the \"To pdf\" button and choose a pdf filename to save your final pattern.<br/><br/>"
-      "You can return to this stage at any time by clicking on the <img src=\":patternImage.png\"> icon on the toolbar.<br/><br/>"
+      "You can return to this stage at any time by clicking on the <img src=\":pattern.png\"> icon on the toolbar.<br/><br/>"
       "Congratulations!  If you'd like to do more, a good place to start would be to return to Stage 3 and read the full documentation on "
       "how to use the editing tools.  Humans are still better at some things than computers, and artistry is one of them, "
       "so that part is up to you!  If you do so, you should also learn about how to save and restore your work as a project, information which can be "

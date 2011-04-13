@@ -3,8 +3,8 @@
     <file alias="about.png">icons/32x32_about.png</file>
     <file alias="aboutIcon.png">icons/aboutIcon.png</file>
     <file alias="changeAll.png">icons/32x32_changeAll.png</file>
-    <file alias="colorChooser.png">icons/32x32_colorChooserImage.png</file>
-    <file alias="colorChooser_active.png">icons/32x32_colorChooserImage_active.png</file>
+    <file alias="colorChooser.png">icons/32x32_colorChooser.png</file>
+    <file alias="colorChooser_active.png">icons/32x32_colorChooser_active.png</file>
     <file alias="colorCompare.png">icons/32x32_colorCompare.png</file>
     <file alias="colorCompare_active.png">icons/32x32_colorCompare_active.png</file>
     <file alias="cursor.png">icons/32x32_cursor.png</file>
@@ -18,8 +18,8 @@
     <file alias="leftImage.png">icons/32x32_leftImage.png</file>
     <file alias="openImage.png">icons/32x32_openImage.png</file>
     <file alias="openProject.png">icons/32x32_openProject.png</file>
-    <file alias="patternImage.png">icons/32x32_patternImage.png</file>
-    <file alias="patternImage_active.png">icons/32x32_patternImage_active.png</file>
+    <file alias="pattern.png">icons/32x32_pattern.png</file>
+    <file alias="pattern_active.png">icons/32x32_pattern_active.png</file>
     <file alias="print.png">icons/32x32_print.png</file>
     <file alias="print_all.png">icons/32x32_print_all.png</file>
     <file alias="quickHelp.png">icons/32x32_quickHelp.png</file>
@@ -28,8 +28,8 @@
     <file alias="saveImage.png">icons/32x32_saveImage.png</file>
     <file alias="saveProject.png">icons/32x32_saveProject.png</file>
     <file alias="saveProjectAs.png">icons/32x32_saveProjectAs.png</file>
-    <file alias="squareImage.png">icons/32x32_squareImage.png</file>
-    <file alias="squareImage_active.png">icons/32x32_squareImage_active.png</file>
+    <file alias="square.png">icons/32x32_square.png</file>
+    <file alias="square_active.png">icons/32x32_square_active.png</file>
     <file alias="switchImages.png">icons/32x32_switchImages.png</file>
     <file alias="zoomIn.png">icons/32x32_zoomIn.png</file>
     <file alias="zoomOut.png">icons/32x32_zoomOut.png</file>

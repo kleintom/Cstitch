@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>A Cstitch example</title>
+  <meta http-equiv="content-type" 
+	content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="index.css" />
+  <style type="text/css">
+    div#nav a#example_link {
+      color: #678BAD;
+    }
+  </style>
+</head>
+
+<body>
+
+<!--#include file="title.html" -->
+
+<h1>An example</h1>
+
+<p>
+(Before you start on your own project please read
+<a href="index.shtml#rel-0.9.0">this</a> release note.)
+</p>
+
+<p>
+The base image is a Libary of
+Congress <a href="http://www.loc.gov/pictures/resource/bbc.0701f/">public
+domain image</a> of a baseball card from circa 1910.
+</p>
+
+<p>
+<img class="blockImg" src="images/mcOriginal.jpg" alt="Image of
+McIntyre baseball card" />
+</p>
+<div class="imgTitleSmall">The original image.</div>
+
+<p>
+Start cstitch and click the folder icon on the toolbar
+<img class="inlineImg" src="images/open.png" alt="open icon" /> to
+open the image.  The first step is to choose the colors to use for the
+pattern.  The default mode (visible on the toolbar) is "Num colors to
+DMC" with a default color count of 80, meaning the program will choose
+80 DMC colors for you.  (Briefly, DMC colors are colors that are
+available as cross stitch thread.)  The original image has 68,439
+colors, but the image was obviously printed with far fewer colors, so
+we started by trying 20 colors (change the 80 to 20 on the toolbar and
+click "Choose colors").  The result was too flat, so we go back and
+try 30 (if you're not on the first screen anymore, click the
+<img class="inlineImg" src="images/stage1.png" alt="stage 1 icon" />
+icon on the toolbar).  Here's the result, which we were satisfied
+with:
+</p>
+
+<p>
+<img class="blockImg" src="images/mcCompare30.jpg"
+     alt="The McIntyre image reduced to 30 colors" />
+</p>
+<div class="imgTitleSmall">The original image reduced to 30 colors.</div>
+
+<p>
+The next step "squares" the 30-color image by overlaying a grid on the
+image and then making each square in the grid a solid color.  The size
+of the image, the size of the grid squares, and the type of cross
+stitch fabric you use will determine how large your final product will
+be.  To have the program do the math for you, click on "Compute
+dimensions" under the Image menu - as you change the square size at
+the top the final dimensions for your pattern using various fabric
+types are updated below. We don't know what type of fabric we'll be
+using yet, but we want the final product to be smaller than a sheet of
+paper, so we're going with a square size of 5 (which means the program
+will lay down a grid line on the image every 5 pixels).  The larger
+the square size, the smaller the final product will be.  Click the
+"Square" button on the toolbar to produce the square image:
+</p>
+
+<p>
+<img class="blockImg" src="images/mcSquareUnedited28.jpg"
+     alt="square McIntyre image with 28 colors" />
+</p>
+<div class="imgTitleMedium">A squared image with 28 colors.</div>
+
+<p>
+If you're following along in the program you'll notice that the color
+count dropped from 30 to 28!  The program chooses just one color for
+each square, so it looks like 2 colors didn't make the cut (they
+probably didn't appear enough in the image to get chosen to represent
+the square(s) they appeared in).  There's no way to tell ahead of time
+how many colors will be dropped, but you can always go back and
+restart if you're unhappy with the new count.
+</p>
+
+<p>
+Some might say the squared image doesn't look very good, and normally
+we would agree!  There are a couple of options at this point.  You
+could go back to the previous stage and make the square size smaller
+to keep more detail, but then the final size of your pattern would
+change.  Another option would be to go back to the start and rerun the
+first two stages with more initial colors.  If we start with 60 colors
+instead of 30, we get a square image with 51 colors that looks quite a
+bit better:
+</p>
+
+<p>
+  <img class="blockImg" src="images/mcSquare51.jpg"
+       alt="square McIntyre image with 51 colors" />
+</p>
+<div class="imgTitleMedium">A squared image with 51 colors.</div>
+
+<p>
+But now we need 51 colors of thread instead of 28, so for the purposes
+of illustration we'll instead use the square drawing tools to edit the
+28-color image above to see if we can make it a bit better.  The tools
+are above the color list and include a tool to draw on the image with
+the mouse, a tool to fill areas with a given color, a tool to change a
+color throughout the image, and a "detail" tool - check out
+the <a href="doc.shtml#squareTools">main documentation</a> for more
+information on exactly what the tools do and how to use them.  Another
+useful function when editing is the "Remove rare colors" function
+found under the Image menu - use it to replace colors that only appear
+a few times in the image with similar colors that already appear
+more often.
+</p>
+
+<p>
+The result of editing by hand:
+</p>
+
+<p>
+  <img class="blockImg" src="images/mcSquareEdited23.jpg"
+       alt="edited square McIntyre image with 23 colors" />
+</p>
+<div class="imgTitleMedium">The final edited squared image with 23
+colors.</div>
+
+<p>
+Note that the color count actually fell from 28 to 23 while editing
+since we removed some "rare" colors that were only used in 5 or fewer
+squares (you can specify whatever number you like in place of 5).  We
+also removed the name at the bottom of the image and the "B" on the
+cap since small features like letters don't come out well when
+squared, and we made the border around the main part of the image one
+solid color since we like it better that way.  Creating a good pattern
+requires a certain amount of artistry, something that humans are still
+much better at than computers!  You should expect to have to do some
+editing unless you're willing to use a lot of colors and/or a small
+square size.
+</p>
+
+<p>
+Now click "Pattern" to choose pattern symbols for colors.  Colors and
+their symbols are listed on the right, while the main image is
+enlarged so that you can read the symbol for each square - to get
+around you can right click on the image to switch to the square color
+view, or click/drag your mouse in the preview image in the upper right
+corner to move the red preview box.  If you don't want to change any
+of the symbols, then just click the "To pdf" button on the toolbar.
+Enter any title and copyright/licensing you want to appear in the pdf
+and then click Ok to save your pattern to a pdf file.  Note that the
+size of the squares in the pdf pattern will be based on the size of
+the squares appearing in the image on the screen, so you can zoom in
+or out on the image on the screen before pressing the "To pdf" button
+to change the pdf square size.
+</p>
+
+<p>
+Here are some patterns I get from my image using three different zoom
+levels to save: at four zooms in from the default size
+<a href="images/McIntyre-smaller.pdf">McIntyre_smaller.pdf</a>,
+at the default zoom size
+<a href="images/McIntyre-default.pdf">McIntyre_default.pdf</a>,
+and at four zooms out from the default size
+<a href="images/McIntyre-larger.pdf">McIntyre_larger.pdf</a>.  The
+program decides automatically whether to print the pattern pages in
+landscape or portrait mode in order to minimize the number of pages
+needed - in this case the smaller version printed in portrait mode,
+while the other two printed in landscape mode.
+</p>
+
+<p>
+At this point it would be a good idea to save the work you've done so
+that if you decide later that you want to make more edits or save a
+new pattern size, for example, you won't have to start over from
+scratch.  Click the "save project" button <img class="inlineImg"
+src="images/saveProject.png" alt="the save project icon" /> on the
+toolbar to save your project to a file.  What gets saved are all of
+the images from the four stages, plus any editing history and other
+settings you might have changed.  (Actually, the original image is
+saved but all that's saved for the other images are the options needed
+to reproduce them.)  Here's the project file for the McIntyre
+project: <a href="images/McIntyre.xst">McIntyre.xst</a>.  If you'd like to
+take a look, just save the file to your computer and then use the
+"Open project" button <img class="inlineImg" src="images/openProject.png"
+alt='The "Open project" icon' /> on the toolbar to load it.
+</p>
+
+<p>
+<br />
+<b>
+For more details try the full program documentation, available from
+the program under the Help menu or
+online <a href="doc.shtml">here</a>.  Good luck!
+</b>
+</p>
+
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Cstitch: a free and open source program for creating cross stitch
+    patterns from images</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="index.css" />
+  <style type="text/css">
+    div#nav a#home_link {
+      color: #678BAD;
+    }
+  </style>
+</head>
+
+<body>
+
+<!--#include file="title.html" -->
+
+<p>
+<img class="blockImg" src="images/mcSquare.jpg" alt="Screenshot of the
+cstitch program" />
+</p>
+<div class="imgTitleLarge">Screenshot of cstitch, showing the original
+image on the left and an edited squared version on the right - the
+original image uses 68,439 colors, the one on the right uses 23.</div>
+
+<div class="heading">Features</div>
+<ul class="squareUL">
+  <li><span>
+    Load images in various formats, including jpg, png, and gif.
+  </span></li>
+  <li><span> Choose from several options for selecting colors to be
+    used in the pattern
+    &rarr;<a href="doc.shtml#colorSelectionMode">more
+    information</a>.
+  </span></li>
+  <li><span>
+    Choose how large you want your final pattern to be (by choosing the
+    size of squares to be imposed on your image
+    &rarr;<a href="doc.shtml#squareSize">more information</a>).
+  </span></li>
+  <li><span>
+    Edit your pattern (see the screenshot above) with tools including
+    draw, change color, and fill region
+    &rarr;<a href="doc.shtml#squareTools">more information</a>.
+  </span></li>
+  <li><span>
+    Save your project and restore for later editing
+    &rarr;<a href="doc.shtml#saveRestore">more information</a>.
+  </span></li>
+  <li><span>
+    Save the final pattern as a pdf.
+  </span></li>
+</ul>
+
+<div class="heading">Notes</div>
+<ul class="squareUL">
+  <li><span>
+      Found a bug? Please report it using the <a href="http://sourceforge.net/tracker/?group_id=529723&amp;atid=2151826">bug tracker</a>.
+  </span></li>
+  <li><span>
+      Have a feature you'd like to see that's not currently implemented?
+      Let me know using
+      the <a href="http://sourceforge.net/tracker/?group_id=529723&amp;atid=2151829">
+        Feature Tracker</a>.
+  </span></li>
+  <li><span>
+      Visit the sourceforge <a href="http://sourceforge.net/projects/cstitch/">project page</a> for cstitch.
+  </span></li>
+</ul>
+
+<div class="heading">Release Notes</div>
+<p>
+<span class="rnd" id="rel-0.9.0">4-6-11</span>
+Beta version 0.9.0 released.<br />
+<b>Note: It seems that the Windows and Linux versions of the jpeg
+library used to load jpeg images produce different images when they
+load the same .jpg file (who knew?!? No really...).  This is an issue
+with external libraries outside my control, and for now it means that
+some project files saved on Windows may not load correctly or may give
+different results on Linux (and vice versa).  If you use Windows and
+have no concern about your project files being usable on Linux (or
+don't know what Linux is), then don't worry about this, but if you'd
+like to be able to share your files with people who might be using
+Linux, then for now at least I suggest you convert any jpg images to
+png images before loading them in cstitch (.png's seem to load
+consistently on Windows and linux).</b>
+</p>
+
+</body>
+</html>

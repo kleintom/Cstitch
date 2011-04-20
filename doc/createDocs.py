@@ -121,21 +121,14 @@ class sectionsProcessor:
     @abstractmethod
     def processSections(self): pass
 
-    def writeHtml(self, outputFile, htmlTitle, css, useInpageCss, htmlBody):
-        """Write html to <outputFile>.  CSS is included directly in
-        the head as the string <css> if <useInpageCss> is true,
-        otherwise css is external coming from the file name <css> if
-        <useInpageCss> is false.  The header title is <htmlTitle> and
-        the html body is <htmlBody>."""
+    def writeHtml(self, outputFile, htmlTitle, css, htmlBody):
+        """Write html to <outputFile>.  <css> should be a string
+        holding all css instructions that belong in <head>.  The
+        header title is <htmlTitle> and the html body is <htmlBody>."""
 
-        template = open('html_template.html').read()
+        template = open('docTemplate.html').read()
         template = re.sub(r'@@title', htmlTitle, template)
-        if useInpageCss: # put css statements in head
-            template = re.sub(r'@@css', ('<style type="text/css">\n' + css +
-                                         '\n  </style>'), template)
-        else: # load css from file
-            template = re.sub(r'@@css', ('<link rel="stylesheet" type="text/css" href="' +
-                                         css + '" />'), template)
+        template = re.sub(r'@@css', css, template)
         template = re.sub(r'@@body', htmlBody, template)
         
         outFile = open(outputFile, 'w')
@@ -148,16 +141,18 @@ class qtPageProcessor(sectionsProcessor):
         self.sections = sections(xmlFilename, "multi")
 
     def css(self):
-        return """h1 {color: #00B300; }
-h2 {color: #009900; }
-h3 {color: #004D00; }
-div.h2Div {margin-left: 15px;}
-div.h3Div {margin-left: 30px;}
-body {
-    max-width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}"""
+        return """<style type="text/css">
+    h1 {color: #00B300; }
+    h2 {color: #009900; }
+    h3 {color: #004D00; }
+    div.h2Div {margin-left: 15px;}
+    div.h3Div {margin-left: 30px;}
+    body {
+      max-width: 950px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>"""
 
     def writeNav(self, direction, href, title):
         """Return a "navigation" string used to navigate through the
@@ -211,23 +206,33 @@ body {
             navLine = "<p>\n" + navLine.strip().rstrip(";") + "\n</p>"
             outputFile = page.filename()
             self.writeHtml(outputFile, self.sections.pages[i].title,
-                           self.css(), True, 
+                           self.css(), 
                            navLine + page.allTextParts() + navLine)
             
 class singleWebProcessor(sectionsProcessor):
     """Processor for producing single webpage docs"""
 
     def __init__(self, xmlFilename):
-        self.cssFilename = 'doc.css'
         self.sections = sections(xmlFilename, "singleWeb")
+
+    def css(self):
+        return """<link rel="stylesheet" type="text/css" href="index.css" />
+  <link rel="stylesheet" type="text/css" href="doc.css" />
+  <style type="text/css">
+    div#nav a#doc_link {
+      color: #678BAD;
+    }
+  </style>"""
 
     def processSections(self):
         """Combine the data pages into a single output document"""
         htmlBody = ""
         for page in self.sections.pages:
             htmlBody = htmlBody + page.mainBody
-        self.writeHtml("cstitchDoc.html", "Cstitch documentation",
-                       self.cssFilename, False, htmlBody)
+        self.writeHtml("doc.shtml", "Cstitch documentation",
+                       self.css(), htmlBody)
+        self.writeHtml("web/doc.shtml", "Cstitch documentation",
+                       self.css(), htmlBody)
 
 ## main #######################################################################
 

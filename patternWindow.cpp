@@ -1017,10 +1017,13 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
   int symbolDim = qMax(pdfDim, ::sHeight("B"));
   symbolDim = qMin(symbolDim, 40);
   const QFont originalFont(painter->font());
-  const QFont listFont = ::fontForHeight(symbolDim);
+  QFont tmpFont = originalFont;
+  ::setFontHeight(&tmpFont, symbolDim);
+  const QFont listFont = tmpFont;
+
   painter->setFont(listFont);
-  QFontMetrics fontMetric(listFont);
-  const int fontHeight = fontMetric.height();
+  const QFontMetrics listFontMetric(listFont);
+  const int fontHeight = listFontMetric.height();
 
   //// list color count and box dimensions
   const int xBoxes =
@@ -1041,20 +1044,20 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
                                " and the Name column gives the code and DMC name of the nearest DMC color.");
     const QStringList partsList = nonDmcString.split(" ");
     int numLines = 1;
-    const int spaceWidth = fontMetric.width(" ");
+    const int spaceWidth = listFontMetric.width(" ");
     QString stringSoFar = partsList[0];
-    int widthSoFar = fontMetric.width(stringSoFar);
+    int widthSoFar = listFontMetric.width(stringSoFar);
     for (int i = 1, size = partsList.size(); i < size; ++i) {
-      if (widthSoFar + fontMetric.width(partsList[i]) + spaceWidth <
+      if (widthSoFar + listFontMetric.width(partsList[i]) + spaceWidth <
           printerWidth) {
         stringSoFar += " " + partsList[i];
-        widthSoFar += fontMetric.width(partsList[i] + " ");
+        widthSoFar += listFontMetric.width(partsList[i] + " ");
       }
       else { // new line
         painter->drawText(0, yused + numLines*fontHeight, stringSoFar);
         ++numLines;
         stringSoFar = partsList[i];
-        widthSoFar = fontMetric.width(stringSoFar);
+        widthSoFar = listFontMetric.width(stringSoFar);
       }
     }
     // draw the last line
@@ -1068,18 +1071,19 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
   QFont boldFont = listFont;
   boldFont.setBold(true);
   painter->setFont(boldFont);
-  const QString header = "Symbol  Count  Code              Name";
-  fontMetric = QFontMetrics(boldFont);
-  //// tab stops
-  const int tab1 = symbolDim + 5;//fontMetric.width("Symbol  ");
-  const int tab2 = fontMetric.width("Symbol   ");
-  const int tab3 = tab2 + fontMetric.width("Count  ");
-  const int tab4 = tab3 + fontMetric.width("Code              ");
-  const int tab5 = tab4 + fontMetric.width("~8888:Ultra V DK Turquoise");
+  const QFontMetrics boldFontMetric(boldFont);
 
-  painter->drawText(0, yused + 2*fontHeight, header);
+  //// tab stops
+  const int padding = 10;
+  const int swatchTab = symbolDim + 5;
+  const int countTab = 2 * swatchTab + padding;
+  const int codeTab = countTab + listFontMetric.width("999999") + padding;
+  const int nameTab = codeTab + listFontMetric.width("255 255 255") + padding;
+  const int endTab = nameTab + boldFontMetric.width("~8888:Ultra V DK Turquoise");
+
+  drawListHeader(painter, 0, yused + 2*fontHeight, countTab, codeTab, nameTab);
   yused += 2*fontHeight;
-  painter->drawLine(0, yused + 3, tab5, yused + 3);
+  painter->drawLine(0, yused + 3, endTab, yused + 3);
   yused += 5;
   painter->setFont(listFont);
 
@@ -1102,7 +1106,7 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
     if (yused + fontHeight > printerHeight) {
       // if we're currently in a second column or there isn't room for a
       // second column, then start a new page
-      if (xtab > 0 || tab5 + 50 + tab5 > printerWidth) {
+      if (xtab > 0 || endTab + 50 + endTab > printerWidth) {
         xtab = 0;
         printer->newPage();
         // page #
@@ -1115,27 +1119,29 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
         partial = false;
         yused = 0;
         painter->setFont(boldFont);
-        painter->drawText(0, fontHeight, header);
+        drawListHeader(painter, xtab, fontHeight, countTab, codeTab, nameTab);
         painter->setFont(listFont);
         yused += fontHeight;
-        painter->drawLine(xtab, yused + 3, tab5, yused + 3);
+        painter->drawLine(xtab, yused + 3, endTab, yused + 3);
         yused += 5;
       }
       else { // start a second column
-        xtab = tab5 + 50;
+        xtab = endTab + 50;
         painter->setFont(boldFont);
         if (partial) { // second column on first page of listing
           yused = yusedSaved;
-          painter->drawText(xtab, 2*fontHeight + yused, header);
+          drawListHeader(painter, xtab, 2*fontHeight + yused, countTab,
+                         codeTab, nameTab);
           yused += 2*fontHeight;
         }
         else {
           yused = 0;
-          painter->drawText(xtab, fontHeight, header);
+          drawListHeader(painter, xtab, fontHeight, countTab, codeTab,
+                         nameTab);
           yused += fontHeight;
         }
         painter->setFont(listFont);
-        painter->drawLine(xtab, yused + 3, tab5 + xtab, yused + 3);
+        painter->drawLine(xtab, yused + 3, endTab + xtab, yused + 3);
         yused += 5;
       }
     }
@@ -1145,20 +1151,20 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
     symbolPainter.drawRect(0, 0, thisSymbol.width()-1, 
                            thisSymbol.height()-1);
     symbolPainter.end();
-    painter->drawPixmap(xtab, yused+5, thisSymbol);
+    painter->drawPixmap(xtab, yused + 5, thisSymbol);
     //// color swatch ("sample")
     thisPixmap.fill((*it).color().qc());
-    painter->drawPixmap(tab1 + xtab+2, yused+5, thisPixmap);
-    painter->drawRect(tab1 + xtab + 2, yused + 5,
+    painter->drawPixmap(swatchTab + xtab + 2, yused + 5, thisPixmap);
+    painter->drawRect(swatchTab + xtab + 2, yused + 5,
                       symbolDim, symbolDim);
     //// color count
-    painter->drawText(tab2 + xtab, yused + symbolDim,
+    painter->drawText(countTab + xtab, yused + symbolDim,
                       ::itoqs(countsHash[(*it).color().qrgb()]));
     //// floss code (or rgb code)
     const int code = (*it).code();
     if (code != -1) { // valid floss
       if (code >= 0) {
-        painter->drawText(tab3 + xtab, yused+symbolDim, ::itoqs(code));
+        painter->drawText(codeTab + xtab, yused+symbolDim, ::itoqs(code));
       }
       else { // the dmc code is a string in this case
         thisCodeString = "N/A";
@@ -1171,18 +1177,27 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
         else {
           qWarning() << "String code error.";
         }
-        painter->drawText(tab3 + xtab, yused + symbolDim, thisCodeString);
+        painter->drawText(codeTab + xtab, yused + symbolDim, thisCodeString);
       }
     }
     else { // insert the rgb code instead of the dmc code
-      painter->drawText(tab3 + xtab, yused + symbolDim,
+      painter->drawText(codeTab + xtab, yused + symbolDim,
                         ::ctos((*it).color()));
     }
     //// color name
-    painter->drawText(tab4 + xtab, yused + symbolDim, (*it).name());
+    painter->drawText(nameTab + xtab, yused + symbolDim, (*it).name());
 
     yused += symbolDim + 5;
   }
+}
+
+void patternWindow::drawListHeader(QPainter* painter, int xStart, int y,
+                                   int countTab, int codeTab,
+                                   int nameTab) const {
+
+  painter->drawText(xStart + countTab, y, tr("Count"));
+  painter->drawText(xStart + codeTab, y, tr("Code"));
+  painter->drawText(xStart + nameTab, y, tr("Name"));
 }
 
 bool patternWindow::eventFilter(QObject* watched, QEvent* event) {

@@ -6,20 +6,22 @@
   <title>Color Compare</title>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <style type="text/css">
-h1 {color: #00B300; }
-h2 {color: #009900; }
-h3 {color: #004D00; }
-div.h2Div {margin-left: 15px;}
-div.h3Div {margin-left: 30px;}
-body {
-    max-width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    h1 {color: #00B300; }
+    h2 {color: #009900; }
+    h3 {color: #004D00; }
+    div.h2Div {margin-left: 15px;}
+    div.h3Div {margin-left: 30px;}
+    body {
+      max-width: 950px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 
 <body>
+
+<!--#include file="title.html" -->
 
 <p>
 Previous: <a href="colorChooser.html">The color chooser panel</a>;
@@ -28,7 +30,7 @@ Top: <a href="overview.html">Overview</a>
 </p>
 
 <h1 id="colorCompare" class="section">The Color Compare Panel
-<img src=":colorCompare_active.png" /></h1>
+<img src=":colorCompare_active.png" alt="active color compare icon" /></h1>
 
 <p>
 The color compare panel allows you to compare your new image with the
@@ -72,8 +74,7 @@ image cannot be recovered.  You can't delete the original image.
 </div>
 
 <div class="h2Div">
-<a id="color_compare_keyboard_shortcuts"></a>
-<h2>Keyboard shortcuts</h2>
+<h2 id="color_compare_keyboard_shortcuts">Keyboard shortcuts</h2>
 <p>
 You can press "Shift + Left Arrow" (i.e. hold down the shift key and
 then press the left arrow key) to make the left image active, "Shift +
@@ -119,7 +120,7 @@ is tranformed into a squared/patterned image depends on
 the <i>squaring mode</i> and the <i>square size</i> setting.
 </p>
 
-<p>
+<p id="squareSize">
 The <i>square size</i> setting determines how large (in pixels) the
 squares to be created will be.  The size is set using the number box
 on the toolbar, and is allowed to have any value from 2 to 50.  The

@@ -122,14 +122,6 @@ inline void setFontHeight(QFont* font, int height) {
   }
 }
 
-// return the smallest application font with height at least <height>
-inline QFont fontForHeight(int height) {
-
-    static QFont font = QApplication::font();
-    setFontHeight(&font, height);
-    return font;
-}
-
 // return the average width of a character in <font> (rounded up)
 // [by character we mean ascii characters 32-127]
 int averageCharacterWidth(const QFont& font);

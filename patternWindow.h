@@ -219,6 +219,9 @@ class patternWindow : public imageSaverWindow {
   // pdf output.
   void drawPdfColorList(QPainter* painter, QPrinter* printer,
                         int pageNum, int yused, int pdfDim) const;
+  // draw column headers for a section of the color list
+  void drawListHeader(QPainter* painter, int xStart, int y,
+                      int countTab, int codeTab, int nameTab) const;
   // return the helpMode enum constant for this mode
   helpMode getHelpMode() const;
 

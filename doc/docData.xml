@@ -49,10 +49,11 @@ stitch pattern and a list of the colors in the pattern.
 
 <p>
   The transformation is a four step process.
+</p>
 
 <div class="h2Div">
 <h2>1. <a href="colorChooser"><i>Choose your colors</i></a>
-<a href="colorChooser"><img src="colorChooser_active.png" /></a></h2>
+<a href="colorChooser"><img src="colorChooser_active.png" alt="active color chooser icon"/></a></h2>
 <p>
   There are three modes for choosing the colors to appear in your
   pattern, including choosing your own colors from the original image,
@@ -67,7 +68,7 @@ stitch pattern and a list of the colors in the pattern.
 
 <div class="h2Div">
 <h2>2. <a href="colorCompare"><i>Compare color choices</i></a>
-<a href="colorCompare"><img src="colorCompare_active.png" /></a></h2>
+<a href="colorCompare"><img src="colorCompare_active.png" alt="active color compare icon"/></a></h2>
 <p>
   At this stage your original image has been transformed into a new
   image using your color choices.  This step is used to compare your
@@ -80,7 +81,7 @@ stitch pattern and a list of the colors in the pattern.
 
 <div class="h2Div">
 <h2>3. <a href="square"><i>Square your image and edit</i></a>
-<a href="square"><img src="square_active.png" /></a></h2>
+<a href="square"><img src="square_active.png" alt="active square icon" /></a></h2>
 <p>
   Your colored image has now been transformed into a "squared" or
   "grided" image as in the final cross stitch pattern.  Here you can
@@ -91,14 +92,13 @@ stitch pattern and a list of the colors in the pattern.
 
 <div class="h2Div">
 <h2>4. <a href="pattern"><i>Create the pattern and edit</i></a>
-<a href="pattern"><img src="pattern_active.png" /></a></h2>
+<a href="pattern"><img src="pattern_active.png" alt="active pattern icon" /></a></h2>
 <p>
 The squared color image has now had colors replaced with symbols,
 which you can change from among those available.  When you're
 satisfied with the symbols, save your pattern to a pdf.
 </p>
 </div>
-</p>
 
 <h1>Moving Between the Stages</h1>
 <p>
@@ -111,32 +111,36 @@ satisfied with the symbols, save your pattern to a pdf.
 </p>
 
 <h1>Zooming</h1>
+
 <p>
-The first three stages provide two sets of zooming operations.  The
-first set appears on the toolbar (and also from the <i>Image</i> menu)
-and consists of a "Zoom to fit" option <img src="zoomToImage.png" />
-that zooms the image to be as large as possible and still fit in the
-available space, a "Zoom to width" option <img src="zoomToWidth.png" />
-that zooms the image to fit the available width, and a "Zoom to
-height" option <img src="zoomToHeight.png" /> that zooms the image to
-fit the available height.  (There's a caveat for square images - see
-<a href="square#zoom_caveat">this</a> for details.)
+The first three stages provide two sets of zooming operations.
+The first set appears on the toolbar (and also from the <i>Image</i>
+menu) and consists of a "Zoom to fit" option <img
+src="zoomToImage.png" alt="zoom to image icon"/> that zooms the image to be as large as
+possible and still fit in the available space, a "Zoom to width"
+option <img src="zoomToWidth.png" alt="zoom to width icon" /> that zooms the image to fit the
+available width, a "Zoom to height" option <img src="zoomToHeight.png" alt="zoom to height icon"
+/> that zooms the image to fit the available height, and an "Original
+size" option <img src="zoomToOriginal.png" alt="zoom to original icon" /> that zooms the image to
+its original size.  (There's a caveat for square images - see <a
+href="square#zoom_caveat">this</a> for details.)
 </p>
+
 <p>
 The second set of zoom options is available from the <i>Image</i> menu
-and consists of a "Zoom in" option <img src="zoomIn.png" /> that
-increases the zoom by a fixed amount, a "Zoom out"
-option <img src="zoomOut.png" /> that decreases the zoom by a fixed
-amount, and an "Original size" option <img src="zoomToOriginal.png" />
-that zooms the image to its original size.
+and consists of a "Zoom in" option <img src="zoomIn.png" alt="zoom in icon" /> that
+increases the zoom by a fixed amount and a "Zoom out"
+option <img src="zoomOut.png" alt="zoom out icon" /> that decreases the zoom by a fixed
+amount.
 </p>
+
 <p>
 In the last (pattern) stage, only the second set of options is
 available, either from the toolbar or from the <i>Image</i> menu.  At
 the pattern stage the zoom level of the image determines the size of
 the symbols in the pdf pattern output, i.e. the size of a square in
 the pdf pattern will be (approximately) the same size as a square
-on the screen.  In all other stages the zoom level has no affect on
+on the screen.  In all other stages the zoom level has no effect on
 processing.
 </p>
 
@@ -144,7 +148,7 @@ processing.
 <p>
 You can save the active image at any time as a jpg, png, pdf, or any
 of several other formats, by clicking on the save
-icon <img src="saveImage.png" /> on the toolbar or by choosing <i>Save
+icon <img src="saveImage.png" alt="save image icon" /> on the toolbar or by choosing <i>Save
 Image</i> from the <i>File</i> menu (not available from the first
 panel since the only image there is the original!).
 </p>
@@ -173,10 +177,10 @@ get such a warning and decide to save the image, you should first save
 your project.
 </p>
 
-<h1>Saving and restoring projects</h1>
+<h1 id="saveRestore">Saving and restoring projects</h1>
 <p>
 You can save your work at any time by clicking on the save project
-icon <img src="saveProject.png" /> on the toolbar or by
+icon <img src="saveProject.png" alt="save project icon" /> on the toolbar or by
 choosing <i>Save Project</i> (or <i>Save Project As</i>) from
 the <i>File</i> menu.  "Project" here refers to all of the images in
 all of the panels, as well as various settings in those panels.  We
@@ -185,7 +189,7 @@ for example), but you can use any filename you'd like, with or without
 an extension.
 </p>
 
-<p><b>Note:</b>The only image contained in a saved project file is the
+<p><b>Note: </b>The only image contained in a saved project file is the
 original image that started the project; all other images associated
 with the saved project are restored from the original when the project
 is reloaded.  This keeps project files small and portable, but means
@@ -196,13 +200,12 @@ to delete them before saving your project.)
 
 <p>
 To restore your work from a saved project file, just click on the open
-project icon <img src="openProject.png" /> on the toolbar or
+project icon <img src="openProject.png" alt="open project icon" /> on the toolbar or
 choose <i>Open Project</i> from the <i>File</i> menu and open the
 project file you saved above.
 </p>
 
-<a id="overview_keyboard_shortcuts"></a>
-<h1>Keyboard shortcuts</h1>
+<h1 id="overview_keyboard_shortcuts">Keyboard shortcuts</h1>
 <p>
 In addition to keyboard shortcuts listed in the menus, you can press
 "Ctrl+Enter" (i.e. hold down the control key and then press enter) at
@@ -263,11 +266,11 @@ this documentation for the <i>Color Choosing Panel</i>.
 
   <mainBody><![CDATA[
 <h1 id="colorChooser" class="section">The Color Choosing Panel
-<img src="colorChooser_active.png" /></h1>
+<img src="colorChooser_active.png" alt="active color chooser icon" /></h1>
 
 <p>
 Start a new project by opening a saved image from your files, either
-by clicking the folder icon <img src="openImage.png"> on the toolbar
+by clicking the folder icon <img src="openImage.png" alt="open image icon" /> on the toolbar
 or choosing <i>Open</i> from the <i>File</i> menu.
 </p>
 
@@ -280,7 +283,7 @@ determined by the "color selection mode", described next.
 </p>
 
 <div class="h2Div">
-<h2>Choosing the Color Selection Mode</h2>
+<h2 id="colorSelectionMode">Choosing the Color Selection Mode</h2>
 <p>
 The color selection mode is chosen from the dropdown box on the
 toolbar.  There are three modes to choose from:
@@ -330,6 +333,7 @@ original image unless similar close shades already exist as DMC
 colors.  The next mode gets around that by allowing you to select
 exact colors from the original image (which may not be available as
 floss!).
+</p>
 </div>
 
 <div class="h3Div">
@@ -383,11 +387,10 @@ processed image will be available in the next panel, where you can
 compare results.
 </p>
 
-<p><b>Note:</b> This <i>color choosing</i> step performs mostly
-  automated color selection.  A <a href="square">later</a> step
-  will allow for editing "by hand" to change/add/delete colors.
-  </li>
-</ul>
+<p>
+<b>Note: </b>This <i>color choosing</i> step performs mostly
+automated color selection.  A <a href="square">later</a> step
+will allow for editing "by hand" to change/add/delete colors.
 </p>
 </div>
 ]]></mainBody>
@@ -407,7 +410,7 @@ compare results.
   <mainBody><![CDATA[
 
 <h1 id="colorCompare" class="section">The Color Compare Panel
-<img src="colorCompare_active.png" /></h1>
+<img src="colorCompare_active.png" alt="active color compare icon" /></h1>
 
 <p>
 The color compare panel allows you to compare your new image with the
@@ -451,8 +454,7 @@ image cannot be recovered.  You can't delete the original image.
 </div>
 
 <div class="h2Div">
-<a id="color_compare_keyboard_shortcuts"></a>
-<h2>Keyboard shortcuts</h2>
+<h2 id="color_compare_keyboard_shortcuts">Keyboard shortcuts</h2>
 <p>
 You can press "Shift + Left Arrow" (i.e. hold down the shift key and
 then press the left arrow key) to make the left image active, "Shift +
@@ -498,7 +500,7 @@ is tranformed into a squared/patterned image depends on
 the <i>squaring mode</i> and the <i>square size</i> setting.
 </p>
 
-<p>
+<p id="squareSize">
 The <i>square size</i> setting determines how large (in pixels) the
 squares to be created will be.  The size is set using the number box
 on the toolbar, and is allowed to have any value from 2 to 50.  The
@@ -567,7 +569,7 @@ many times as you like.
   <mainBody><![CDATA[
 
 <h1 id="square" class="section">The Square Edit Panel
-<img src="square_active.png" /></h1>
+<img src="square_active.png" alt="active square icon" /></h1>
 
 <p>
 The square edit panel allows you to edit your pattern by changing
@@ -575,18 +577,18 @@ colors and freehand drawing.
 </p>
 
 <div class="h2">
-<h2>Square Pattern Editing Tools</h2>
+<h2 id="squareTools">Square Pattern Editing Tools</h2>
 <p>
 This panel provides four tools for editing your pattern by hand.
 </p>
 <p>
-<b>Note:</b> You can't edit the original image using these tools, but
+<b>Note: </b>You can't edit the original image using these tools, but
 you can use the tools to choose colors from the original image.
 </p>
 </div>
 
 <div class="h3">
-<h3>Selection mode <img src="cursor.png" /></h3>
+<h3>Selection mode <img src="cursor.png" alt="cursor icon" /></h3>
 <p>
 Click on the selection mode icon to be able to select an image with
 the mouse (if other tools are active, a mouse click may mean something
@@ -594,14 +596,14 @@ else) - basically selection mode provides what you would think of as
 standard mouse behavior, as opposed to the other tools.
 </p>
 <p>You can also select the left or right image at any time by using
-the left image button <img src="leftImage.png" /> or the right image
-button <img src="rightImage.png" /> on the toolbar.
+the left image button <img src="leftImage.png" alt="left image icon" /> or the right image
+button <img src="rightImage.png" alt="right image icon" /> on the toolbar.
 </p>
 </div>
 
 <div class="h3">
 <a name="change_a_color_tool"></a>
-<h3>The Change a Color Tool <img src="changeAll.png" /></h3>
+<h3>The Change a Color Tool <img src="changeAll.png" alt="change all icon" /></h3>
 <p>
 Use this tool to change a color in your image.  You can also change a
 color by right clicking on it at any time in the color list and
@@ -610,6 +612,7 @@ choosing <i>Change color</i>.
 
 <p>The color to be changed <i>to</i> is displayed in a color swatch
 above the tools.  You can set that color in any of four ways:
+</p>
 
 <ul>
 <li>Right click on a color on either image;</li>
@@ -621,7 +624,6 @@ Dialog options;</li>
 <li>Right click on the color you want in the color list and
 choose <i>Set as tool color</i>.</li>
 </ul>
-</p>
 
 <p>
 Once the swatch color has been set, left click on a color in the
@@ -671,7 +673,7 @@ color.
 With this option you can choose any DMC
 color; colors are arranged in the same manner as for the <i>Choose a
 List Color</i> option.
-<p>
+</p>
 </div>
 
 <div class="h3">
@@ -706,7 +708,7 @@ In DMC only mode this option is unavailable.
 </div>
 
 <div class="h3">
-<h3>The Draw Tool <img src="draw.png" /></h3>
+<h3>The Draw Tool <img src="draw.png" alt="draw icon" /></h3>
 <p>
 Use the draw tool to freehand draw on your image by holding down the
 left mouse button while dragging the mouse.  The drawing color is
@@ -716,7 +718,7 @@ described under the <i>Change a color tool</i> directions.
 </div>
 
 <div class="h3">
-<h3>The Fill Region Tool <img src="fill.png" /></h3>
+<h3>The Fill Region Tool <img src="fill.png" alt="fill icon" /></h3>
 <p>
 Use the fill region tool to change the color of a specific region in
 the image by left clicking in the region.  The new color is determined
@@ -725,7 +727,7 @@ just as for the <i>Change a color tool</i>.
 </div>
 
 <div class="h3">
-<h3>The Detail Tool <img src="detail.png" /></h3>
+<h3>The Detail Tool <img src="detail.png" alt="detail icon" /></h3>
 <p>
 The detail tool is intended to be used to restore color to small
 detail areas of an image that may not have received adequate treatment
@@ -739,7 +741,7 @@ you'd like to detail.  As you drag, the squares under the mouse will
 be marked with xes.  To unmark individual marked squares, right
 click/drag on the square(s), or click on the <i>Clear</i> button to
 clear all of the marked squares.<br />
-<b>Note:</b>The tool works best if you concentrate on individual
+<b>Note: </b>The tool works best if you concentrate on individual
 features you'd like to restore, i.e. it's better to mark and detail many
 smaller regions of similar colors than to mark a single larger region
 with many mixed features/colors.
@@ -785,8 +787,8 @@ the <a href="#change_a_color_tool"><i>Change a Color Tool</i></a>.
 <h2>Edit Undo/Redo</h2>
 <p>
 You can undo and redo your edits using the edit
-history buttons on the toolbar: undo <img src="/leftArrow.png"> and
-redo <img src="rightArrow.png">.
+history buttons on the toolbar: undo <img src="leftArrow.png" alt="left arrow icon" /> and
+redo <img src="rightArrow.png" alt="right arrow icon" />.
 </p>
 </div>
 
@@ -795,7 +797,7 @@ redo <img src="rightArrow.png">.
 <p>
 By default all pattern images in this panel have grid lines in black.
 You can turn off the grid lines by either clicking the gridlines
-button <img src="grid.png" /> on the toolbar or by toggling
+button <img src="grid.png" alt="grid icon" /> on the toolbar or by toggling
 the <i>Grid</i> menu option in the <i>Image</i> menu.
 </p>
 <p>
@@ -810,7 +812,7 @@ image).
 </div>
 
 <div class="h2">
-<a name="keyboard_shortcuts"></a>
+<a name="square_keyboard_shortcuts"></a>
 <h2>Keyboard shortcuts</h2>
 <p>
 You can press "Shift + Left Arrow" (i.e. hold down the shift key and
@@ -821,7 +823,7 @@ Arrow" to move down in the image list for the active side.  The same
 shortcuts apply in the color compare panel.
 </p>
 <p>
-See the <a href="overview#keyboard_shortcuts">overview</a> for
+See the <a href="overview#overview_keyboard_shortcuts">overview</a> for
 application-wide keyboard shortcut information.
 </p>
 </div>
@@ -893,14 +895,14 @@ many times as you like.
   <mainBody><![CDATA[
 
 <h1 id="pattern" class="section">The Pattern Edit Panel
-<img src="pattern_active.png" /></h1>
+<img src="pattern_active.png" alt="active pattern icon" /></h1>
 
 <p>
 The pattern edit panel allows you to change color symbols and to save
 your pattern as a pdf.
 </p>
 <p>
-<b>Note:</b> The pattern view shows a border around each symbol filled
+<b>Note: </b>The pattern view shows a border around each symbol filled
 with the color of the corresponding square - this is for on-screen
 reference purposes and does not appear in the final pdf version of the
 pattern.
@@ -933,7 +935,7 @@ list in the <i>Images</i> menu.
 To situate yourself on the symbol image, you can switch back and forth
 between the symbol and square color views by clicking the right button
 on the image or by clicking the <i>Switch Views</i>
-button <img src="switchImages.png" /> on the toolbar.
+button <img src="switchImages.png" alt="switch images icon" /> on the toolbar.
 </p>
 </div>
 
@@ -979,13 +981,13 @@ have either no border or a border that isn't filled.
 </div>
 
 <div class="h2Div">
-<h2>Saving a Pattern to a Pdf File</h2>
+<h2 id="savePattern">Saving a Pattern to a Pdf File</h2>
 <p>
 To save your pattern to a pdf, click the <i>To pdf</i> button on the toolbar.
 </p>
 
 <p>
-<b>Note:</b>The size of the symbols/squares in the saved pdf will
+<b>Note: </b>The size of the symbols/squares in the saved pdf will
 reflect the current zoom level of the onscreen image, so if you want
 larger symbols in the pdf then zoom in on screen before saving (but be
 aware that increasing the zoom level can significantly increase the
@@ -994,8 +996,7 @@ number of pdf pages).
 </div>
 
 <div class="h2Div">
-<a id="pattern_keyboard_shortcuts"></a>
-<h2>Keyboard shortcuts</h2>
+<h2 id="pattern_keyboard_shortcuts">Keyboard shortcuts</h2>
 <p>
 You can press "Shift + Up Arrow" (i.e. hold down the shift key and
 then press the up arrow) to move up in the image list and "Shift +

@@ -6,20 +6,22 @@
   <title>Color Chooser</title>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <style type="text/css">
-h1 {color: #00B300; }
-h2 {color: #009900; }
-h3 {color: #004D00; }
-div.h2Div {margin-left: 15px;}
-div.h3Div {margin-left: 30px;}
-body {
-    max-width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    h1 {color: #00B300; }
+    h2 {color: #009900; }
+    h3 {color: #004D00; }
+    div.h2Div {margin-left: 15px;}
+    div.h3Div {margin-left: 30px;}
+    body {
+      max-width: 950px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 
 <body>
+
+<!--#include file="title.html" -->
 
 <p>
 Previous: <a href="overview.html">Overview</a>;
@@ -47,11 +49,11 @@ this documentation for the <i>Color Choosing Panel</i>.
 </p>
 
 <h1 id="colorChooser" class="section">The Color Choosing Panel
-<img src=":colorChooser_active.png" /></h1>
+<img src=":colorChooser_active.png" alt="active color chooser icon" /></h1>
 
 <p>
 Start a new project by opening a saved image from your files, either
-by clicking the folder icon <img src=":openImage.png"> on the toolbar
+by clicking the folder icon <img src=":openImage.png" alt="open image icon" /> on the toolbar
 or choosing <i>Open</i> from the <i>File</i> menu.
 </p>
 
@@ -64,7 +66,7 @@ determined by the "color selection mode", described next.
 </p>
 
 <div class="h2Div">
-<h2>Choosing the Color Selection Mode</h2>
+<h2 id="colorSelectionMode">Choosing the Color Selection Mode</h2>
 <p>
 The color selection mode is chosen from the dropdown box on the
 toolbar.  There are three modes to choose from:
@@ -114,6 +116,7 @@ original image unless similar close shades already exist as DMC
 colors.  The next mode gets around that by allowing you to select
 exact colors from the original image (which may not be available as
 floss!).
+</p>
 </div>
 
 <div class="h3Div">
@@ -167,11 +170,10 @@ processed image will be available in the next panel, where you can
 compare results.
 </p>
 
-<p><b>Note:</b> This <i>color choosing</i> step performs mostly
-  automated color selection.  A <a href="square.html">later</a> step
-  will allow for editing "by hand" to change/add/delete colors.
-  </li>
-</ul>
+<p>
+<b>Note: </b>This <i>color choosing</i> step performs mostly
+automated color selection.  A <a href="square.html">later</a> step
+will allow for editing "by hand" to change/add/delete colors.
 </p>
 </div>
 <p>

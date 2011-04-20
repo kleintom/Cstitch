@@ -6,20 +6,22 @@
   <title>Square</title>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <style type="text/css">
-h1 {color: #00B300; }
-h2 {color: #009900; }
-h3 {color: #004D00; }
-div.h2Div {margin-left: 15px;}
-div.h3Div {margin-left: 30px;}
-body {
-    max-width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    h1 {color: #00B300; }
+    h2 {color: #009900; }
+    h3 {color: #004D00; }
+    div.h2Div {margin-left: 15px;}
+    div.h3Div {margin-left: 30px;}
+    body {
+      max-width: 950px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 
 <body>
+
+<!--#include file="title.html" -->
 
 <p>
 Previous: <a href="colorCompare.html">The color compare panel</a>;
@@ -28,7 +30,7 @@ Top: <a href="overview.html">Overview</a>
 </p>
 
 <h1 id="square" class="section">The Square Edit Panel
-<img src=":square_active.png" /></h1>
+<img src=":square_active.png" alt="active square icon" /></h1>
 
 <p>
 The square edit panel allows you to edit your pattern by changing
@@ -36,18 +38,18 @@ colors and freehand drawing.
 </p>
 
 <div class="h2">
-<h2>Square Pattern Editing Tools</h2>
+<h2 id="squareTools">Square Pattern Editing Tools</h2>
 <p>
 This panel provides four tools for editing your pattern by hand.
 </p>
 <p>
-<b>Note:</b> You can't edit the original image using these tools, but
+<b>Note: </b>You can't edit the original image using these tools, but
 you can use the tools to choose colors from the original image.
 </p>
 </div>
 
 <div class="h3">
-<h3>Selection mode <img src=":cursor.png" /></h3>
+<h3>Selection mode <img src=":cursor.png" alt="cursor icon" /></h3>
 <p>
 Click on the selection mode icon to be able to select an image with
 the mouse (if other tools are active, a mouse click may mean something
@@ -55,14 +57,14 @@ else) - basically selection mode provides what you would think of as
 standard mouse behavior, as opposed to the other tools.
 </p>
 <p>You can also select the left or right image at any time by using
-the left image button <img src=":leftImage.png" /> or the right image
-button <img src=":rightImage.png" /> on the toolbar.
+the left image button <img src=":leftImage.png" alt="left image icon" /> or the right image
+button <img src=":rightImage.png" alt="right image icon" /> on the toolbar.
 </p>
 </div>
 
 <div class="h3">
 <a name="change_a_color_tool"></a>
-<h3>The Change a Color Tool <img src=":changeAll.png" /></h3>
+<h3>The Change a Color Tool <img src=":changeAll.png" alt="change all icon" /></h3>
 <p>
 Use this tool to change a color in your image.  You can also change a
 color by right clicking on it at any time in the color list and
@@ -71,6 +73,7 @@ choosing <i>Change color</i>.
 
 <p>The color to be changed <i>to</i> is displayed in a color swatch
 above the tools.  You can set that color in any of four ways:
+</p>
 
 <ul>
 <li>Right click on a color on either image;</li>
@@ -82,7 +85,6 @@ Dialog options;</li>
 <li>Right click on the color you want in the color list and
 choose <i>Set as tool color</i>.</li>
 </ul>
-</p>
 
 <p>
 Once the swatch color has been set, left click on a color in the
@@ -132,7 +134,7 @@ color.
 With this option you can choose any DMC
 color; colors are arranged in the same manner as for the <i>Choose a
 List Color</i> option.
-<p>
+</p>
 </div>
 
 <div class="h3">
@@ -167,7 +169,7 @@ In DMC only mode this option is unavailable.
 </div>
 
 <div class="h3">
-<h3>The Draw Tool <img src=":draw.png" /></h3>
+<h3>The Draw Tool <img src=":draw.png" alt="draw icon" /></h3>
 <p>
 Use the draw tool to freehand draw on your image by holding down the
 left mouse button while dragging the mouse.  The drawing color is
@@ -177,7 +179,7 @@ described under the <i>Change a color tool</i> directions.
 </div>
 
 <div class="h3">
-<h3>The Fill Region Tool <img src=":fill.png" /></h3>
+<h3>The Fill Region Tool <img src=":fill.png" alt="fill icon" /></h3>
 <p>
 Use the fill region tool to change the color of a specific region in
 the image by left clicking in the region.  The new color is determined
@@ -186,7 +188,7 @@ just as for the <i>Change a color tool</i>.
 </div>
 
 <div class="h3">
-<h3>The Detail Tool <img src=":detail.png" /></h3>
+<h3>The Detail Tool <img src=":detail.png" alt="detail icon" /></h3>
 <p>
 The detail tool is intended to be used to restore color to small
 detail areas of an image that may not have received adequate treatment
@@ -200,7 +202,7 @@ you'd like to detail.  As you drag, the squares under the mouse will
 be marked with xes.  To unmark individual marked squares, right
 click/drag on the square(s), or click on the <i>Clear</i> button to
 clear all of the marked squares.<br />
-<b>Note:</b>The tool works best if you concentrate on individual
+<b>Note: </b>The tool works best if you concentrate on individual
 features you'd like to restore, i.e. it's better to mark and detail many
 smaller regions of similar colors than to mark a single larger region
 with many mixed features/colors.
@@ -246,8 +248,8 @@ the <a href="#change_a_color_tool"><i>Change a Color Tool</i></a>.
 <h2>Edit Undo/Redo</h2>
 <p>
 You can undo and redo your edits using the edit
-history buttons on the toolbar: undo <img src=":/leftArrow.png"> and
-redo <img src=":rightArrow.png">.
+history buttons on the toolbar: undo <img src=":leftArrow.png" alt="left arrow icon" /> and
+redo <img src=":rightArrow.png" alt="right arrow icon" />.
 </p>
 </div>
 
@@ -256,7 +258,7 @@ redo <img src=":rightArrow.png">.
 <p>
 By default all pattern images in this panel have grid lines in black.
 You can turn off the grid lines by either clicking the gridlines
-button <img src=":grid.png" /> on the toolbar or by toggling
+button <img src=":grid.png" alt="grid icon" /> on the toolbar or by toggling
 the <i>Grid</i> menu option in the <i>Image</i> menu.
 </p>
 <p>
@@ -271,7 +273,7 @@ image).
 </div>
 
 <div class="h2">
-<a name="keyboard_shortcuts"></a>
+<a name="square_keyboard_shortcuts"></a>
 <h2>Keyboard shortcuts</h2>
 <p>
 You can press "Shift + Left Arrow" (i.e. hold down the shift key and
@@ -282,7 +284,7 @@ Arrow" to move down in the image list for the active side.  The same
 shortcuts apply in the color compare panel.
 </p>
 <p>
-See the <a href="overview.html#keyboard_shortcuts">overview</a> for
+See the <a href="overview.html#overview_keyboard_shortcuts">overview</a> for
 application-wide keyboard shortcut information.
 </p>
 </div>

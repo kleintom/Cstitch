@@ -1,0 +1,41 @@
+body {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+p {
+    padding-left: 10px;
+}
+
+h1 {color: #494949; }
+
+h2 {color: #3E475E; }
+
+h3 {color: #5E667D; }
+
+div.h2Div {margin-left: 15px;}
+
+div.h3Div {margin-left: 30px;}
+
+.note_title {
+    color: #8B918A;
+}
+
+.note {
+    font-size: .85em;
+    border-left: 2px solid black;
+    max-width: 750px;
+    padding-left: 12px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section {
+    margin-left: -15px;
+    padding-bottom: 4px;
+    font-size: xx-large;
+    border-bottom: 2px dotted black;
+}

@@ -242,7 +242,7 @@ void imageZoomWindow::displayOriginalImageInfo(int width, int height) {
     (colorCount > 1) ? tr(" distinct colors.") : tr(" color.");
   QMessageBox::information(this, 
                            tr("Original Image"), tr("The original image") +
-                           tr(" has dimensions ") +
+                           tr(" currently has dimensions ") +
                            ::itoqs(width) + tr("x") + ::itoqs(height) +
                            tr(" and contains ") + ::itoqs(colorCount) + 
                            countString);

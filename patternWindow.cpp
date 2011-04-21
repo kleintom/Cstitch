@@ -53,8 +53,6 @@
 // too small and symbols can't be distinguished)
 extern const int MAX_SYMBOL_SIZE = 68;
 extern const int MIN_SYMBOL_SIZE = 10;
-// all dock widgets have the same width
-extern const int DOCK_WIDTH;
 // coordinates for progress meters (meters aren't parented, so we fix constant
 // coords instead of letting the system choose them randomly)
 extern const int PROGRESS_X_COORDINATE;

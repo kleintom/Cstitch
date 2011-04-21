@@ -29,16 +29,13 @@
 
 #include "utility.h"
 
-extern const int DOCK_WIDTH; // all docks have the same fixed width
-
 patternDockWidget::patternDockWidget(int patternSymbolSize, QWidget* parent)
-  : QWidget(parent), symbolSize_(patternSymbolSize) {
-
-  setFixedWidth(DOCK_WIDTH);
+  : constWidthDock(parent), symbolSize_(patternSymbolSize) {
 
   symbolList_ = new QListWidget(this);
   symbolList_->setIconSize(listIconSize() + QSize(0, 4));
   symbolList_->setContextMenuPolicy(Qt::CustomContextMenu);
+  symbolList_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   changeSymbolAction_ = new QAction(tr("Change symbol"), this);
 
   // a label for the number of symbols in the list

@@ -23,6 +23,7 @@
 #include <QtGui/QWidget>
 
 #include "triC.h"
+#include "constWidthDock.h"
 
 template<class T1, class T2> struct QPair;
 class QPixmap;
@@ -34,7 +35,7 @@ typedef QPair<QRgb, QPixmap> symbolPair;
 
 // the symbol list dock widget for patternWindow: provides a list of
 // symbols and a label giving the number of symbols
-class patternDockWidget : public QWidget {
+class patternDockWidget : public constWidthDock {
 
   Q_OBJECT
 
@@ -60,7 +61,9 @@ class patternDockWidget : public QWidget {
   // generate the number of symbols string from <numSymbols>
   QString numSymbolsStringFromInt(int numSymbols) const;
   // return the size of the list item icons
-  QSize listIconSize() const { return QSize(4*symbolSize_ - 1, symbolSize_); }
+  QSize listIconSize() const { 
+    return QSize(dockWidth(), symbolSize_);
+  }
 
  private slots:
   void processContextRequest(const QPoint& point);

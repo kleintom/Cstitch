@@ -22,23 +22,21 @@
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
 
-extern const int DOCK_WIDTH;
-
 dockImage::dockImage(const QImage& originalImage, QWidget* parent)
-  : QWidget(parent), originalImageRef_(originalImage),
+  : constWidthDock(parent), originalImageRef_(originalImage),
     showingOriginal_(true), dragging_(false) {
 
-  setFixedSize(DOCK_WIDTH, DOCK_WIDTH);
+  setFixedHeight(dockWidth());
 }
 
 void dockImage::setImage(const QImage& image) {
 
-  const int dockWidth = DOCK_WIDTH - 5; // leave a border of 5 on the right
+  const int width = dockWidth() - 5; // leave a border of 5 on the right
   originalImage_ = QPixmap::fromImage(
     originalImageRef_.copy(0, 0, image.width(), image.height()).
-    scaledToWidth(dockWidth));
-  image_ = QPixmap::fromImage(image.scaledToWidth(dockWidth));
-  setFixedSize(dockWidth, image_.height());
+    scaledToWidth(width));
+  image_ = QPixmap::fromImage(image.scaledToWidth(width));
+  setFixedSize(width, image_.height());
 }
 
 void dockImage::paintEvent(QPaintEvent* ) {

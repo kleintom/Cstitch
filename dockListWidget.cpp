@@ -32,19 +32,16 @@
 #include "utility.h"
 #include "imageProcessing.h"
 
-extern const int DOCK_WIDTH = 154;
-extern const int SWATCH_SIZE = 32;
-
 dockListWidget::dockListWidget(const QVector<triC>& colorList,
                                QWidget* parent)
-  : QWidget(parent), mainLayout_(new QVBoxLayout(this)),
+  : constWidthDock(parent), mainLayout_(new QVBoxLayout(this)),
     colorList_(new QListWidget(this)), numColorsLabel_(new QLabel(this)) {
 
-  setFixedWidth(DOCK_WIDTH);
   colorList_->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(colorList_, SIGNAL(customContextMenuRequested(const QPoint& )),
           this, SLOT(processContextRequest(const QPoint& )));
   colorList_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
+  colorList_->setIconSize(iconSize());
   QFont font = QApplication::font();//colorList_->font();
   font.setFamily("monaco");
   // apparently pitch means width (as in "fixed width")
@@ -110,13 +107,12 @@ void dockListWidget::setColorList(QVector<triC> colors) {
 
 QPixmap dockListWidget::generateIconSwatch(const triC& swatchColor) const {
 
-  const int width = 30;
-  const int height = 22;
-  QPixmap swatchPixmap(width, height);
+  const QSize size = iconSize();
+  QPixmap swatchPixmap(size);
   swatchPixmap.fill(swatchColor.qc());
   QPainter painter(&swatchPixmap);
-  painter.drawLine(0, 0, width, 0);
-  painter.drawLine(0, 0, 0, height);
+  painter.drawLine(0, 0, size.width(), 0);
+  painter.drawLine(0, 0, 0, size.height());
   return swatchPixmap;
 }
 
@@ -212,14 +208,14 @@ dockListSwatchWidget::dockListSwatchWidget(const QVector<triC>& colorList,
     colorSwatch_(new QLabel(this)), curColorString_(new QLabel(this)) {
 
   //// a label the user can use to display a color
-  colorSwatch_->setFixedSize(SWATCH_SIZE, SWATCH_SIZE);
+  colorSwatch_->setFixedSize(swatchSize());
   colorSwatch_->setFrameStyle(QFrame::Panel | QFrame::Raised);
   colorSwatch_->setLineWidth(3);
   colorSwatch_->setAlignment(Qt::AlignCenter);
-  QPixmap colorPixmap = QPixmap(SWATCH_SIZE, SWATCH_SIZE);
+  QPixmap colorPixmap = QPixmap(swatchSize());
   colorPixmap.fill(Qt::black);
   colorSwatch_->setPixmap(colorPixmap);
-  colorSwatchCache_ = QPixmap(SWATCH_SIZE, SWATCH_SIZE);
+  colorSwatchCache_ = QPixmap(swatchSize());
   colorSwatchCacheColor_ = Qt::black;
 
   colorSwatchLayout_->addStretch(1);

@@ -1,0 +1,14 @@
+Beta version 0.9.0 released on April 6, 2011.
+
+NOTE: It seems that the Windows and Linux versions of the jpeg
+library used to load jpeg images produce different images when they
+load the same .jpg file (who knew?!? No really...).  This is an issue
+with external libraries outside my control, and for now it means that
+some project files saved on Windows may not load correctly or may give
+different results on Linux (and vice versa).  If you use Windows and
+have no concern about your project files being usable on Linux (or
+don't know what Linux is), then don't worry about this, but if you'd
+like to be able to share your files with people who might be using
+Linux, then for now at least I suggest you convert any jpg images to
+png images before loading them in cstitch (.png's seem to load
+consistently on Windows and linux).

@@ -25,16 +25,18 @@
 
 #include "squareDockTools.h"
 #include "detailToolDock.h"
+#include "constWidthDock.h"
 
 class mousePressLabel;
 class triC;
 class QGridLayout;
 
 //
-// squareToolDock is the dock widget for displaying the square editing tools; the widget
-// also displays a color swatch (tool loabel color) for those tools that
-// use a user selected color and a "dmc only" box that when checked means
-// the user should only be allowed to choose and use dmc colors for tools.
+// squareToolDock is the dock widget for displaying the square editing
+// tools; the widget also displays a color swatch (tool loabel color)
+// for those tools that use a user selected color and a "dmc only" box
+// that when checked means the user should only be allowed to choose
+// and use dmc colors for tools.
 //
 //// Implementation notes
 //
@@ -46,7 +48,7 @@ class QGridLayout;
 // added/removed when the tool is selected/deselected (achieved by passing
 // signals back and forth)
 //
-class squareToolDock : public QWidget {
+class squareToolDock : public constWidthDock {
 
   Q_OBJECT
 

@@ -118,8 +118,10 @@ void windowManager::configureNewWindow(imageZoomWindow* window,
   window->addWindowActions(actions, windowMenu_);
   window->setWindowTitle(getWindowTitle());
   window->addQuickHelp(autoShowQuickHelp_);
-  window->showHideQuickHelp(false); // close any current quick help
-  window->showHideQuickHelp(autoShowQuickHelp_->isChecked());
+  window->showQuickHelp(false); // close any current quick help
+  if (!hideWindows_) {
+    window->showQuickHelp(autoShowQuickHelp_->isChecked());
+  }
 
   window->installEventFilter(this);
 }
@@ -131,10 +133,12 @@ void windowManager::addColorChooserWindow(colorChooser* window) {
   QWidget* widgetPointer = window;
   colorChooserAction_->setData(QVariant::fromValue(widgetPointer));
   colorChooserAction_->setEnabled(true);
-  // configure installs the event filter that captures the geometry
-  // change of showMaximized, so do configure before showMaximized
-  configureNewWindow(window, CHOOSER);
+  // install event filter before show to capture the geometry change
+  window->installEventFilter(this);
   window->showMaximized();
+  // configure maybe displays the quickHelp window, so configure after
+  // the showMaximized so that help displays above the main window
+  configureNewWindow(window, CHOOSER);
 }
 
 void windowManager::addColorCompareImage(const QImage& image,
@@ -383,7 +387,8 @@ void windowManager::openProject() {
 
   //const QString fileString = "test.out";
   const QString fileString =
-    QFileDialog::getOpenFileName(activeWindow(), tr("Open project"), ".", "Cstitch files (*.xst)\nAll files (*.*)");
+    QFileDialog::getOpenFileName(activeWindow(), tr("Open project"), ".",
+                                 "Cstitch files (*.xst)\nAll files (*.*)");
   if (fileString.isEmpty()) {
     return;
   }
@@ -614,7 +619,7 @@ void windowManager::displayActionWindow(QAction* action) {
   if (actionWindow == curWindow) { // we're already there
     return;
   }
-  curWindow->showHideQuickHelp(false);
+  curWindow->showQuickHelp(false);
   setNewWidgetGeometryAndRaise(actionWindow);
 }
 
@@ -844,7 +849,6 @@ template<class T> void windowManager::addChild(QList<T>* list,
   }
 }
 
-
 void windowManager::colorCompareImageDeleted(int imageIndex) {
 
   deleteIndexedImageFromList(&colorCompareSavers_, imageIndex);
@@ -879,7 +883,7 @@ void windowManager::autoShowQuickHelp(bool show) {
 
   QSettings settings("cstitch", "cstitch");
   settings.setValue("auto_show_quick_help", show);
-  activeWindow()->showHideQuickHelp(show);
+  activeWindow()->showQuickHelp(show);
 }
 
 QList<imageZoomWindow*> windowManager::constructedWidgets() const {
@@ -901,7 +905,6 @@ QList<imageZoomWindow*> windowManager::constructedWidgets() const {
 }
 
 int windowManager::getOriginalImageColorCount() {
-
 
   // if this is a restore and colorCount_ is 0, too bad, we're not going to
   // count now [especially since that should never happen!]

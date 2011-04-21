@@ -69,7 +69,7 @@ class imageZoomWindow : public QMainWindow {
  public slots:
   // provide the user some quick (brief) help for this widget, or close
   // the quick help window
-  void showHideQuickHelp(bool show = true);
+  void showQuickHelp(bool show = true);
 
  protected:
   void showListDock();

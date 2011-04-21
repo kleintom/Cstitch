@@ -23,13 +23,15 @@
 #include <QtGui/QWidget>
 #include <QtGui/QListWidget>
 
+#include "constWidthDock.h"
+
 class triC;
 class QHBoxLayout;
 class QVBoxLayout;
 class QLabel;
 
 // a widget for displaying a color list and a "number of colors" label
-class dockListWidget : public QWidget {
+class dockListWidget : public constWidthDock {
 
   Q_OBJECT
 

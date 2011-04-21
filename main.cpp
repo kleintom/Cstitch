@@ -25,6 +25,9 @@
 
 int main(int argc, char *argv[]) {
 
+#ifdef Q_OS_LINUX
+  QApplication::setStyle("plastique"); // motif is never the correct choice...
+#endif
   QApplication app(argc, argv);
 
   // seed the static scroll bar width value
@@ -35,7 +38,7 @@ int main(int argc, char *argv[]) {
   // the version is updated by the git pre-commit script based on the
   // current git label and the current git revision count 
   // (if you change @GIT-VERSION you'll need to change the script too)
-  winManager.setVersion("0.9.0.4"); // @GIT-VERSION - don't touch this comment
+  winManager.setVersion("0.9.0.6"); // @GIT-VERSION - don't touch this comment
 
   colorChooser colorChooserWindow(&winManager);
   colorChooserWindow.show();

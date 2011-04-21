@@ -38,8 +38,6 @@
 #include "helpBrowser.h"
 #include "quickHelp.h"
 
-// all docks have the same fixed width
-extern const int DOCK_WIDTH;
 extern const int ZOOM_INCREMENT = 100;
 
 imageZoomWindow::imageZoomWindow(const QString& dockName,
@@ -153,7 +151,7 @@ void imageZoomWindow::createToolbarAndMenuActions() {
   connect(imageInfoAction_, SIGNAL(triggered()),
           this, SLOT(displayImageInfo()));
   connect(quickHelpAction_, SIGNAL(triggered()),
-          this, SLOT(showHideQuickHelp()));
+          this, SLOT(showQuickHelp()));
   connect(helpAction_, SIGNAL(triggered()),
           this, SLOT(helpRequested()));
   connect(helpAboutAction_, SIGNAL(triggered()),
@@ -325,7 +323,7 @@ void imageZoomWindow::helpRequested() const {
   helpBrowser::loadHelp(getHelpMode());
 }
 
-void imageZoomWindow::showHideQuickHelp(bool show) {
+void imageZoomWindow::showQuickHelp(bool show) {
 
   if (show) {
     quickHelp::loadQuickHelp(getHelpMode(), this);

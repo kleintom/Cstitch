@@ -35,9 +35,6 @@
 #include "leftRightAccessors.h"
 #include "imageUtility.h"
 
-// all docks are fixed width
-extern const int DOCK_WIDTH;
-
 imageCompareBase::imageCompareBase(windowManager* windowMgr)
   : imageSaverWindow(tr("Colors"), windowMgr),
     leftImageSavedSize_(QSize()), rightImageSavedSize_(QSize()) {

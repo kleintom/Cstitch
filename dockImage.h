@@ -25,6 +25,8 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPixmap>
 
+#include "constWidthDock.h"
+
 // the dockImage appears in a dock widget and displays one of two images
 // at a time: an original image or another image (which in practice is a
 // squared version of the original); a right click switches between the
@@ -36,7 +38,7 @@
 // in the main window.  Conversely, the main window can call
 // updateViewport to make the viewport respond to changes in the view
 // of the image on the main window.
-class dockImage : public QWidget {
+class dockImage : public constWidthDock {
 
   Q_OBJECT
 

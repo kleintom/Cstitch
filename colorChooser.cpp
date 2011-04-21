@@ -41,8 +41,6 @@
 #include "xmlUtility.h"
 #include "windowSavers.h"
 
-extern const int DOCK_WIDTH;
-
 // winMgr is used to store the currently loaded image (application wide)
 // and is where we send our new image when the user clicks "Process",
 // among other things.

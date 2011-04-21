@@ -31,10 +31,7 @@
 #include "squareDockTools.h"
 #include "detailToolDock.h"
 
-extern const int DOCK_WIDTH; // all docks share the same width
-extern const int SWATCH_SIZE; // the tool color swatch size
-
-squareToolDock::squareToolDock(QWidget* parent) : QWidget(parent),
+squareToolDock::squareToolDock(QWidget* parent) : constWidthDock(parent),
                                                   detailDock_(NULL) {
 
   dockLayout_ = new QVBoxLayout(this);
@@ -46,18 +43,15 @@ squareToolDock::squareToolDock(QWidget* parent) : QWidget(parent),
   // apparently every button has to be set individually...
   const int iconDimension = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
   const QSize iconSize(iconDimension, iconDimension);
-  setFixedWidth(DOCK_WIDTH);
-
   constructTools(iconSize);
 
   toolColorLabel_ = new mousePressLabel(this);
-  toolColorLabel_->setFixedWidth(SWATCH_SIZE);
-  toolColorLabel_->setFixedHeight(SWATCH_SIZE);
+  toolColorLabel_->setFixedSize(swatchSize());
   toolColorLabel_->setFrameStyle(QFrame::Panel | QFrame::Raised);
   toolColorLabel_->setLineWidth(3);
   toolColorLabel_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
   toolColorLabel_->setAlignment(Qt::AlignCenter);
-  QPixmap qpm = QPixmap(SWATCH_SIZE, SWATCH_SIZE);
+  QPixmap qpm = QPixmap(swatchSize());
   qpm.fill(Qt::black);
   toolColorLabel_->setPixmap(qpm);
   toolColorLabel_->setEnabled(false);
@@ -179,7 +173,7 @@ QRgb squareToolDock::getToolLabelColor() const {
 
 void squareToolDock::setToolLabelColor(QRgb color) {
 
-  QPixmap newLabel = QPixmap(SWATCH_SIZE, SWATCH_SIZE);
+  QPixmap newLabel = QPixmap(swatchSize());
   newLabel.fill(dmcOnly() ? ::rgbToDmc(color).qrgb() : color);
   toolColorLabel_->setPixmap(newLabel);
 }
@@ -222,12 +216,12 @@ void squareToolDock::showDetailDock(bool show) {
 
 QSize squareToolDock::sizeHint() const {
 
-  int height = SWATCH_SIZE +
+  int height = swatchSize().height() +
     style()->pixelMetric(QStyle::PM_ToolBarIconSize) + sHeight("D") + 40;
   if (detailDock_ && detailDock_->isVisible()) {
     height += detailDock_->height();
   }
-  return QSize(DOCK_WIDTH, height);
+  return QSize(dockWidth(), height);
 }
 
 void squareToolDock::setToolToNoop() {

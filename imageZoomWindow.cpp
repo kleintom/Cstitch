@@ -206,9 +206,9 @@ void imageZoomWindow::setZoomActionsEnabled(bool b) {
 }
 
 bool imageZoomWindow::quit() {
-  exit(0);
-  const int returnCode = QMessageBox::warning(this, tr("Stitch"),
-tr("All work will be lost if you continue; are you sure you want to quit?"),
+
+  const int returnCode = QMessageBox::warning(this, tr("Cstitch"),
+    tr("All work will be lost if you continue; are you sure you want to quit?"),
                                 QMessageBox::Cancel | QMessageBox::Ok,
                                 QMessageBox::Ok);
 
@@ -312,7 +312,7 @@ void imageZoomWindow::helpAbout() {
   QMessageBox aboutBox(this);
   aboutBox.setWindowTitle(tr("About"));
   const QString version = winManager()->getVersion();
-  aboutBox.setText(tr("<b>Stitch</b><br />Version: ") + version +
+  aboutBox.setText(tr("<b>Cstitch</b><br />Version: ") + version +
                       tr("<br />Tom Klein<br />email: tomklein@users.sourceforge.net<br />http://cstitch.sourceforge.net/"));
   aboutBox.setIconPixmap(QPixmap(":aboutIcon.png"));
   aboutBox.exec();

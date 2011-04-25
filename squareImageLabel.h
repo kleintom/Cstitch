@@ -88,9 +88,9 @@ class squareImageLabel : public imageLabelBase {
       update(updateRectangle);
     }
   }
-  // set the color that squares added via addSquare will be drawn in
-  // once called, only squares added with addSquare will be drawn on this
-  // label, until clearSquares is called
+  // Set the color that squares added via addSquare will be drawn in.
+  // Once called, only squares added with addSquare will be drawn on this
+  // label, until clearSquares is called.
   void setSquaresColor(QRgb squaresColor) {
     squareColor_ = squaresColor;
     drawingSquares_ = true;
@@ -99,7 +99,7 @@ class squareImageLabel : public imageLabelBase {
   // add a square to be drawn in squareColor_; all squares added will be
   // drawn on the widget until clearSquares() is called
   // <coordinates> are box coordinates
-  // the label MUST be update for the change to become visible
+  // the label MUST be updated for the change to become visible
   void addSquare(const pairOfInts& coordinates) {
     drawSquares_.push_back(coordinates);
   }

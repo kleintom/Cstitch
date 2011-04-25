@@ -25,8 +25,6 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 
-#include "utility.h"
-
 detailToolDock::detailToolDock(QWidget* parent)
   : QWidget(parent) {
 
@@ -56,7 +54,8 @@ detailToolDock::detailToolDock(QWidget* parent)
 
   setLayout(dockLayout_);
 
-  int fixedHeight = 2*sHeight("D") + 40;
+  const QFontMetrics fontMetric(font());
+  const int fixedHeight = 2*fontMetric.boundingRect("D").width() + 60;
   setMinimumHeight(fixedHeight);
   setMaximumHeight(fixedHeight);
 }

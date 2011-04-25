@@ -22,8 +22,7 @@
 #include <QtCore/QDebug>
 
 #include <QtGui/QPainter>
-
-#include "utility.h"
+#include <QtGui/QPaintEvent>
 
 void squareImageLabel::paintEvent(QPaintEvent* event) {
 
@@ -187,6 +186,7 @@ bool squareImageLabel::clearHashes() {
 void squareImageLabel::setImageAndSize(const QImage& image,
                                        const QList<QRgb>& colors,
                                        int xSquareCount, int ySquareCount) {
+
   baseImage_ = image;
   resize(image.size());
   xSquareCount_ = xSquareCount;

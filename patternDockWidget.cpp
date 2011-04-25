@@ -27,8 +27,6 @@
 #include <QtGui/QMenu>
 #include <QtGui/QPainter>
 
-#include "utility.h"
-
 patternDockWidget::patternDockWidget(int patternSymbolSize, QWidget* parent)
   : constWidthDock(parent), symbolSize_(patternSymbolSize) {
 
@@ -40,7 +38,8 @@ patternDockWidget::patternDockWidget(int patternSymbolSize, QWidget* parent)
 
   // a label for the number of symbols in the list
   numSymbolsLabel_ = new QLabel(numSymbolsStringFromInt(0), this);
-  numSymbolsLabel_->setFixedHeight(sHeight("D") + 12);
+  const QFontMetrics fontMetric(font());
+  numSymbolsLabel_->setFixedHeight(fontMetric.boundingRect("D").height() + 12);
   numSymbolsLabel_->setAlignment(Qt::AlignCenter);
 
   dockLayout_ = new QVBoxLayout(this);
@@ -142,5 +141,5 @@ void patternDockWidget::setSymbolCountLabel(int numSymbols) {
 
 QString patternDockWidget::numSymbolsStringFromInt(int numSymbols) const {
 
-  return ::itoqs(numSymbols).append((numSymbols > 1) ? " symbols" : " symbol");
+  return QString::number(numSymbols).append((numSymbols > 1) ? " symbols" : " symbol");
 }

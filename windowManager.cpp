@@ -33,10 +33,8 @@
 #include "colorCompare.h"
 #include "squareWindow.h"
 #include "patternWindow.h"
-#include "utility.h"
 #include "imageUtility.h"
 #include "xmlUtility.h"
-
 
 windowManager::windowManager() : originalImageColorCount_(0),
                                  projectFilename_(QString()),
@@ -398,18 +396,24 @@ void windowManager::openProject() {
   // the save file starts with xml text, so read that first
   QTextStream textInStream(&inFile);
   QString inString;
-  QString thisString;
   inString = textInStream.readLine() + "\n";
-  if (!inString.startsWith("<cstitch version=") &&
-      !inString.startsWith("<stitch version=")) { // uh oh
+  // (A day after the initial release I changed the program name from
+  // stitch to cstitch, so check for either...)
+  QRegExp rx("^<(cstitch|stitch) version=");
+  rx.indexIn(inString);
+  const QString programName = rx.cap(1);
+  if (programName != "cstitch" && programName != "stitch") { // uh oh
     QMessageBox::critical(NULL, tr("Bad project file"),
                           tr("Sorry, ") + fileString +
                           tr(" is not a valid project file ") +
                           tr("(diagnostic: wrong first line)"));
     return;
   }
+
   int lineCount = 0;
   const int maxLineCount = 100000;
+  const QString endTag = "</" + programName + ">";
+  QString thisString = "";
   do {
     thisString = textInStream.readLine();
     inString += thisString + "\n";
@@ -421,7 +425,7 @@ void windowManager::openProject() {
                             tr("(diagnostic: bad separator)"));
       return;
     }
-  } while (thisString != "");
+  } while (thisString != endTag);
 
   QDomDocument doc;
   const bool xmlLoadSuccess = doc.setContent(inString);
@@ -432,6 +436,8 @@ void windowManager::openProject() {
                           tr("(diagnostic: parse failed)"));
     return;
   }
+  // a blank line between the xml and the image
+  inString += textInStream.readLine() + "\n";
 
   // hide everything except progress meters while we regenerate this project
   hideWindows_ = true;

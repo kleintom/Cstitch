@@ -70,39 +70,11 @@ inline void clearEventQueue() {
 
 // int to qstring
 inline QString itoqs(int i) {
-  return QString("%1").arg(i);
+  return QString::number(i);
 }
 // real to qstring
 inline QString rtoqs(qreal r) {
   return QString("%1").arg(r, 0, 'f', 2);
-}
-
-// width of a string in the application font ("string width")
-inline int sWidth(const QString& s) {
-  static QFontMetrics qfm(QApplication::font());
-  return qfm.boundingRect(s).width();
-}
-
-// return true if the application font contains the character <c>
-inline bool charInFont(const QChar& c) {
-  static QFontMetrics qfm(QApplication::font());
-  return qfm.inFont(c);
-}
-
-// width of the string <n> in the application font
-inline int sWidth(const int& n) {
-  return sWidth(itoqs(n));
-}
-
-// height of the string <s> in the application font
-inline int sHeight(const QString& s) {
-  static QFontMetrics qfm(QApplication::font());
-  return qfm.boundingRect(s).height();
-}
-
-// height of the string <n> in the application font
-inline int sHeight(const int& n) {
-  return sHeight(itoqs(n));
 }
 
 inline void setFontHeight(QFont* font, int height) {

@@ -60,7 +60,8 @@ extern const int PROGRESS_Y_COORDINATE;
 
 patternWindow::patternWindow(windowManager* winMgr)
   : imageSaverWindow(tr("Symbols"), winMgr),
-    curImage_(patternImagePtr(NULL)) {
+    curImage_(patternImagePtr(NULL)),
+    fontMetrics_(QFontMetrics(QApplication::font())) {
 
   installEventFilter(this);
   imageLabel_ = new patternImageLabel(this);
@@ -452,6 +453,7 @@ void patternWindow::saveSlot() {
   // do printer.newPage() for each new page
   QPainter painter;
   painter.begin(&printer);
+  setFontMetric(painter.fontMetrics());
 
   const QImage& squareImage = curImage_->squareImage();
   const int squareDim = curImage_->squareDimension();
@@ -468,7 +470,7 @@ void patternWindow::saveSlot() {
   int widthPerPage; // actual image width per pdf page
   int heightPerPage; // actual image height per pdf page
   int xpages, ypages; // pdf pattern pages used
-  //  drawPdfImage(&painter, &printer, patternImage, pdfDim, &xpages, &ypages,
+
   const bool cancel =
     drawPdfImage(&painter, &printer, pdfDim, patternImageWidth,
                  patternImageHeight, &xpages, &ypages,
@@ -494,9 +496,8 @@ void patternWindow::saveSlot() {
   else {
     // draw the page number
     const int pageNum = xpages * ypages + 1;
-    const QFontMetrics qfm(painter.font());
-    const int pageNumWidth = ::sWidth(pageNum);
-    const int pageNumHeight = ::sHeight(pageNum);
+    const int pageNumWidth = sWidth(pageNum);
+    const int pageNumHeight = sHeight(pageNum);
     painter.drawText(printerWidth - pageNumWidth, pageNumHeight,
                      ::itoqs(pageNum));
   }
@@ -508,9 +509,11 @@ void patternWindow::saveSlot() {
 
   painter.end();
 
+#ifdef Q_OS_LINUX
   QStringList args;
   args << outputFile;
-  QProcess::execute("a", args);
+  QProcess::execute("evince", args);
+#endif
 }
 
 void patternWindow::drawTitlePage(QPainter* painter,
@@ -807,13 +810,32 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       //// draw grid lines and counts (thick every 5, thin every 1)
       const int thickCount = 5;
       //// x grid lines
-      int tx = 0; // x grid count for this page
+      painter->setPen(QPen(Qt::black, 1));
+      int tx = 0;
+      //// draw the thin x grid lines
+      while (tx*pdfDim <= widthToUse) {
+        painter->drawLine(tx*pdfDim + xstart, ystart,
+                          tx*pdfDim + xstart, heightToUse + ystart);
+        tx += 1;
+      }
+      //// draw the thin y grid lines
+      int ty = 0;
+      while (ty*pdfDim <= heightToUse) {
+        painter->drawLine(xstart, ty*pdfDim + ystart, widthToUse + xstart,
+                     ty*pdfDim + ystart);
+        ty += 1;
+      }
+
+      //// thick lines
+      tx = 0; // x grid count for this page
       if ((x-1)*xBoxesPerPage % thickCount != 0) {
         // to the next multiple of thickCount
         tx = thickCount - ((x-1)*xBoxesPerPage % thickCount);
       }
 
-      painter->setPen(QPen(Qt::black, 3));
+      const int savedTx = tx;
+      // draw the x grid counts
+      painter->setPen(QPen(Qt::black, 1));
       while (tx*pdfDim <= widthToUse) {
         const int tgridx = (x-1)*xBoxesPerPage + tx;
         if (tx == 0) { // avoid collision
@@ -824,33 +846,37 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
           painter->drawText(xstart + tx*pdfDim - sWidth(tgridx),
                             ystart - f, ::itoqs(tgridx));
         }
-        painter->drawLine(tx*pdfDim + xstart, ystart,
-                     tx*pdfDim + xstart, heightToUse + ystart);
         tx += thickCount;
       }
+
+      // draw the thick x grid lines
+      tx = savedTx;
+      painter->setPen(QPen(Qt::darkGray, 3));
+      while (tx*pdfDim <= widthToUse) {
+        painter->drawLine(tx*pdfDim + xstart, ystart,
+                          tx*pdfDim + xstart, heightToUse + ystart);
+        tx += thickCount;
+      }
+
       // draw the final line
       if ((x-1)*(widthPerPage) + tx*pdfDim > patternImageWidth) {
+        painter->setPen(QPen(Qt::black, 1));
         painter->drawText(xstart + widthToUse - sWidth(xBoxes), ystart - f,
                           ::itoqs(xBoxes));
+        painter->setPen(QPen(Qt::darkGray, 3));
         painter->drawLine(widthToUse + xstart, ystart, widthToUse + xstart,
                           heightToUse + ystart);
       }
-      painter->setPen(QPen(Qt::black, 1));
-      tx = 0;
-      while (tx*pdfDim <= widthToUse) {
-        painter->drawLine(tx*pdfDim + xstart, ystart,
-                     tx*pdfDim + xstart, heightToUse + ystart);
-        tx += 1;
-      }
 
-      //// y grid lines
-      int ty = 0; // y grid count for this page
+      ty = 0; // y grid count for this page
       if ((y-1)*yBoxesPerPage % thickCount != 0) {
         // to the next multiple of 5
         ty = thickCount - ((y-1)*yBoxesPerPage % thickCount);
       }
 
-      painter->setPen(QPen(Qt::black, 3));
+      const int savedTy = ty;
+      // draw the y grid counts
+      painter->setPen(QPen(Qt::black, 1));
       while (ty*pdfDim <= heightToUse) {
         const int tgridy = (y-1)*yBoxesPerPage + ty;
         if (ty == 0) { // avoid confusion
@@ -861,24 +887,29 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
           painter->drawText(xstart - sWidth(tgridy) - f, ty*pdfDim + ystart,
                        ::itoqs(tgridy));
         }
-        painter->drawLine(xstart, ty*pdfDim + ystart, widthToUse + xstart,
-                     ty*pdfDim + ystart);
         ty += thickCount;
       }
+
+      // draw the thick y grid lines
+      ty = savedTy;
+      painter->setPen(QPen(Qt::darkGray, 3));
+      while (ty*pdfDim <= heightToUse) {
+        painter->drawLine(xstart, ty*pdfDim + ystart, widthToUse + xstart,
+                          ty*pdfDim + ystart);
+        ty += thickCount;
+      }
+
       // draw the final line
       if ((y-1)*(heightPerPage) + ty*pdfDim > patternImageHeight) {
+        painter->setPen(QPen(Qt::black, 1));
         painter->drawText(xstart - sWidth(yBoxes) - f, heightToUse + ystart,
                           ::itoqs(yBoxes));
+        painter->setPen(QPen(Qt::darkGray, 3));
         painter->drawLine(xstart, heightToUse + ystart, widthToUse + xstart,
                           heightToUse + ystart);
       }
-      painter->setPen(QPen(Qt::black, 1));
-      ty = 0;
-      while (ty*pdfDim <= heightToUse) {
-        painter->drawLine(xstart, ty*pdfDim + ystart, widthToUse + xstart,
-                     ty*pdfDim + ystart);
-        ty += 1;
-      }
+
+      painter->setPen(QPen(Qt::black, 1)); // reset
 
       if (x < xpages || y < ypages) {
         printer->newPage();
@@ -1012,7 +1043,7 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
   const int printerWidth = printerRectangle.width();
   const int printerHeight = printerRectangle.height();
   // have the list font match the symbol size, within reason
-  int symbolDim = qMax(pdfDim, ::sHeight("B"));
+  int symbolDim = qMax(pdfDim, sHeight("B"));
   symbolDim = qMin(symbolDim, 40);
   const QFont originalFont(painter->font());
   QFont tmpFont = originalFont;

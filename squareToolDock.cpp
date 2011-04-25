@@ -26,7 +26,6 @@
 
 #include "dmcList.h"
 #include "mousePressLabel.h"
-#include "utility.h"
 #include "imageProcessing.h"
 #include "squareDockTools.h"
 #include "detailToolDock.h"
@@ -203,21 +202,19 @@ void squareToolDock::showDetailDock(bool show) {
     detailDock_->detailListIsEmpty(true);
     detailDock_->show();
     setFixedSize(sizeHint());
-//    setMinimumSize(sizeHint());
-//    setMaximumSize(sizeHint());
   }
   else if (detailDock_) {
     detailDock_->hide();
     setFixedSize(sizeHint());
-//    setMinimumSize(sizeHint());
-//    setMaximumSize(sizeHint());
   }
 }
 
 QSize squareToolDock::sizeHint() const {
 
+  const QFontMetrics fontMetric(font());
   int height = swatchSize().height() +
-    style()->pixelMetric(QStyle::PM_ToolBarIconSize) + sHeight("D") + 40;
+    style()->pixelMetric(QStyle::PM_ToolBarIconSize) +
+    fontMetric.boundingRect("D").height() + 40;
   if (detailDock_ && detailDock_->isVisible()) {
     height += detailDock_->height();
   }

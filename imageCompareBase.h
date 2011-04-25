@@ -47,7 +47,8 @@ class stateLabel : public QLabel {
   explicit stateLabel(const QString& label) : label_(label) {
     setText(label_ + ":");
     setEnabled(false);
-    setFixedWidth(sWidth(label_ + ":"));
+    const QFontMetrics metric(font());
+    setFixedWidth(metric.boundingRect(label_ + ":").width());
   }
   // enable the label
   void on() { setText(label_ + ":"); setEnabled(true); on_ = true; }

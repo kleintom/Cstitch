@@ -29,7 +29,6 @@
 #include <QtGui/QMenu>
 
 #include "triC.h"
-#include "utility.h"
 #include "imageProcessing.h"
 
 dockListWidget::dockListWidget(const QVector<triC>& colorList,
@@ -42,7 +41,7 @@ dockListWidget::dockListWidget(const QVector<triC>& colorList,
           this, SLOT(processContextRequest(const QPoint& )));
   colorList_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
   colorList_->setIconSize(iconSize());
-  QFont font = QApplication::font();//colorList_->font();
+  QFont font = colorList_->font();
   font.setFamily("monaco");
   // apparently pitch means width (as in "fixed width")
   // needed for some families, not for others
@@ -51,7 +50,8 @@ dockListWidget::dockListWidget(const QVector<triC>& colorList,
   colorList_->setFont(font);
 
   //// a label for the number of colors in the list
-  numColorsLabel_->setFixedHeight(::sHeight("D"));// + 16);
+  const QFontMetrics fontMetric(font);
+  numColorsLabel_->setFixedHeight(fontMetric.boundingRect("D").height());
   numColorsLabel_->setAlignment(Qt::AlignCenter);
   setNumColors(colorList.size());
   setColorList(colorList);
@@ -65,7 +65,8 @@ dockListWidget::dockListWidget(const QVector<triC>& colorList,
 void dockListWidget::setNumColors(int numColors) {
 
   const QString plural = (numColors == 1) ? "" : "s";
-  const QString numColorsString = ::itoqs(numColors) + " color" + plural;
+  const QString numColorsString =
+    QString::number(numColors) + " color" + plural;
   numColorsLabel_->setText(numColorsString);
 }
 
@@ -223,15 +224,16 @@ dockListSwatchWidget::dockListSwatchWidget(const QVector<triC>& colorList,
   colorSwatchLayout_->addStretch(1);
 
   //// a label for the current rgb color code
-  curColorString_->setFixedHeight(::sHeight(8));// + 12);
+  const QFontMetrics fontMetric(font());
+  curColorString_->setFixedHeight(fontMetric.boundingRect("8").height());
   curColorString_->setAlignment(Qt::AlignCenter);
-  QFont font = QApplication::font();
-  font.setFamily("monaco");
+  QFont widgetFont = font();
+  widgetFont.setFamily("monaco");
   // apparently pitch means width (as in "fixed width")
   // needed for some families, not for others
   // See http://www.cfcl.com/vlb/h/fontmono.html for many more options
-  font.setFixedPitch(true);
-  curColorString_->setFont(font);
+  widgetFont.setFixedPitch(true);
+  curColorString_->setFont(widgetFont);
   curColorString_->setText(::ctos(triC(0, 0, 0)));
   prependWidget(curColorString_);
   prependLayout(colorSwatchLayout_);

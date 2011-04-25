@@ -224,6 +224,29 @@ class patternWindow : public imageSaverWindow {
                       int countTab, int codeTab, int nameTab) const;
   // return the helpMode enum constant for this mode
   helpMode getHelpMode() const;
+  // [sWidth and sHeight used to be global functions that kept a
+  // static font metric for the application font, but that turned out
+  // to be problematic]
+  void setFontMetric(const QFontMetrics& fontMetric) {
+    fontMetrics_ = fontMetric;
+  }
+  //// WARNING: you better call setFontMetric before using these
+  // return the width of s
+  int sWidth(const QString& s) const {
+    return fontMetrics_.boundingRect(s).width();
+  }
+  // return the height of s
+  int sHeight(const QString& s) const {
+    return fontMetrics_.boundingRect(s).height();
+  }
+  // return the width of n
+  int sWidth(int n) const {
+    return sWidth(QString::number(n));
+  }
+  // return the height of n
+  int sHeight(int n) const {
+    return sHeight(QString::number(n));
+  }
 
  private slots:
   // pop up a dialog for the user to select an unused new symbol for
@@ -300,6 +323,9 @@ class patternWindow : public imageSaverWindow {
   patternImagePtr curImage_;
   QMenu* imageListMenu_;
   comboBox* imageListBox_;
+
+  // keep fontMetrics for the app font since we use them a lot
+  QFontMetrics fontMetrics_;
 };
 
 #endif

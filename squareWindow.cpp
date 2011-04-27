@@ -1110,7 +1110,8 @@ void squareWindow::updateImageLabelImage() {
   activeSquareLabel()->setImageAndSize(curImage_->image(),
                                        rgbColors,
                                        curImage_->xSquareCount(),
-                                       curImage_->ySquareCount());
+                                       curImage_->ySquareCount(),
+                                       curImage_->isOriginal());
 }
 
 void squareWindow::toolDockLabelColorRequested(const triC& currentColor,

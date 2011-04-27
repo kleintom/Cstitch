@@ -58,6 +58,9 @@ original image uses 68,439 colors, the one on the right uses 23.</div>
 <div class="heading">Notes</div>
 <ul class="squareUL">
   <li><span>
+      Questions or comments?  Email tomklein@users.sourceforge.net.
+  </span></li>
+  <li><span>
       Found a bug? Please report it using the <a href="http://sourceforge.net/tracker/?group_id=529723&amp;atid=2151826">bug tracker</a>.
   </span></li>
   <li><span>
@@ -85,14 +88,16 @@ to share your projects with people who might be using Linux, then for
 now at least I suggest you convert any jpg images to png images before
 loading them in cstitch.</b>
 </p>
-<p>
-<span class="rnd">4-6-11</span>
-Beta version 0.9.0 released.
-</p>
+
 <p>
 <span class="rnd">4-24-11</span>
 Beta version 0.9.1 released: bug fixes; linux binary now available
 (see README_linux under downloads for distribution availability).
+</p>
+
+<p>
+<span class="rnd">4-6-11</span>
+Beta version 0.9.0 released.
 </p>
 
 </body>

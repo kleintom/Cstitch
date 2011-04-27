@@ -30,11 +30,14 @@ void squareImageLabel::paintEvent(QPaintEvent* event) {
   // if we're not currently drawing a mouse drag edit, draw the underlying
   // image
   if (!drawingSquares_ && !drawingHashes_) {
-    if (imageIsOriginalImage()) { // paint the original image pixmap
+    if (imageIsFlat()) { // paint the entire image at once
       const QRectF viewRectangle(QRectF(event->rect()));
       painter.drawPixmap(viewRectangle, scaledImage_, viewRectangle);
-      event->accept();
-      return; // no decorations for the original image
+      if (imageIsOriginal_) {
+        // no decorations for the original image
+        event->accept();
+        return;
+      }
     }
     else { // draw a square image
       // we only draw the portion of the image in the viewing rectangle
@@ -185,15 +188,17 @@ bool squareImageLabel::clearHashes() {
 
 void squareImageLabel::setImageAndSize(const QImage& image,
                                        const QList<QRgb>& colors,
-                                       int xSquareCount, int ySquareCount) {
+                                       int xSquareCount, int ySquareCount,
+                                       bool imageIsOriginal) {
 
   baseImage_ = image;
+  imageIsOriginal_ = imageIsOriginal;
   resize(image.size());
   xSquareCount_ = xSquareCount;
   ySquareCount_ = ySquareCount;
   scaledDimension_ = image.width()/xSquareCount_;
   generateColorSquares(colors);
-  if (imageIsOriginalImage()) {
+  if (imageIsFlat()) {
     scaledImage_ = QPixmap::fromImage(baseImage_);
   }
   else {
@@ -203,11 +208,11 @@ void squareImageLabel::setImageAndSize(const QImage& image,
 
 void squareImageLabel::setImageSize(const QSize& newSize) {
 
-  if (imageIsOriginalImage()) {
+  scaledDimension_ = newSize.width()/xSquareCount_;
+  if (imageIsFlat()) {
     scaledImage_ = QPixmap::fromImage(baseImage_).scaled(newSize);
   }
   else {
-    scaledDimension_ = newSize.width()/xSquareCount_;
     Q_ASSERT_X(newSize.width() % scaledDimension_ == 0 &&
                newSize.height() % scaledDimension_ == 0, "setImageSize",
                QString(tr("Bad scaled square image size: (") +
@@ -225,11 +230,11 @@ void squareImageLabel::setImageSize(const QSize& newSize) {
 
 void squareImageLabel::setImageWidth(int newWidth) {
 
-  if (imageIsOriginalImage()) {
+  scaledDimension_ = newWidth/xSquareCount_;
+  if (imageIsFlat()) {
     scaledImage_ = QPixmap::fromImage(baseImage_).scaledToWidth(newWidth);
   }
   else {
-    scaledDimension_ = newWidth/xSquareCount_;
     Q_ASSERT_X(newWidth % scaledDimension_ == 0, "setImageWidth",
                QString(tr("Bad scaled square image width: ") +
                        ::itoqs(newWidth) + " " +
@@ -245,11 +250,11 @@ void squareImageLabel::setImageWidth(int newWidth) {
 
 void squareImageLabel::setImageHeight(int newHeight) {
 
-  if (imageIsOriginalImage()) {
+  scaledDimension_ = newHeight/ySquareCount_;
+  if (imageIsFlat()) {
     scaledImage_ = QPixmap::fromImage(baseImage_).scaledToHeight(newHeight);
   }
   else {
-    scaledDimension_ = newHeight/ySquareCount_;
     Q_ASSERT_X(newHeight % scaledDimension_ == 0, "setImageHeight",
                QString(tr("Bad scaled square image height: ") +
                        ::itoqs(newHeight) + " " +

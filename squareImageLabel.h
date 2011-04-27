@@ -25,10 +25,11 @@
 
 //
 // Extend imageLabel to provide support for displaying a squared image,
-// including gridding and square drawing (via setSquaresColor for the
+// including gridding, square drawing (via setSquaresColor for the
 // drawing color, addSquare to draw a (temporary) square in the drawing
 // color, and clearSquares to stop drawing the squares added since the last
-// clearSquares).
+// clearSquares), and hash drawing (i.e. "x"es through squares, via
+// start/stopDrawingHashes and add/removeHashSquare)
 //
 class squareImageLabel : public imageLabelBase {
 
@@ -48,21 +49,11 @@ class squareImageLabel : public imageLabelBase {
   QSize size() const { return QSize(width(), height()); }
   // the image's current width
   int width() const {
-    if (imageIsOriginalImage()) {
-      return scaledImage_.width();
-    }
-    else {
-      return xSquareCount_ * scaledDimension_;
-    }
+    return xSquareCount_ * scaledDimension_;
   }
   // the image's current height
   int height() const {
-    if (imageIsOriginalImage()) {
-      return scaledImage_.height();
-    }
-    else {
-      return ySquareCount_ * scaledDimension_;
-    }
+    return ySquareCount_ * scaledDimension_;
   }
   void setGridOn(bool b) {
     gridOn_ = b;
@@ -76,7 +67,8 @@ class squareImageLabel : public imageLabelBase {
   void setImageHeight(int newHeight);
   // user must call update
   void setImageAndSize(const QImage& image, const QList<QRgb>& colors,
-                       int xSquareCount, int ySquareCount);
+                       int xSquareCount, int ySquareCount,
+                       bool imageIsOriginal);
   void updateImage(const QImage& image, const QList<QRgb>& colors,
                    const QRect& updateRectangle) {
     baseImage_ = image;
@@ -117,13 +109,13 @@ class squareImageLabel : public imageLabelBase {
   void stopDrawingHashes() { drawingHashes_ = false; }
   // add a square to be drawn as "x"ed in <p>'s color at the box
   // coordinates given by <p>
-  // the label MUST be update for the change to become visible
+  // the label MUST be updated for the change to become visible
   void addHashSquare(const pixel& p) {
     hashSquares_.push_back(p);
   }
   // stop hashing the square with box coordinates given by <p> and replace
   // that square with <p>'s color
-  // the label MUST be update for the change to become visible
+  // the label MUST be updated for the change to become visible
   void removeHashSquare(const pixel& p);
   // clear all of the hash squares, restoring the image to its state
   // before any hashes were addHashSquare()ed
@@ -132,7 +124,9 @@ class squareImageLabel : public imageLabelBase {
 
  private:
   int originalWidth() const { return baseImage_.width(); }
-  bool imageIsOriginalImage() const {
+  // return true if we paint the image all at once (as opposed to 
+  // drawing each square)
+  bool imageIsFlat() const {
     return colorSquares_.isEmpty();
   }
   int originalHeight() const { return baseImage_.height(); }
@@ -141,8 +135,10 @@ class squareImageLabel : public imageLabelBase {
 
  private:
   QImage baseImage_;
-  // only used when baseImage_ is the original image
+  bool imageIsOriginal_; // baseImage_ is the Original image
+  // only used when baseImage_ isFlat()
   QPixmap scaledImage_;
+  
   // number of horizontal squares in baseImage_
   // (just a more convenient way of saying "original square dimension")
   int xSquareCount_;

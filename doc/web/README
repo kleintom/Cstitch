@@ -10,12 +10,12 @@ share your projects with people who might be using Linux, then for now
 at least I suggest you convert any jpg images to png images before
 loading them in cstitch.
 
-Beta version 0.9.1 released on April 24, 2001: bug fixes; linux binary
+Beta version 0.9.1 released on April 24, 2011: bug fixes; linux binary
 now available (see README_linux for distribution availability).
 
 Beta version 0.9.0 released on April 6, 2011.
 
 All executables are packed using the UPX packer
-(http://upx.sourceforge.net/) to make them smaller (about 40% of the
-original size!).  Run the program as though you weren't aware of this.
+(http://upx.sourceforge.net/) to make them smaller - about 40% of the
+original size.  (This has no effect on the way you run the program.)
 

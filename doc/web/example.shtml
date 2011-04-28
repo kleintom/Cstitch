@@ -21,11 +21,6 @@
 <h1>An example</h1>
 
 <p>
-(Before you start on your own project please read
-<a href="index.shtml#jpeg_issue">this</a> release note.)
-</p>
-
-<p>
 The base image is a Libary of
 Congress <a href="http://www.loc.gov/pictures/resource/bbc.0701f/">public
 domain image</a> of a baseball card from circa 1910.
@@ -175,8 +170,8 @@ and at four zooms out from the default size
 <a href="images/McIntyre-larger.pdf">McIntyre_larger.pdf</a>.  The
 program decides automatically whether to print the pattern pages in
 landscape or portrait mode in order to minimize the number of pages
-needed - in this case the smaller version printed in portrait mode,
-while the other two printed in landscape mode.
+needed - in this case the smaller and larger versions printed in
+portrait mode, while the default size printed in landscape mode.
 </p>
 
 <p>

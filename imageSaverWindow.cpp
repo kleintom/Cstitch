@@ -58,7 +58,6 @@ QString imageSaverWindow::getValidSaveFile(const QList<QByteArray>& formats) {
   extensions += "\nAll (*.*)";
   warningExtensions.chop(2);
 
-
   QString returnString;
   while (true) { // get a filename with a valid extension
     returnString =

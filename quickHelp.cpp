@@ -68,7 +68,7 @@ quickHelp::quickHelp(QWidget* parent)
 
   // setFrameStyle + setStyleSheet is broken until 4.5...
   textLabel_->setStyleSheet("QLabel { background-color : white; border: 1px solid black; }");
-  //  textLabel_->setFrameStyle(QFrame::Box | QFrame::Plain);
+  //textLabel_->setFrameStyle(QFrame::Box | QFrame::Plain);
   textLabel_->setWordWrap(true);
   textLabel_->setTextFormat(Qt::RichText);
   textLabel_->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -77,10 +77,8 @@ quickHelp::quickHelp(QWidget* parent)
           this, SLOT(processClose()));
 
   moreHelpLabel_->setTextFormat(Qt::RichText);
-  moreHelpLabel_->setText("Use the <i>Help</i> menu at any time to display this Quick Help window<br/>"
-                          "or to turn automatic display of Quick Help windows on/off<br/>"
-//                        "You can view this screen at any time by choosing <i>Quick Help</i> from the <i>Help</i> menu<br>"
-//                        "You can also turn off all automatic display of Quick Help from the <i>Help</i> menu<br/>"
+  moreHelpLabel_->setText("Use the <i>Help</i> menu at any time to display this Quick Help window or to<br/>"
+                          "turn automatic display of Quick Help windows on/off.<br/>"
                           "<a href=\"url\">Load the full documentation for this stage</a>");
   connect(moreHelpLabel_, SIGNAL(linkActivated(const QString& )),
           this, SLOT(moreHelpActivated(const QString& )));
@@ -104,12 +102,13 @@ void quickHelp::loadModeHelp(helpMode mode) {
   case(helpMode::H_COLOR_CHOOSER):
     pixmap = ":colorChooser.png";
     title = "<h1>Stage 1 of 4: Choose your pattern colors</h1>";
-    helpText = "In stage 1 you choose the colors you want to appear in your final pattern.<br/>"
-      "In the default (\"Num Colors\") mode, you can choose specific colors for yourself "
-      "and/or you can have the program choose a set number of colors for you."
+    helpText = "In stage 1 you load an image and choose the colors you want to appear in your final pattern.<br/>"
+      "Click the <img src=\":openImage.png\"> icon on the toolbar to open an image.<br/>"
+      "In the default (\"Num Colors to DMC\") mode, you can choose colors from the image (which will be converted to DMC) "
+      "and/or you can have the program choose a set number of DMC colors for you."
       "<ul>"
-      "<li>To choose specific colors manually, click on a color on your image.</li>"
-      "<li>To set the number of colors the program will choose, use the number box to the right of \"Num Colors\" on the toolbar.</li>"
+      "<li>To choose colors manually, click on a color on your image - the closest DMC color to the color you click will be added to the list.</li>"
+      "<li>To set the number of DMC colors the program will choose, use the number box to the right of \"Num Colors to DMC\" on the toolbar.</li>"
       "</ul>"
       "When you click the \"Choose colors\" button the program will generate its colors and a new image using those colors will be displayed in Stage 2.<br/><br/>"
       "You can return to this stage at any time to choose different colors by clicking on the <img src=\":colorChooser.png\"> icon on the toolbar.";

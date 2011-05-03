@@ -22,6 +22,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/qmath.h>
 #include <QtCore/QProcess>
+#include <QtCore/QSettings>
 
 #include <QtGui/QPainter>
 #include <QtGui/QMessageBox>
@@ -34,6 +35,10 @@
 #include <QtGui/QColorDialog>
 #include <QtGui/QFileDialog>
 #include <QtGui/QPushButton>
+#include <QtGui/QGroupBox>
+#include <QtGui/QLineEdit>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QFileDialog>
 
 #include "dmcList.h"
 #include "patternDockWidget.h"
@@ -98,6 +103,7 @@ patternWindow::patternWindow(windowManager* winMgr)
   constructActions();
   constructMenus();
   constructToolbar();
+  constructPdfViewerDialog();
 
   setPermanentStatus(tr("Click the 'To pdf' button to save the pattern as a pdf; the pdf symbol size will reflect the current zoom level."));
   setStatus(tr("left click: change symbol; right click: switch between square and symbol images"));
@@ -143,6 +149,10 @@ void patternWindow::constructActions() {
 
   connect(originalSizeAction(), SIGNAL(triggered()),
           this, SLOT(originalSize()));
+
+  setPdfViewerAction_ = new QAction(tr("Set pdf viewer"), this);
+  connect(setPdfViewerAction_, SIGNAL(triggered()),
+          this, SLOT(updatePdfViewerOptions()));
 }
 
 void patternWindow::constructMenus() {
@@ -154,6 +164,7 @@ void patternWindow::constructMenus() {
   imageMenu()->addAction(gridAction_);
   imageMenu()->addAction(gridColorAction_);
   imageMenu()->addAction(imageInfoAction());
+  helpMenu()->addAction(setPdfViewerAction_);
 
   imageListMenu_ = new QMenu(tr("I&mages"), this);
   menuBar()->insertMenu(helpMenu()->menuAction(), imageListMenu_);
@@ -509,11 +520,10 @@ void patternWindow::saveSlot() {
 
   painter.end();
 
-#ifdef Q_OS_LINUX
-  QStringList args;
-  args << outputFile;
-  QProcess::execute("evince", args);
-#endif
+  if (usePdfViewer_) {    
+    QProcess::startDetached(pdfViewerPath_,
+                            QStringList(QDir::toNativeSeparators(outputFile)));
+  }
 }
 
 void patternWindow::drawTitlePage(QPainter* painter,
@@ -1400,3 +1410,117 @@ helpMode patternWindow::getHelpMode() const {
 
   return helpMode::H_PATTERN;
 }
+
+void patternWindow::constructPdfViewerDialog() {
+
+  usePdfViewer_ = false;
+  pdfViewerPath_ = "";
+  const QSettings settings("cstitch", "cstitch");
+  if (settings.contains("use_pdf_viewer") &&
+      settings.contains("pdf_viewer_path")) {
+    usePdfViewer_ = settings.value("use_pdf_viewer").toBool();
+    pdfViewerPath_ = settings.value("pdf_viewer_path").toString();
+  }
+  else { // very first run on this machine
+    // find a default viewer if we can
+#ifdef Q_OS_LINUX
+    if (QFile::exists("/usr/bin/evince")) {
+      pdfViewerPath_ = "/usr/bin/evince";
+    }
+    else if (QFile::exists("/usr/bin/kpdf")) {
+      pdfViewerPath_ = "/usr/bin/kpdf";
+    }
+    else if (QFile::exists("/usr/bin/okular")) {
+      pdfViewerPath_ = "/usr/bin/okular";
+    }
+    else if (QFile::exists("/usr/bin/xpdf")) {
+      pdfViewerPath_ = "/usr/bin/xpdf";
+    }
+#endif
+#ifdef Q_OS_WIN
+    // try to find acroread
+    QDir dir("C:/Program Files/Adobe/");
+    if (dir.exists()) {
+      // sort by time - if somebody has multiple versions of Reader
+      // installed (not officially supported by Adobe) and they
+      // install an older version after a newer version then this will
+      // choose the wrong version
+      QStringList readers = dir.entryList(QStringList("Reader *"), QDir::Dirs,
+                                          QDir::Time|QDir::Reversed);
+      if (!readers.empty() && dir.exists(readers[0] + "/Reader")) {
+        dir.cd(readers[0] + "/Reader");
+        if (dir.exists("AcroRd32.exe")) {
+          pdfViewerPath_ = dir.absoluteFilePath("AcroRd32.exe");
+        }
+        else if (dir.exists("AcroRd64.exe")) {
+          pdfViewerPath_ = dir.absoluteFilePath("AcroRd64.exe");
+        }
+      }
+    }
+#endif // Q_OS_WIN
+    if (!pdfViewerPath_.isEmpty()) {
+      usePdfViewer_ = true;
+    }
+  }
+}
+
+void patternWindow::updatePdfViewerOptions() {
+
+  pdfViewerDialog viewerDialog(usePdfViewer_, pdfViewerPath_, this);
+  const int rc = viewerDialog.exec();
+  if (rc == QDialog::Accepted) {
+    QSettings settings("cstitch", "cstitch");
+    usePdfViewer_ = viewerDialog.useViewer();
+    settings.setValue("use_pdf_viewer", usePdfViewer_);
+    pdfViewerPath_ = viewerDialog.viewerPath();
+    settings.setValue("pdf_viewer_path", pdfViewerPath_);
+  }
+}
+
+pdfViewerDialog::pdfViewerDialog(bool useViewer, const QString& curViewerPath,
+                                 QWidget* parent) 
+  : cancelAcceptDialogBase(parent),
+    useViewer_(new QGroupBox(tr("Use viewer to display saved pdf patterns"))),
+    dialogLayout_(new QVBoxLayout),
+    groupLayout_(new QVBoxLayout),
+    currentPath_(new QLineEdit),
+    choosePath_(new QPushButton(tr("Choose new pdf viewer"))) {
+
+  useViewer_->setCheckable(true);
+  useViewer_->setChecked(useViewer);
+  currentPath_->setText(curViewerPath);
+
+  connect(choosePath_, SIGNAL(clicked()),
+          this, SLOT(updateViewerPath()));
+
+  groupLayout_->addWidget(currentPath_);
+  groupLayout_->addWidget(choosePath_);
+  useViewer_->setLayout(groupLayout_);
+
+  dialogLayout_->addWidget(useViewer_);
+  dialogLayout_->addWidget(cancelAcceptWidget());
+  setLayout(dialogLayout_);
+  
+  setWindowTitle(tr("Set pdf viewer"));
+}
+
+void pdfViewerDialog::updateViewerPath() {
+
+  const QString newPath =
+    QFileDialog::getOpenFileName(this, tr("Choose new pdf viewer"),
+                                 currentPath_->text());
+  if (!newPath.isEmpty()) {
+    currentPath_->setText(newPath);
+  }
+} 
+
+QString pdfViewerDialog::viewerPath() const {
+
+  return currentPath_->text();
+}
+
+bool pdfViewerDialog::useViewer() const {
+ 
+  return useViewer_->isChecked();
+}
+  

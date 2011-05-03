@@ -908,6 +908,16 @@ reference purposes and does not appear in the final pdf version of the
 pattern.
 </p>
 
+<p> 
+<b>Note: </b>The program will attempt to find a program on your
+system to automatically view your pdf pattern each time you save.  If
+you'd prefer to save without viewing, or if you want to view the pdf but
+no viewer is loaded after you save a pdf pattern, or if you'd like to
+use a different viewer, then change the viewer settings under
+<i>Set pdf viewer</i> in the <i>Help</i> menu (only available in the
+Pattern Edit Panel).
+</p>
+
 <p>
 The final pdf includes a title page showing the original image and the
 square colored image, then the pattern itself, then a table

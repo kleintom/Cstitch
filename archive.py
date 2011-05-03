@@ -37,7 +37,7 @@ class archiver:
         self.versionsDir = "versions/"
         # figure out the version of our binary (or quit)
         self.version = ""
-        versionRE = re.compile(r'setVersion\("([0-9]\.[0-9]\.[0-9]\.[0-9])"')
+        versionRE = re.compile(r'setVersion\("([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+"')
         for line in open("main.cpp"):
             found = versionRE.search(line)
             if found:
@@ -59,7 +59,7 @@ class windowsArchiver(archiver):
 
     def archive(self):
 
-        archiveDir = "Cstitch_" + self.version + "test"
+        archiveDir = "Cstitch_" + self.version
         thisVersionDir = os.path.join(self.versionsDir, archiveDir)
         if os.path.exists(thisVersionDir):
             shutil.rmtree(thisVersionDir)
@@ -70,17 +70,29 @@ class windowsArchiver(archiver):
             # need carriage returns (\r\n) for Windows
             readmeString = open(os.path.join(self.readmeDir, readme)).read()
             newString = readmeString.replace('\n', '\r\n')
-            newFile = open(os.path.join(thisVersionDir, readme), 'w')
+            newFile = open(os.path.join(thisVersionDir, readme + ".txt"), 'w')
             newFile.write(newString)
             newFile.close()
 
         newBinaryName = "cstitch_" + self.version + "_win32.exe"
-        shutil.copy2(self.binary, os.path.join(thisVersionDir, newBinaryName))
+        newBinaryLocation = os.path.join(thisVersionDir, newBinaryName)
+        shutil.copy2(self.binary, newBinaryLocation)
+
+        packStatus = subprocess.call(["upx", newBinaryLocation])
+        if packStatus != 0:
+            if packStatus == 2:
+                print self.binary + " is already packed, so quitting..."
+            else:
+                print "Unknown packing error on " + newBinaryLocation + ", so quitting..."
+            sys.exit(-1)
 
         # create the zip archive
         os.chdir(self.versionsDir)
-        #print os.getcwd()
-        zipFile = "cstitch_" + self.version + "_test_win32.zip"
+        zipFile = "cstitch_" + self.version + "_win32.zip"
+        # zip will add files to an archive by default, so make sure we don't
+        # have an old version sitting around
+        if os.path.exists(zipFile):
+            os.remove(zipFile)
         subprocess.call("zip " + zipFile + " " + archiveDir + "/*",
                         shell=True)
         print "  Created " + zipFile
@@ -114,7 +126,7 @@ class linuxArchiver(archiver):
 
         # create the archive
         # tar czf cstitch_0.9.1_linux32.tar.gz --transform='s@^@cstitch_0.9.1/@' cstitch -C doc/web/ README_linux README
-        archiveName = "cstitch_" + self.version + "_linux32-test.tar.gz"
+        archiveName = "cstitch_" + self.version + "_linux32.tar.gz"
         subprocess.call(["tar", "czf", archiveName,
                          "--transform=s@^@cstitch_" + self.version + "/@",
                          self.binary,
@@ -128,8 +140,8 @@ class linuxArchiver(archiver):
 ## main #######################################################################
 
 if binary.endswith("exe"):
-    binaryArchive = windowsArchiver(binary, ["README"])
+    binaryArchive = windowsArchiver(binary, [])
 else:
-    binaryArchive = linuxArchiver(binary, ["README", "README_linux"])
+    binaryArchive = linuxArchiver(binary, ["README_linux"])
 
 binaryArchive.archive()

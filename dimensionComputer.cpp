@@ -36,7 +36,7 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
     width_(imageSize.width()), height_(imageSize.height()) {
 
   QGroupBox* groupBox = 
-    new QGroupBox(tr("Click OK to set the main window square size setting"),
+    new QGroupBox(tr("Click OK to set the main window square size"),
                   this);
 
   // the start of the square size line
@@ -91,11 +91,13 @@ void dimensionComputer::updateDims() {
     const qreal width = static_cast<qreal>(xBoxes)/aidas[i];
     const qreal height = static_cast<qreal>(yBoxes)/aidas[i];
     const QString count = QString("%1").arg(aidas[i], 2);
-    newText += tab + "Final fabric dimensions for " + count +
-      " squares per inch fabric: " +
-      ::rtoqs(width) + "x" + ::rtoqs(height) + " inches\n";
+    newText += tab + "Final fabric dimensions for " + 
+      "<span style='color: #474858'>" +
+      count +
+      "</span> squares per inch fabric: <span style='color: #474858'>" +
+      ::rtoqs(width) + "x" + ::rtoqs(height) + "</span> inches<br /><br />";
   }
-  newText.chop(1);
+  newText.chop(12); // remove the last 2 <br />
   outputLabel_->setText(newText);
   update();
 }

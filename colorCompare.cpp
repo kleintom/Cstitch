@@ -64,7 +64,8 @@ colorCompare::colorCompare(const QImage& image, int index,
   connect(leftLabel_, SIGNAL(mouseMoved(QMouseEvent* )),
           this, SLOT(processLeftMouseMove(QMouseEvent* )));
 
-  dimensionsAction_ = new QAction(tr("Compute dimensions"), this);
+  dimensionsAction_ = new QAction(QIcon(":dims.png"),
+                                  tr("Compute dimensions"), this);
   imageMenu()->addAction(dimensionsAction_);
   imageMenu()->addAction(imageInfoAction());
   connect(dimensionsAction_, SIGNAL(triggered()),
@@ -119,6 +120,7 @@ void colorCompare::populateToolbar() {
   addToolbarSeparator();
   addToolbarWidget(squareModeBox_);
   addToolbarWidget(squareSizeBox_);
+  addToolbarAction(dimensionsAction_);
   addToolbarSeparator();
   addToolbarSeparator();
   addToolbarWidget(squareButton_);

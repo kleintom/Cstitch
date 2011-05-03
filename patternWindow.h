@@ -22,6 +22,7 @@
 
 #include "imageSaverWindow.h"
 #include "patternImageContainer.h"
+#include "cancelAcceptDialogBase.h"
 
 class patternImageLabel;
 class patternDockWidget;
@@ -37,8 +38,34 @@ class QDomDocument;
 class QDomElement;
 class QScrollArea;
 class QPushButton;
+class QVBoxLayout;
+class QGroupBox;
+class QLineEdit;
 
 typedef findActionName<patternImagePtr> findPatternActionName;
+
+class pdfViewerDialog : public cancelAcceptDialogBase {
+
+  Q_OBJECT
+
+ public:
+  pdfViewerDialog(bool useViewer, const QString& curViewerPath,
+                  QWidget* parent);
+  bool useViewer() const;
+  QString viewerPath() const;
+
+ private slots:
+  void updateViewerPath();
+
+ private:
+  // a checkable group that is checked if we should use the pdf viewer
+  // specified by the group's child widgets to view saved pdf patterns
+  QGroupBox* useViewer_;
+  QVBoxLayout* dialogLayout_;
+  QVBoxLayout* groupLayout_;
+  QLineEdit* currentPath_;
+  QPushButton* choosePath_;
+};
 
 // class patternWindow
 //
@@ -121,6 +148,8 @@ class patternWindow : public imageSaverWindow {
   void constructMenus();
   // constructor helper
   void constructToolbar();
+  // set up the dialog for the user to choose a pdf viewer
+  void constructPdfViewerDialog();
   // return a grided copy of <image>, where the original dimensions are
   // for <image> (which is possibly scaled), using <gridColor>
   QImage gridedImage(const QImage& image, int originalSquareDim,
@@ -290,6 +319,9 @@ class patternWindow : public imageSaverWindow {
   // bottom (x/yPercentage aren't precise enough to handle edge cases).
   void processDockImageUpdate(qreal xPercentage, qreal yPercentage,
                               bool rightEdge, bool bottomEdge);
+  // let the user update the pdf viewer options for displaying saved
+  // pdf patterns
+  void updatePdfViewerOptions();
 
  private:
   // a default dimension for pattern symbol squares that should make
@@ -326,6 +358,12 @@ class patternWindow : public imageSaverWindow {
 
   // keep fontMetrics for the app font since we use them a lot
   QFontMetrics fontMetrics_;
+
+  // remember whether or not we're loading a pdf viewer to view saved
+  // pdf patterns
+  bool usePdfViewer_;
+  QString pdfViewerPath_;
+  QAction* setPdfViewerAction_;
 };
 
 #endif

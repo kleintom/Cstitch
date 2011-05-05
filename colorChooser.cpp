@@ -37,7 +37,7 @@
 #include "colorChooserProcessModes.h"
 #include "windowManager.h"
 #include "helpBrowser.h"
-#include "symbolChooser.h"
+#include "symbolChooser.h" // for max number of colors(/symbols)
 #include "xmlUtility.h"
 #include "windowSavers.h"
 

@@ -23,7 +23,6 @@
 #include <algorithm>
 
 #include <QtCore/QAbstractEventDispatcher>
-#include <QtGui/QApplication>
 #include <QtGui/QAction>
 #include <QtGui/QProgressDialog>
 #include <QtGui/QCloseEvent>
@@ -77,22 +76,8 @@ inline QString rtoqs(qreal r) {
   return QString("%1").arg(r, 0, 'f', 2);
 }
 
-inline void setFontHeight(QFont* font, int height) {
-
-  for (int j = 1; j < 100; ++j) {
-    font->setPointSize(j);
-    const QFontMetrics metrics(*font);
-    if (metrics.height() > height - 1) {
-      if (j > 1) {
-        font->setPointSize(j-1);
-      }
-      else {
-        font->setPointSize(1); // !
-      }
-      break;
-    }
-  }
-}
+// set the size of <painter>'s font to have the largest height <= <height>
+void setFontHeight(QPainter* painter, int height);
 
 // return the average width of a character in <font> (rounded up)
 // [by character we mean ascii characters 32-127]

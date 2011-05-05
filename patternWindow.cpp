@@ -66,7 +66,7 @@ extern const int PROGRESS_Y_COORDINATE;
 patternWindow::patternWindow(windowManager* winMgr)
   : imageSaverWindow(tr("Symbols"), winMgr), pdfSymbolDim_(0),
     curImage_(patternImagePtr(NULL)),
-    fontMetrics_(QFontMetrics(QApplication::font())) {
+    fontMetrics_(QFontMetrics(font())) {
 
   installEventFilter(this);
   imageLabel_ = new patternImageLabel(this);
@@ -90,11 +90,10 @@ patternWindow::patternWindow(windowManager* winMgr)
   connect(dockImage_, SIGNAL(viewportUpdated(qreal , qreal, bool , bool )),
           this, SLOT(processDockImageUpdate(qreal , qreal, bool , bool )));
 
-  const QFontMetrics metrics(QApplication::font());
+  const QFontMetrics metrics(font());
   basePatternDim_ = (metrics.width("@") > metrics.height()) ?
     metrics.width("@") : metrics.height();
-  basePatternDim_ = qMax(basePatternDim_, 20);
-  basePatternDim_ += 6; // some room for a border
+  basePatternDim_ = qMax(basePatternDim_, 30);
   listDock_ = new patternDockWidget(basePatternDim_, this);
   setListDockWidget(listDock_);
   connect(listDock_, SIGNAL(changeSymbol(const triC& )),
@@ -1056,11 +1055,9 @@ void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
   int symbolDim = qMax(pdfSymbolDim_, sHeight("B"));
   symbolDim = qMin(symbolDim, 40);
   const QFont originalFont(painter->font());
-  QFont tmpFont = originalFont;
-  ::setFontHeight(&tmpFont, symbolDim);
-  const QFont listFont = tmpFont;
+  ::setFontHeight(painter, symbolDim);
+  const QFont listFont = painter->font();
 
-  painter->setFont(listFont);
   const QFontMetrics listFontMetric(listFont);
   const int fontHeight = listFontMetric.height();
 

@@ -24,10 +24,11 @@
 
 //
 // stepIndex is used to keep track of which of a set of indices are
-// used/unused.  The indices go from <min> to <max-1> in steps of <step>.
-// next() returns the smallest available index, availableIndices() returns
-// all available indices, reserve() marks an index as in use, and free()
-// marks an index as available.
+// used/unused.  The indices go from <min> to <max-1> in steps of
+// <step> (cf. the constructor).  next() returns the smallest
+// available index, availableIndices() returns all available indices,
+// reserve() marks an index as in use, and free() marks an index as
+// available.
 //
 // Implementation note: QSet internally orders its elements, so getting
 // next is trivial (for us)

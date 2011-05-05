@@ -28,10 +28,7 @@ extern const int MAX_NUM_SYMBOL_TYPES;
 
 //
 // symbolChooser makes the initial choice of the color->symbol
-// correspondence for a user-supplied list of colors; the association
-// attempts to map light colors (relative to the overall image color
-// distribution) to "light" symbols and relatively dark colors to "dark"
-// symbols.
+// correspondence for a user-supplied list of colors.
 //
 // Each symbol is made up of a symbol pixmap, a border (always
 // specified by the width of the border, not of the symbol plus its
@@ -49,18 +46,16 @@ extern const int MAX_NUM_SYMBOL_TYPES;
 // get inserted into the object's symbolMap_ if they weren't already there
 // (at the specified overall size and border size).
 //
-// Image creation:
-// Symbols come from a predefined list of unicode characters; the actual
-// number of symbols available will depend on which of those symbols is
-// actually available for the given font on the given computer in use (but
-// should always include at least a subset of the standard ascii
-// characters).  Each unicode symbol can be paired with up to eight
-// different distinct outlines, where the outlines are paired into
-// light and dark outlines (so four pairs of light/dark outlines).
-// The outlines used depend on the number of symbols required and the color
-// intensity of the colors requiring symbols: the actual number of symbols
-// available will be at least the number required for the given colors, but
-// not necessarily all symbols that could be created.
+// Image creation: Symbols come from a predefined list of unicode
+// characters; the actual number of symbols available will depend on
+// which of those symbols is actually available for the given font on
+// the given computer in use (but should always include at least a
+// subset of the standard ascii characters).  Each unicode symbol can
+// be paired with up to four different distinct outlines.  The
+// outlines used depend on the number of symbols required: the actual
+// number of symbols available will be at least the number required
+// for the given colors, but not necessarily all symbols that could be
+// created.
 //
 // Each time the user requests a symbol that doesn't already exist for
 // the requested color with the given dimension and border, a new
@@ -76,7 +71,7 @@ class symbolChooser {
   // <borderDim> is the width of the border, <colors> are the colors to
   // create symbols for
   symbolChooser(int symbolDimension, QVector<triC> colors,
-                int borderDim = 3);
+                int borderDim = 4);
   // run through a predefined list of unicode characters to determine
   // which are defined in the current system font and save the list to
   // unicodeCharacters_
@@ -148,27 +143,22 @@ class symbolChooser {
   static QPixmap getSampleSymbol(int symbolSize);
 
  private:
-  // return an index for <color> based on its intensity
-  // returns numberOfSymbols()/2 if all indices have been used
-  int getNewIndex(const triC& color);
+  // return the next available index;
+  // returns numberOfSymbols() if all indices have been used
+  int getNewIndex() { return colorIndex_.next(); }
   // create and return the symbol for index <index> using the current
   // symbolDim and borderDim and <color> for the background if there's a
   // border; doesn't update symbolMap_
   QPixmap createSymbol(int index,
                        const triC& color = triC(255, 255, 255)) const;
-  // create a symbol of type 1 by drawing on <painter> the icon for <index>
-  // of size <drawDim>
-  void createSymbolType1(QPainter* painter, int drawDim, int index) const;
-  void createSymbolType2(QPainter* painter, int drawDim, int index) const;
-  void createSymbolType3(QPainter* painter, int drawDim, int index) const;
-  void createSymbolType4(QPainter* painter, int drawDim, int index) const;
-  // load <vector> with the symbols for the given <indices> and <color>
-  // using the current symbolDim and borderDim
-  void loadIndices(QVector<patternSymbolIndex>* vector,
-                   const QSet<int>& indices, QRgb color) const;
+  // draw the background pixmap for the different types of symbols
+  // (type1 is "plain")
+  void createSymbolType2(QPainter* painter, int drawDim) const;
+  void createSymbolType3(QPainter* painter, int drawDim) const;
+  void createSymbolType4(QPainter* painter, int drawDim) const;
   // return the total number of possible symbols
   int numberOfSymbols() const {
-    return unicodeCharacters_.size()*numSymbolTypes_;
+    return unicodeCharacters_.size() * numSymbolTypes_;
   }
 
  private:
@@ -181,13 +171,10 @@ class symbolChooser {
   int numSymbolTypes_;
   // the most recently created symbols for the hash's color keys
   QHash<QRgb, patternSymbolIndex> symbolMap_;
-  stepIndex darkIndex_; // available dark symbols
-  stepIndex lightIndex_; // available light symbols
+  stepIndex colorIndex_; // available symbol indices
   int symbolDimension_; // size of the symbols (with border)
   // size of a border around the symbol (0 means no border)
   int borderDimension_;
-  // median intensity of the colors under consideration
-  int medianIntensity_;
 };
 
 #endif

@@ -26,6 +26,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
 #include <QtGui/QImageWriter>
+#include <QtGui/QPainter>
 
 extern const int PROGRESS_X_COORDINATE;
 extern const int PROGRESS_Y_COORDINATE;
@@ -106,4 +107,20 @@ int averageCharacterWidth(const QFont& font) {
     totalWidth += metrics.width(QChar(i));
   }
   return qCeil(totalWidth/97.);
+}
+
+void setFontHeight(QPainter* painter, int height) {
+
+  QRect emptyRect;
+  QFont font = painter->font();
+  for (int j = 5; j < 100; ++j) {
+    font.setPointSize(j);
+    painter->setFont(font);
+    if (painter->boundingRect(emptyRect, Qt::AlignCenter, "@").height() >
+        height) {
+      font.setPointSize(j-1);
+      painter->setFont(font);
+      return;
+    }
+  }
 }

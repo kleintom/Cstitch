@@ -47,7 +47,7 @@ extern const int MAX_NUM_SYMBOL_TYPES;
 //
 // Each time the user requests a new symbol or symbols, the new symbol(s)
 // get inserted into the object's symbolMap_ if they weren't already there
-// (including overall size and border size).
+// (at the specified overall size and border size).
 //
 // Image creation:
 // Symbols come from a predefined list of unicode characters; the actual
@@ -63,10 +63,11 @@ extern const int MAX_NUM_SYMBOL_TYPES;
 // not necessarily all symbols that could be created.
 //
 // Each time the user requests a symbol that doesn't already exist for
-// the requested color with the given dimension and border is added to
-// the symbol map.  In other words, only one version of a symbol is ever
-// stored at a time, and there may be multiple combinations of size/border
-// stored in the symbol map at any given time.
+// the requested color with the given dimension and border, a new
+// symbol is added to the symbol map.  In other words, only one
+// version of a symbol is ever stored at a time, and there may be
+// multiple combinations of size/border stored in the symbol map at
+// any given time.
 //
 class symbolChooser {
 
@@ -143,6 +144,8 @@ class symbolChooser {
     initializeSymbolList();
     return MAX_NUM_SYMBOL_TYPES * unicodeCharacters_.size();
   }
+  // return a sample symbol of size <symbolSize> using the symbol font
+  static QPixmap getSampleSymbol(int symbolSize);
 
  private:
   // return an index for <color> based on its intensity

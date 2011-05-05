@@ -64,7 +64,7 @@ extern const int PROGRESS_X_COORDINATE;
 extern const int PROGRESS_Y_COORDINATE;
 
 patternWindow::patternWindow(windowManager* winMgr)
-  : imageSaverWindow(tr("Symbols"), winMgr),
+  : imageSaverWindow(tr("Symbols"), winMgr), pdfSymbolDim_(0),
     curImage_(patternImagePtr(NULL)),
     fontMetrics_(QFontMetrics(QApplication::font())) {
 
@@ -105,7 +105,7 @@ patternWindow::patternWindow(windowManager* winMgr)
   constructToolbar();
   constructPdfViewerDialog();
 
-  setPermanentStatus(tr("Click the 'To pdf' button to save the pattern as a pdf; the pdf symbol size will reflect the current zoom level."));
+  setPermanentStatus(tr("Click the 'To pdf' button to save the pattern as a pdf."));
   setStatus(tr("left click: change symbol; right click: switch between square and symbol images"));
 }
 
@@ -469,9 +469,11 @@ void patternWindow::saveSlot() {
   const QImage& squareImage = curImage_->squareImage();
   const int squareDim = curImage_->squareDimension();
   // the symbol dimension for the output pdf
-  const int pdfDim = curImage_->symbolDimension();
-  const int patternImageWidth = (squareImage.width()/squareDim)*pdfDim;
-  const int patternImageHeight = (squareImage.height()/squareDim)*pdfDim;
+  pdfSymbolDim_ = metadata.pdfSymbolSize();
+  const int patternImageWidth =
+    (squareImage.width()/squareDim)*pdfSymbolDim_;
+  const int patternImageHeight =
+    (squareImage.height()/squareDim)*pdfSymbolDim_;
 
   //// draw title pages with the original and squared images
   drawTitlePage(&painter, &printer, metadata);
@@ -483,9 +485,8 @@ void patternWindow::saveSlot() {
   int xpages, ypages; // pdf pattern pages used
 
   const bool cancel =
-    drawPdfImage(&painter, &printer, pdfDim, patternImageWidth,
-                 patternImageHeight, &xpages, &ypages,
-                 &widthPerPage, &heightPerPage);
+    drawPdfImage(&painter, &printer, patternImageWidth, patternImageHeight,
+                 &xpages, &ypages, &widthPerPage, &heightPerPage);
   if (cancel) {
     // abort probably does nothing; the printer writes to disk as it goes,
     // so we've already written a partial pdf
@@ -499,7 +500,7 @@ void patternWindow::saveSlot() {
   //// present the page-number to image-portion correspondence
   int yused = 0; // how much vertical space does the correspondence take?
   if (xpages * ypages > 1) {
-    yused = drawPdfLegend(&painter, pdfDim, xpages, ypages,
+    yused = drawPdfLegend(&painter, xpages, ypages,
                           patternImageWidth, patternImageHeight,
                           widthPerPage, heightPerPage,
                           printerWidth, printerHeight);
@@ -516,7 +517,7 @@ void patternWindow::saveSlot() {
   //// present the color list
   // this will be the next page number
   const int pageNum = xpages * ypages + 2;
-  drawPdfColorList(&painter, &printer, pageNum, yused, pdfDim);
+  drawPdfColorList(&painter, &printer, pageNum, yused);
 
   painter.end();
 
@@ -629,39 +630,39 @@ void patternWindow::drawTitlePageImage(QPainter* painter,
 }
 
 bool patternWindow::computeNumPages(int w, int h, int widthPerPage,
-                                    int heightPerPage, int pdfDim,
+                                    int heightPerPage,
                                     int* xpages, int* ypages) const {
 
   const int landscapePages =
     computeNumPagesHelper(w, h, heightPerPage, widthPerPage,
-                          pdfDim, xpages, ypages);
+                          xpages, ypages);
   const int portraitPages =
     computeNumPagesHelper(w, h, widthPerPage, heightPerPage,
-                          pdfDim, xpages, ypages);
+                          xpages, ypages);
   bool portrait = true;
   if (portraitPages > landscapePages) {
     portrait = false;
     // recompute xpages, ypages for landscape
-    computeNumPagesHelper(w, h, heightPerPage, widthPerPage, pdfDim,
+    computeNumPagesHelper(w, h, heightPerPage, widthPerPage,
                           xpages, ypages);
   }
   return portrait;
 }
 
 int patternWindow::computeNumPagesHelper(int w, int h, int widthPerPage,
-                                         int heightPerPage, int pdfDim,
+                                         int heightPerPage,
                                          int* xpages, int* ypages) const {
   int tXpages = 0; // will become *xpages
   int tYpages = 0; // will become *ypages
-  const int xBoxesPerPage = widthPerPage/pdfDim; // horizontal boxes per page
-  const int yBoxesPerPage = heightPerPage/pdfDim; // vertical boxes per page
+  const int xBoxesPerPage = widthPerPage/pdfSymbolDim_; // horizontal boxes per page
+  const int yBoxesPerPage = heightPerPage/pdfSymbolDim_; // vertical boxes per page
 
-  tXpages = (w/pdfDim)/xBoxesPerPage; // horizontal pages needed
-  if ((w/pdfDim) % xBoxesPerPage != 0) {
+  tXpages = (w/pdfSymbolDim_)/xBoxesPerPage; // horizontal pages needed
+  if ((w/pdfSymbolDim_) % xBoxesPerPage != 0) {
     ++tXpages;
   }
-  tYpages = (h/pdfDim)/yBoxesPerPage; // vertical pages needed
-  if ((h/pdfDim) % yBoxesPerPage != 0) {
+  tYpages = (h/pdfSymbolDim_)/yBoxesPerPage; // vertical pages needed
+  if ((h/pdfSymbolDim_) % yBoxesPerPage != 0) {
     ++tYpages;
   }
   *xpages = tXpages;
@@ -671,7 +672,7 @@ int patternWindow::computeNumPagesHelper(int w, int h, int widthPerPage,
 }
 
 bool patternWindow::drawPdfImage(QPainter* painter, QPrinter* printer,
-                                 int pdfDim, int patternImageWidth,
+                                 int patternImageWidth,
                                  int patternImageHeight,
                                  int* xpages, int* ypages,
                                  int* widthPerPage,
@@ -684,32 +685,32 @@ bool patternWindow::drawPdfImage(QPainter* painter, QPrinter* printer,
   int printerWidth = printerRectangle.width();
   int printerHeight = printerRectangle.height();
 
-  const int xBoxes = patternImageWidth/pdfDim;
-  const int yBoxes = patternImageHeight/pdfDim;
+  const int xBoxes = patternImageWidth/pdfSymbolDim_;
+  const int yBoxes = patternImageHeight/pdfSymbolDim_;
 
   // horizontal boxes per pdf page
-  int xBoxesPerPage = printerWidth/pdfDim;
+  int xBoxesPerPage = printerWidth/pdfSymbolDim_;
   // vertical boxes per pdf page
-  int yBoxesPerPage = printerHeight/pdfDim;
+  int yBoxesPerPage = printerHeight/pdfSymbolDim_;
 
   // how much room do we want for grid-line-count numbers (in multiples
-  // of pdfDim for future use)
+  // of pdfSymbolDim_ for future use)
   int xstart = 0;
   while (xstart < sWidth("555")) {
-    xstart += pdfDim;
+    xstart += pdfSymbolDim_;
   }
-  xBoxesPerPage -= xstart/pdfDim;
-  tWidthPerPage = xBoxesPerPage*pdfDim; // image width per page
+  xBoxesPerPage -= xstart/pdfSymbolDim_;
+  tWidthPerPage = xBoxesPerPage*pdfSymbolDim_; // image width per page
 
   // make ystart = xstart to simplify the landscape/portrait issue
   // to fix this pass xstart and ystart to computeNumPages
   const int ystart = xstart;
-  yBoxesPerPage -= ystart/pdfDim;
-  tHeightPerPage = yBoxesPerPage*pdfDim; // image height per page
+  yBoxesPerPage -= ystart/pdfSymbolDim_;
+  tHeightPerPage = yBoxesPerPage*pdfSymbolDim_; // image height per page
 
   bool portrait = computeNumPages(patternImageWidth, patternImageHeight,
                                   tWidthPerPage, tHeightPerPage,
-                                  pdfDim, xpages, ypages);
+                                  xpages, ypages);
   if (!portrait) {
     // you can't change the orientation under Windows, so we'll just
     // draw sideways instead
@@ -731,7 +732,7 @@ bool patternWindow::drawPdfImage(QPainter* painter, QPrinter* printer,
   // start printing
   const bool cancel =
     actuallyDrawPdfImage(painter, printer, patternImageWidth,
-                         patternImageHeight, pdfDim, *xpages, *ypages,
+                         patternImageHeight, *xpages, *ypages,
                          xstart, ystart, xBoxes, yBoxes,
                          xBoxesPerPage, yBoxesPerPage,
                          tWidthPerPage, tHeightPerPage,
@@ -752,7 +753,7 @@ bool patternWindow::drawPdfImage(QPainter* painter, QPrinter* printer,
 bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
                                          QPrinter* printer,
                                          int patternImageWidth,
-                                         int patternImageHeight, int pdfDim,
+                                         int patternImageHeight,
                                          int xpages, int ypages,
                                          int xstart, int ystart,
                                          int xBoxes, int yBoxes,
@@ -766,7 +767,7 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
   int widthToUse = widthPerPage;
   int heightToUse = heightPerPage;
   const int f = 5; // fudge room for grid number separation from the grid
-  const QHash<QRgb, QPixmap> symbolMap = curImage_->symbolsNoBorder(pdfDim);
+  const QHash<QRgb, QPixmap> symbolMap = curImage_->symbolsNoBorder(pdfSymbolDim_);
   const QImage& squareImage = curImage_->squareImage();
   const int squareDim = curImage_->squareDimension();
   const int printerWidth = printer->pageRect().width();
@@ -802,18 +803,18 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       }
 
       // draw this page's image
-      const int patternXBoxStart = ((x-1)*widthPerPage)/pdfDim;
-      const int patternXBoxEnd = patternXBoxStart + (widthToUse/pdfDim);
-      const int patternYBoxStart = ((y-1)*heightPerPage)/pdfDim;
-      const int patternYBoxEnd = patternYBoxStart + (heightToUse/pdfDim);
+      const int patternXBoxStart = ((x-1)*widthPerPage)/pdfSymbolDim_;
+      const int patternXBoxEnd = patternXBoxStart + (widthToUse/pdfSymbolDim_);
+      const int patternYBoxStart = ((y-1)*heightPerPage)/pdfSymbolDim_;
+      const int patternYBoxEnd = patternYBoxStart + (heightToUse/pdfSymbolDim_);
       for (int j = patternYBoxStart, jj = 0; j < patternYBoxEnd;
             ++j, ++jj) {
         for (int i = patternXBoxStart, ii = 0; i < patternXBoxEnd;
               ++i, ++ii) {
           const QPixmap& thisSymbol =
             symbolMap[squareImage.pixel(i*squareDim, j*squareDim)];
-          painter->drawPixmap(xstart + ii*pdfDim, ystart + jj*pdfDim,
-                              thisSymbol);
+          painter->drawPixmap(xstart + ii*pdfSymbolDim_,
+                              ystart + jj*pdfSymbolDim_, thisSymbol);
         }
       }
 
@@ -823,16 +824,16 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       painter->setPen(QPen(Qt::black, 1));
       int tx = 0;
       //// draw the thin x grid lines
-      while (tx*pdfDim <= widthToUse) {
-        painter->drawLine(tx*pdfDim + xstart, ystart,
-                          tx*pdfDim + xstart, heightToUse + ystart);
+      while (tx*pdfSymbolDim_ <= widthToUse) {
+        painter->drawLine(tx*pdfSymbolDim_ + xstart, ystart,
+                          tx*pdfSymbolDim_ + xstart, heightToUse + ystart);
         tx += 1;
       }
       //// draw the thin y grid lines
       int ty = 0;
-      while (ty*pdfDim <= heightToUse) {
-        painter->drawLine(xstart, ty*pdfDim + ystart, widthToUse + xstart,
-                     ty*pdfDim + ystart);
+      while (ty*pdfSymbolDim_ <= heightToUse) {
+        painter->drawLine(xstart, ty*pdfSymbolDim_ + ystart, widthToUse + xstart,
+                     ty*pdfSymbolDim_ + ystart);
         ty += 1;
       }
 
@@ -846,14 +847,14 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       const int savedTx = tx;
       // draw the x grid counts
       painter->setPen(QPen(Qt::black, 1));
-      while (tx*pdfDim <= widthToUse) {
+      while (tx*pdfSymbolDim_ <= widthToUse) {
         const int tgridx = (x-1)*xBoxesPerPage + tx;
         if (tx == 0) { // avoid collision
-          painter->drawText(xstart + tx*pdfDim, ystart - f,
+          painter->drawText(xstart + tx*pdfSymbolDim_, ystart - f,
                             ::itoqs(tgridx));
         }
         else {
-          painter->drawText(xstart + tx*pdfDim - sWidth(tgridx),
+          painter->drawText(xstart + tx*pdfSymbolDim_ - sWidth(tgridx),
                             ystart - f, ::itoqs(tgridx));
         }
         tx += thickCount;
@@ -862,14 +863,14 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       // draw the thick x grid lines
       tx = savedTx;
       painter->setPen(QPen(Qt::darkGray, 3));
-      while (tx*pdfDim <= widthToUse) {
-        painter->drawLine(tx*pdfDim + xstart, ystart,
-                          tx*pdfDim + xstart, heightToUse + ystart);
+      while (tx*pdfSymbolDim_ <= widthToUse) {
+        painter->drawLine(tx*pdfSymbolDim_ + xstart, ystart,
+                          tx*pdfSymbolDim_ + xstart, heightToUse + ystart);
         tx += thickCount;
       }
 
       // draw the final line
-      if ((x-1)*(widthPerPage) + tx*pdfDim > patternImageWidth) {
+      if ((x-1)*(widthPerPage) + tx*pdfSymbolDim_ > patternImageWidth) {
         painter->setPen(QPen(Qt::black, 1));
         painter->drawText(xstart + widthToUse - sWidth(xBoxes), ystart - f,
                           ::itoqs(xBoxes));
@@ -887,14 +888,14 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       const int savedTy = ty;
       // draw the y grid counts
       painter->setPen(QPen(Qt::black, 1));
-      while (ty*pdfDim <= heightToUse) {
+      while (ty*pdfSymbolDim_ <= heightToUse) {
         const int tgridy = (y-1)*yBoxesPerPage + ty;
         if (ty == 0) { // avoid confusion
           painter->drawText(xstart - sWidth(tgridy) - f,
-                       ty*pdfDim + ystart + sHeight(tgridy), ::itoqs(tgridy));
+                       ty*pdfSymbolDim_ + ystart + sHeight(tgridy), ::itoqs(tgridy));
         }
         else {
-          painter->drawText(xstart - sWidth(tgridy) - f, ty*pdfDim + ystart,
+          painter->drawText(xstart - sWidth(tgridy) - f, ty*pdfSymbolDim_ + ystart,
                        ::itoqs(tgridy));
         }
         ty += thickCount;
@@ -903,14 +904,14 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
       // draw the thick y grid lines
       ty = savedTy;
       painter->setPen(QPen(Qt::darkGray, 3));
-      while (ty*pdfDim <= heightToUse) {
-        painter->drawLine(xstart, ty*pdfDim + ystart, widthToUse + xstart,
-                          ty*pdfDim + ystart);
+      while (ty*pdfSymbolDim_ <= heightToUse) {
+        painter->drawLine(xstart, ty*pdfSymbolDim_ + ystart, widthToUse + xstart,
+                          ty*pdfSymbolDim_ + ystart);
         ty += thickCount;
       }
 
       // draw the final line
-      if ((y-1)*(heightPerPage) + ty*pdfDim > patternImageHeight) {
+      if ((y-1)*(heightPerPage) + ty*pdfSymbolDim_ > patternImageHeight) {
         painter->setPen(QPen(Qt::black, 1));
         painter->drawText(xstart - sWidth(yBoxes) - f, heightToUse + ystart,
                           ::itoqs(yBoxes));
@@ -929,7 +930,7 @@ bool patternWindow::actuallyDrawPdfImage(QPainter* painter,
   return false;
 }
 
-int patternWindow::drawPdfLegend(QPainter* painter, int pdfDim,
+int patternWindow::drawPdfLegend(QPainter* painter,
                                  int xpages, int ypages,
                                  int imageWidth, int imageHeight,
                                  int widthPerPage, int heightPerPage,
@@ -1012,7 +1013,7 @@ int patternWindow::drawPdfLegend(QPainter* painter, int pdfDim,
 
   // the border
   const qreal xstart = printerWidth/2 - legendWidth/2;
-  const qreal ystart = pdfDim;
+  const qreal ystart = pdfSymbolDim_;
   painter->drawRect(QRectF(xstart, ystart, legendWidth, legendHeight));
   // the interior vertical lines
   for (int i = 1; i*legendBoxWidth < legendWidth; ++i) {
@@ -1046,14 +1047,13 @@ int patternWindow::drawPdfLegend(QPainter* painter, int pdfDim,
 }
 
 void patternWindow::drawPdfColorList(QPainter* painter, QPrinter* printer,
-                                     int pageNum, int yused,
-                                     int pdfDim) const {
+                                     int pageNum, int yused) const {
 
   const QRect printerRectangle = printer->pageRect();
   const int printerWidth = printerRectangle.width();
   const int printerHeight = printerRectangle.height();
   // have the list font match the symbol size, within reason
-  int symbolDim = qMax(pdfDim, sHeight("B"));
+  int symbolDim = qMax(pdfSymbolDim_, sHeight("B"));
   symbolDim = qMin(symbolDim, 40);
   const QFont originalFont(painter->font());
   QFont tmpFont = originalFont;

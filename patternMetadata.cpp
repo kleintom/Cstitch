@@ -30,16 +30,24 @@
 #include <QtGui/QGroupBox>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
+#include <QtGui/QSpinBox>
+#include <QtGui/QPainter>
 
 #include "imageUtility.h"
+#include "symbolChooser.h"
+
+// bounds for allowed symbol sizes (too large and file sizes are ridiculous,
+// too small and symbols can't be distinguished)
+extern const int MAX_SYMBOL_SIZE;
+extern const int MIN_SYMBOL_SIZE;
 
 patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
                                  int patternByFontSize, int photoByFontSize,
                                  QWidget* parent)
   : cancelAcceptDialogBase(parent),
     widgetLayout_(new QVBoxLayout),
-    groupBox_(new QGroupBox(tr("Pattern information (all fields are optional, all text will be centered in the pdf)"))),
-    groupBoxLayout_(new QVBoxLayout),
+    metadataBox_(new QGroupBox(tr("Pattern information (all fields are optional, all text will be centered in the pdf)"))),
+    metadataLayout_(new QVBoxLayout),
     titleLabel_(new QLabel(tr("<u><b>Pattern title</b></u> (only the first line will be used):"))),
     titleEdit_(new fixedWidthTextEdit(pdfWidth, 1, this)),
     titleSettingsKey_("pattern_title"),
@@ -58,7 +66,16 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
     photoByFontSize_(photoByFontSize),
     photoByLicenseLayout_(new QHBoxLayout),
     photoByLicenseButton_(new QPushButton(tr("Insert"))),
-    photoByLicenses_(new QComboBox) {
+    photoByLicenses_(new QComboBox),
+    clearMetadataButton_(new QPushButton(tr("Clear all information"))),
+    symbolSizeBox_(new QGroupBox(tr("Pdf symbol size"))),
+    symbolSizeLayout_(new QVBoxLayout),
+    symbolSizeTitleLayout_(new QHBoxLayout),
+    symbolSizeTitle_(new QLabel(tr("Set the pdf symbol size: "))),
+    symbolSizeSpinBox_(new QSpinBox),
+    symbolSizeKey_("pdf_symbol_size"),
+    symbolPreviewLayout_(new QHBoxLayout),
+    symbolPreview_(new QLabel) {
 
   // TODO this won't quite be right since the textEdit has mystery margins
   const int inputFieldWidth = pdfWidth + ::scrollbarWidth();
@@ -72,7 +89,7 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
 #endif
 
   // title
-  groupBoxLayout_->addWidget(titleLabel_);
+  metadataLayout_->addWidget(titleLabel_);
   QFont titleFont = applicationFont;
   titleFont.setBold(true);
   titleFont.setPointSize(titleFontSize_);
@@ -83,14 +100,13 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   // paddings, margins, frames, etc, and how often will they change?)
   const int lineHeightFudge = 8;
   const int comboBoxWidthFudge = 100;
-  // we double lineSpacing since that's what seems to be correct...(!)
   titleEdit_->setFixedHeight(linesFudge*QFontMetrics(titleFont).lineSpacing() +
                              lineHeightFudge);
-  groupBoxLayout_->addWidget(titleEdit_);
-  groupBoxLayout_->addSpacing(20);
+  metadataLayout_->addWidget(titleEdit_);
+  metadataLayout_->addSpacing(20);
 
   // patternBy
-  groupBoxLayout_->addWidget(patternByLabel_);
+  metadataLayout_->addWidget(patternByLabel_);
   QFont patternByFont = applicationFont;
   patternByFont.setPointSize(patternByFontSize_);
   patternByEdit_->setFont(patternByFont);
@@ -104,15 +120,15 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   // so we have to just approximate
   patternByLicenses_->setFixedWidth(inputFieldWidth - comboBoxWidthFudge);
   loadLicenses(patternByLicenses_, patternByFont, false);
-  groupBoxLayout_->addWidget(patternByEdit_);
+  metadataLayout_->addWidget(patternByEdit_);
   patternByLicenseLayout_->addWidget(patternByLicenseButton_, 0,
                                      Qt::AlignLeft);
   patternByLicenseLayout_->addWidget(patternByLicenses_, 1, Qt::AlignLeft);
-  groupBoxLayout_->addLayout(patternByLicenseLayout_);
-  groupBoxLayout_->addSpacing(20);
+  metadataLayout_->addLayout(patternByLicenseLayout_);
+  metadataLayout_->addSpacing(20);
 
   // photoBy
-  groupBoxLayout_->addWidget(photoByLabel_);
+  metadataLayout_->addWidget(photoByLabel_);
   QFont photoByFont = applicationFont;
   photoByFont.setPointSize(photoByFontSize_);
   photoByEdit_->setFont(photoByFont);
@@ -126,14 +142,17 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   // so we have to just approximate
   photoByLicenses_->setFixedWidth(inputFieldWidth - comboBoxWidthFudge);
   loadLicenses(photoByLicenses_, photoByFont, true);
-  groupBoxLayout_->addWidget(photoByEdit_);
+  metadataLayout_->addWidget(photoByEdit_);
   photoByLicenseLayout_->addWidget(photoByLicenseButton_, 0, Qt::AlignLeft);
   photoByLicenseLayout_->addWidget(photoByLicenses_, 1, Qt::AlignLeft);
-  groupBoxLayout_->addLayout(photoByLicenseLayout_);
+  metadataLayout_->addLayout(photoByLicenseLayout_);
 
-  groupBox_->setLayout(groupBoxLayout_);
-  widgetLayout_->addWidget(groupBox_);
-  widgetLayout_->addWidget(cancelAcceptWidget());
+  connect(clearMetadataButton_, SIGNAL(clicked()),
+          this, SLOT(clearMetadata()));
+  metadataLayout_->addWidget(clearMetadataButton_);
+
+  metadataBox_->setLayout(metadataLayout_);
+  widgetLayout_->addWidget(metadataBox_);
   setLayout(widgetLayout_);
 
   // load any saved fields
@@ -142,6 +161,9 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   loadSettings(settings, patternBySettingsKey_, patternByEdit_);
   loadSettings(settings, photoBySettingsKey_, photoByEdit_);
 
+  constructSymbolPreview(settings);
+
+  widgetLayout_->addWidget(cancelAcceptWidget());
   titleEdit_->setFocus();
   setWindowTitle(tr("Pattern information"));
 }
@@ -176,6 +198,32 @@ void patternMetadata::loadLicenses(QComboBox* box, const QFont& font,
   }
 }
 
+void patternMetadata::constructSymbolPreview(const QSettings& settings) {
+
+  connect(symbolSizeSpinBox_, SIGNAL(valueChanged(int )),
+          this, SLOT(updateSymbolSize(int )));
+  symbolSizeSpinBox_->setRange(MIN_SYMBOL_SIZE, MAX_SYMBOL_SIZE);
+  if (settings.contains(symbolSizeKey_)) {
+    symbolSizeSpinBox_->setValue(settings.value(symbolSizeKey_).toInt());
+  }
+  else {
+    symbolSizeSpinBox_->setValue(30);
+  }
+
+  symbolSizeTitleLayout_->addWidget(symbolSizeTitle_);
+  symbolSizeTitleLayout_->addWidget(symbolSizeSpinBox_);
+  symbolSizeTitleLayout_->addStretch();
+  symbolSizeLayout_->addLayout(symbolSizeTitleLayout_);
+
+  symbolPreviewLayout_->addStretch();
+  symbolPreviewLayout_->addWidget(symbolPreview_);
+  symbolPreviewLayout_->addStretch();
+  symbolSizeLayout_->addLayout(symbolPreviewLayout_);
+  
+  symbolSizeBox_->setLayout(symbolSizeLayout_);
+  widgetLayout_->addWidget(symbolSizeBox_);
+}
+
 void patternMetadata::loadSettings(const QSettings& settings,
                                    const QString& settingsKey,
                                    fixedWidthTextEdit* editor) {
@@ -191,6 +239,7 @@ void patternMetadata::saveSettings() const {
   settings.setValue(titleSettingsKey_, titleEdit_->toPlainText());
   settings.setValue(patternBySettingsKey_, patternByEdit_->toPlainText());
   settings.setValue(photoBySettingsKey_, photoByEdit_->toPlainText());
+  settings.setValue(symbolSizeKey_, symbolSizeSpinBox_->value());
 }
 
 void patternMetadata::insertPatternByLicense() {
@@ -203,4 +252,28 @@ void patternMetadata::insertPhotoByLicense() {
 
   photoByEdit_->insertPlainText(photoByLicenses_->currentText());
   photoByEdit_->setFocus();
+}
+
+void patternMetadata::clearMetadata() {
+
+  titleEdit_->setPlainText("");
+  patternByEdit_->setPlainText("");
+  photoByEdit_->setPlainText("");
+}
+
+void patternMetadata::updateSymbolSize(int newSymbolSize) {
+
+  const int viewSize = MAX_SYMBOL_SIZE + 10;
+  QPixmap symbol(viewSize, viewSize);
+  symbol.fill(palette().color(QPalette::Window));
+  QPainter painter(&symbol);
+  const QPixmap sampleSymbol = symbolChooser::getSampleSymbol(newSymbolSize);
+  painter.drawPixmap((viewSize - newSymbolSize)/2,
+                     (viewSize - newSymbolSize)/2, sampleSymbol);
+  symbolPreview_->setPixmap(symbol);
+}
+
+int patternMetadata::pdfSymbolSize() const {
+
+  return symbolSizeSpinBox_->value();
 }

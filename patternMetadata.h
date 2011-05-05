@@ -30,6 +30,8 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QGroupBox;
 class QLabel;
+class QSpinBox;
+class QSettings;
 
 // a QPlainTextEdit that always has a fixed line width (scrollbar is
 // always visible) and returns as its text the first n lines, where n is
@@ -81,6 +83,7 @@ class patternMetadata : public cancelAcceptDialogBase {
  public:
   patternMetadata(int pdfWidth, int titleFontSize, int patternByFontSize,
                   int photoByFontSize, QWidget* parent);
+  void constructSymbolPreview(const QSettings& settings);
   QString title() const { return titleEdit_->startText(); }
   QString patternBy() const { return patternByEdit_->startText(); }
   QString photoBy() const { return photoByEdit_->startText(); }
@@ -89,12 +92,17 @@ class patternMetadata : public cancelAcceptDialogBase {
   int titleFontSize() const { return titleFontSize_; }
   int patternByFontSize() const { return patternByFontSize_; }
   int photoByFontSize() const { return photoByFontSize_; }
+  int pdfSymbolSize() const;
 
  private slots:
   // insert the text of the currently selected license at the current point
   void insertPatternByLicense();
   // insert the text of the currently selected license at the current point
   void insertPhotoByLicense();
+  // clear all info fields
+  void clearMetadata();
+  // update the symbol size preview to reflect <newSymbolSize>
+  void updateSymbolSize(int newSymbolSize);
 
  private:
   // load text for <editor> from <settings> using the settings key
@@ -110,8 +118,8 @@ class patternMetadata : public cancelAcceptDialogBase {
  private:
   QVBoxLayout* widgetLayout_;
 
-  QGroupBox* groupBox_;
-  QVBoxLayout* groupBoxLayout_;
+  QGroupBox* metadataBox_;
+  QVBoxLayout* metadataLayout_;
 
   //// pattern title
   QLabel* titleLabel_;
@@ -141,6 +149,19 @@ class patternMetadata : public cancelAcceptDialogBase {
   QHBoxLayout* photoByLicenseLayout_;
   QPushButton* photoByLicenseButton_;
   QComboBox* photoByLicenses_;
+
+  QPushButton* clearMetadataButton_;
+
+  //// symbol size selection
+  QGroupBox* symbolSizeBox_;
+  QVBoxLayout* symbolSizeLayout_;
+  QHBoxLayout* symbolSizeTitleLayout_;
+  QLabel* symbolSizeTitle_;
+  QSpinBox* symbolSizeSpinBox_;
+  QString symbolSizeKey_;
+
+  QHBoxLayout* symbolPreviewLayout_;
+  QLabel* symbolPreview_;
 };
 
 #endif

@@ -200,25 +200,23 @@ class patternWindow : public imageSaverWindow {
                           int usableWidth, int usableHeight) const;
   // compute the minimum number of pages required to print the pattern
   // with width <w> and height <h>, using <widthPerPage> and
-  // <heightPerPage> and box dimension <pdfDim>, choosing between printing
-  // the pattern in horizontal or vertical mode.
-  // <xpages> is set to the number of horizontal pages the pattern will be
-  // divided into and <ypages> is set to the number of vertical pages the
-  // pattern will be divided into - in other words the pattern images will
-  // be segmented into <xpages> by <ypages> boxes, for a total of
-  // <xpages> * <ypages> pages.
+  // <heightPerPage>, choosing between printing the pattern in
+  // horizontal or vertical mode.  <xpages> is set to the number of
+  // horizontal pages the pattern will be divided into and <ypages> is
+  // set to the number of vertical pages the pattern will be divided
+  // into - in other words the pattern images will be segmented into
+  // <xpages> by <ypages> boxes, for a total of <xpages> * <ypages>
+  // pages.
   bool computeNumPages(int w, int h, int widthPerPage,
-                       int heightPerPage, int pdfDim,
-                       int* xpages, int* ypages) const;
+                       int heightPerPage, int* xpages, int* ypages) const;
   // return the total number of pages required for the input variables
   // (as in computeNumPages)
   int computeNumPagesHelper(int w, int h, int widthPerPage,
-                            int heightPerPage, int pdfDim,
-                            int* xpages, int* ypages) const;
+                            int heightPerPage, int* xpages, int* ypages) const;
   // draw the pdf pattern on the <printer> using the <painter>, where the
   // pattern image has the given dimensions.  Set the last four pointers
   // to their appropriate values on return (cf. computeNumPages).
-  bool drawPdfImage(QPainter* painter, QPrinter* printer, int pdfDim,
+  bool drawPdfImage(QPainter* painter, QPrinter* printer,
                     int patternImageWidth, int patternImageHeight,
                     int* xpages, int* ypages,
                     int* widthPerPage, int* heightPerPage);
@@ -229,8 +227,8 @@ class patternWindow : public imageSaverWindow {
   // if the image is to be drawn vertically (else landscape).
   bool actuallyDrawPdfImage(QPainter* painter, QPrinter* printer,
                             int patternImageWidth, int patternImageHeight,
-                            int pdfDim, int xpages, int ypages,
-                            int xstart, int ystart, int xBoxes, int yBoxes,
+                            int xpages, int ypages, int xstart, int ystart,
+                            int xBoxes, int yBoxes,
                             int xBoxesPerPage, int yBoxesPerPage,
                             int widthPerPage, int heightPerPage,
                             bool portrait);
@@ -238,16 +236,15 @@ class patternWindow : public imageSaverWindow {
   // to which portion of the image; pImageWidth/Height are pattern image
   // width/height, width/heightPerPage are pattern image dimensions per
   // printer page, printerWidth/Height are printer page dimensions.
-  int drawPdfLegend(QPainter* painter, int pdfDim, int xpages, int ypages,
+  int drawPdfLegend(QPainter* painter, int xpages, int ypages,
                     int pImageWidth, int pImageHeight,
                     int widthPerPage, int heightPerPage,
                     int printerWidth, int printerHeight) const;
   // draw the symbol/color correspondence list; pageNum is the
-  // page number of the pdf so far, yused is the amount of y space
-  // used on <pageNum>, and pdfDim is the dimension of the symbols in the
-  // pdf output.
+  // page number of the pdf so far and yused is the amount of y space
+  // used on <pageNum>.
   void drawPdfColorList(QPainter* painter, QPrinter* printer,
-                        int pageNum, int yused, int pdfDim) const;
+                        int pageNum, int yused) const;
   // draw column headers for a section of the color list
   void drawListHeader(QPainter* painter, int xStart, int y,
                       int countTab, int codeTab, int nameTab) const;
@@ -325,8 +322,10 @@ class patternWindow : public imageSaverWindow {
 
  private:
   // a default dimension for pattern symbol squares that should make
-  // symbols distinguishable on screen and pdf
+  // symbols distinguishable on screen
   int basePatternDim_;
+  // cached value of the last user-set pdf symbol dimension
+  int pdfSymbolDim_;
 
   QScrollArea* scroll_;
   patternImageLabel* imageLabel_;

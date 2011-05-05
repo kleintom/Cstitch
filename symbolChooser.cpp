@@ -138,8 +138,6 @@ QPixmap symbolChooser::createSymbol(int index, const triC& color) const {
   if (index < numberOfSymbols()) {
     QPainter painter(&drawSymbol);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    //// interval comes from the size of the ascii range we're using
-    //// for symbols (i.e. we're using interval ascii characters)
     const int interval = 2*unicodeCharacters_.size();
     if (index < interval) {
       createSymbolType1(&painter, drawDimension, index);
@@ -157,13 +155,11 @@ QPixmap symbolChooser::createSymbol(int index, const triC& color) const {
       createSymbolType4(&painter, drawDimension, index);
     }
 
-    //char symbolChar = static_cast<char>(33+(index/2)); // ascii conversion
     const QChar symbolChar = unicodeCharacters_[index/2];
     const QString symbolString(symbolChar);
     // find the right font size for our box size
     QFont font(unicodeFont_);
     ::setFontHeight(&font, drawDimension + 2);
-    //    font.setBold(true);
     painter.setFont(font);
     painter.drawText(0, 0, drawDimension, drawDimension,
                      Qt::AlignCenter, symbolString);
@@ -546,4 +542,27 @@ void symbolChooser::initializeSymbolList() {
   unicodeFont_ = chosenFont;
   //qDebug() << "Font selection time: " << double(t.elapsed())/1000. <<
   //chosenFont.family();
+}
+
+QPixmap symbolChooser::getSampleSymbol(int symbolSize) {
+
+  QPixmap symbol(symbolSize, symbolSize);
+  symbol.fill(Qt::white);
+  QPainter painter(&symbol);
+  painter.setRenderHint(QPainter::Antialiasing, true);
+  painter.fillRect(0, 0, symbolSize, symbolSize, Qt::black);
+  const int innerDim = 2;
+  painter.fillRect(QRect(innerDim, innerDim,
+                         symbolSize - 2*innerDim,
+                         symbolSize - 2*innerDim), Qt::white);
+
+  const QChar symbolChar = 'f';
+  const QString symbolString(symbolChar);
+  // find the right font size for our box size
+  QFont font(unicodeFont_);
+  ::setFontHeight(&font, symbolSize + 2);
+  painter.setFont(font);
+  painter.drawText(0, 0, symbolSize, symbolSize,
+                   Qt::AlignCenter, symbolString);
+  return symbol;
 }

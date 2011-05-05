@@ -992,16 +992,13 @@ have either no border or a border that isn't filled.
 
 <div class="h2Div">
 <h2 id="savePattern">Saving a Pattern to a Pdf File</h2>
-<p>
-To save your pattern to a pdf, click the <i>To pdf</i> button on the toolbar.
-</p>
 
 <p>
-<b>Note: </b>The size of the symbols/squares in the saved pdf will
-reflect the current zoom level of the onscreen image, so if you want
-larger symbols in the pdf then zoom in on screen before saving (but be
-aware that increasing the zoom level can significantly increase the
-number of pdf pages).
+To save your pattern to a pdf, click the <i>To pdf</i> button on the
+toolbar.  Before your pattern is saved you'll have the opportunity to
+choose the size of the symbols to be used in the pdf as well as to
+provide a title and/or any copyright information you'd like to
+include.
 </p>
 </div>
 

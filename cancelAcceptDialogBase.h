@@ -32,7 +32,7 @@ class QWidget;
 // QDialog::done(QDialog::Accepted) on accept and
 // QDialog::done(QDialog::Rejected) on cancel [but these are virtual]
 // Note: QDialogButtonBox handles the business of ordering the buttons
-// per current os guidelines
+// per current os guidelines.
 
 class cancelAcceptDialogBase : public QDialog {
 
@@ -43,6 +43,7 @@ class cancelAcceptDialogBase : public QDialog {
 
  protected:
   QWidget* cancelAcceptWidget() const;
+  // enable or disable the accept button
   void enableAcceptButton(bool b);
 
  private slots:

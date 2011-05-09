@@ -918,15 +918,13 @@ use a different viewer, then change the viewer settings under
 Pattern Edit Panel).
 </p>
 
-<p>
-The final pdf includes a title page showing the original image and the
-square colored image, then the pattern itself, then a table
-illustrating how to piece together the pattern pages, then a list of
-symbol/color associations.  Any DMC colors are listed with their DMC
+<p> The final pdf includes a title page showing the original image and
+the square colored image, then a table illustrating how to piece
+together the pattern pages, then a list of symbol/color associations,
+then the pattern itself.  Any DMC colors are listed with their DMC
 name and code; if a color is non-DMC then the code is the RGB value of
 the color.  The count column lists the number of times a given color
-is used in the pattern.
-</p>
+is used in the pattern.  </p>
 
 <div class="h2Div">
 <h2>Choosing Your Image</h2>
@@ -982,12 +980,6 @@ directly for use with a different color; instead you can assign the
 first color an unused symbol (thereby freeing up the desired symbol)
 and then assign the new color the just freed symbol.
 </p>-->
-
-<p>
-The initial selection of symbols is based on color: darker colors
-receive symbols with borders partially filled in, while lighter colors
-have either no border or a border that isn't filled.
-</p>
 </div>
 
 <div class="h2Div">

@@ -1,3 +1,9 @@
+Beta version 0.9.2 released on May 8, 2011:
+     bug fixes
+     no longer using pattern symbols with thickened border (they were hard to distinguish)
+     specify pdf symbol size on pdf save
+     autoload pdf viewer on pdf save     
+
 Beta version 0.9.1 released on April 24, 2011: bug fixes; linux binary
 now available (see README_linux for distribution availability).
 

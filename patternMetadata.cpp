@@ -21,7 +21,6 @@
 
 #include <QtCore/QSettings>
 #include <QtCore/QDate>
-#include <QtCore/QDebug>
 
 #include <QtGui/QApplication>
 #include <QtGui/QComboBox>
@@ -71,7 +70,9 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
     symbolSizeBox_(new QGroupBox(tr("Pdf symbol size"))),
     symbolSizeLayout_(new QVBoxLayout),
     symbolSizeTitleLayout_(new QHBoxLayout),
-    symbolSizeTitle_(new QLabel(tr("Set the pdf symbol size: "))),
+    symbolSizeTitle_(new QLabel("Set the pdf symbol size (from " +
+                                QString::number(MIN_SYMBOL_SIZE) + " to " +
+                                QString::number(MAX_SYMBOL_SIZE) + "): ")),
     symbolSizeSpinBox_(new QSpinBox),
     symbolSizeKey_("pdf_symbol_size"),
     symbolPreviewLayout_(new QHBoxLayout),

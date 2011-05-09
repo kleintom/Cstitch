@@ -32,7 +32,6 @@ class comboBox;
 class dockImage;
 class triC;
 class helpMode;
-class patternMetadata;
 template<class T> class findActionName;
 class QDomDocument;
 class QDomElement;
@@ -44,6 +43,8 @@ class QLineEdit;
 
 typedef findActionName<patternImagePtr> findPatternActionName;
 
+// dialog for the user to turn auto pdf-viewer-loading when a pdf
+// pattern gets saved on/off, and to set the viewer path
 class pdfViewerDialog : public cancelAcceptDialogBase {
 
   Q_OBJECT
@@ -81,32 +82,28 @@ class pdfViewerDialog : public cancelAcceptDialogBase {
 // a scaled down image with a rectangle indicating the current full size
 // view that the user can drag to move the full size view.
 
-// Individual images can be
-// deleted from the Image menu, and the user can turn gridding on or off
-// and change the grid color.  The user is allowed to save pattern images,
-// but because of their typically large size, the user will be given a
-// warning if the image is "big".
+// Individual images can be deleted from the Image menu, and the user
+// can turn gridding on or off and change the grid color.  The user is
+// allowed to save pattern images, but because of their typically
+// large size, the user will be given a warning if the image is "big".
 //
-// Initial symbol selection is done automatically - symbols come in "light"
-// and "dark" versions and are assigned to colors based on whether the
-// color's intensity is smaller or larger than the average intensity.
-// There are a fixed number of symbols, but there are four groups of
-// borders for those symbols, meaning there are four times the number of
-// "characters" available for use as symbols.  The symbols made available
-// to the user are just enough (from 1 to 4) to have a few more than the
-// number of colors in the pattern.
+// Initial symbol selection is done automatically.  There are a fixed
+// number of symbols, but there are four groups of borders for those
+// symbols, meaning there are four times the number of "characters"
+// available for use as symbols.  The symbols made available to the
+// user are just enough to have a few more than the number of colors
+// in the pattern.
 //
 // The user can change a symbol by left clicking on the image, which
-// brings up a dialog allowing selection of any symbol not currently taken.
-// Currently there is no way to switch two symbols without swapping with
-// an unused symbol.
+// brings up a dialog allowing selection of any symbol not currently
+// taken.  Currently there is no way to switch two symbols without
+// swapping with an unused symbol.
 //
-// Clicking the "To pdf" button produces a black and white pdf version of
-// the pattern at the current zoom level (with no symbol borders), with
-// as much of the pattern as will fit per page, a guide to which part of
-// the pattern is on which page, and a list of symbol/color
-// correspondences along with symbol codes (for DMC colors) and square
-// counts.
+// Clicking the "To pdf" button produces a black and white pdf version
+// of the pattern (with no symbol borders), with as much of the
+// pattern as will fit per page, a guide to which part of the pattern
+// is on which page, and a list of symbol/color correspondences along
+// with symbol codes (for DMC colors) and square counts.
 //
 ////
 // Implementation notes
@@ -150,11 +147,6 @@ class patternWindow : public imageSaverWindow {
   void constructToolbar();
   // set up the dialog for the user to choose a pdf viewer
   void constructPdfViewerDialog();
-  // return a grided copy of <image>, where the original dimensions are
-  // for <image> (which is possibly scaled), using <gridColor>
-  QImage gridedImage(const QImage& image, int originalSquareDim,
-                     int originalWidth, int originalHeight,
-                     QRgb gridColor = Qt::black) const;
   patternImagePtr getImageFromIndex(int index) const;
   // zoom in or out on the image by the given pixel amount
   void zoom(int zoomIncrement);
@@ -182,97 +174,7 @@ class patternWindow : public imageSaverWindow {
   bool eventFilter(QObject* watched, QEvent* event);
   void keyPressEvent(QKeyEvent* event);
   void processFirstShow();
-  //// helpers for producing the pdf pattern output
-  // draw the <metadata> and the original and square images on the printer
-  // using the painter
-  void drawTitlePage(QPainter* painter, QPrinter* printer,
-                     const patternMetadata& metadata) const;
-  // draw <text> on <painter> centered at the top of the rectangle
-  // <availableTextRect>, using <fontSize> and <bold>
-  void drawTitleMetadata(QPainter* painter, int fontSize, bool bold,
-                         const QString& text,
-                         QRect* availableTextRect) const;
-  // draw <image> on <painter> centered horizontally, starting at
-  // <startHeight>, and as large as possible to fit into
-  // <imageWidth> by <imageHeight>
-  void drawTitlePageImage(QPainter* painter,
-                          const QImage& image, int startHeight,
-                          int usableWidth, int usableHeight) const;
-  // compute the minimum number of pages required to print the pattern
-  // with width <w> and height <h>, using <widthPerPage> and
-  // <heightPerPage>, choosing between printing the pattern in
-  // horizontal or vertical mode.  <xpages> is set to the number of
-  // horizontal pages the pattern will be divided into and <ypages> is
-  // set to the number of vertical pages the pattern will be divided
-  // into - in other words the pattern images will be segmented into
-  // <xpages> by <ypages> boxes, for a total of <xpages> * <ypages>
-  // pages.
-  bool computeNumPages(int w, int h, int widthPerPage,
-                       int heightPerPage, int* xpages, int* ypages) const;
-  // return the total number of pages required for the input variables
-  // (as in computeNumPages)
-  int computeNumPagesHelper(int w, int h, int widthPerPage,
-                            int heightPerPage, int* xpages, int* ypages) const;
-  // draw the pdf pattern on the <printer> using the <painter>, where the
-  // pattern image has the given dimensions.  Set the last four pointers
-  // to their appropriate values on return (cf. computeNumPages).
-  bool drawPdfImage(QPainter* painter, QPrinter* printer,
-                    int patternImageWidth, int patternImageHeight,
-                    int* xpages, int* ypages,
-                    int* widthPerPage, int* heightPerPage);
-  // drawPdfImage helper: (xstart, ystart) is where on each page to start
-  // drawing; x/yBoxesPerPages is how many hor/vert boxes per page to draw,
-  // x/yBoxes is the total number of hor/vert boxes, width/heightPerPage
-  // is the number of hor/vert pixels per page, and <portrait> is true
-  // if the image is to be drawn vertically (else landscape).
-  bool actuallyDrawPdfImage(QPainter* painter, QPrinter* printer,
-                            int patternImageWidth, int patternImageHeight,
-                            int xpages, int ypages, int xstart, int ystart,
-                            int xBoxes, int yBoxes,
-                            int xBoxesPerPage, int yBoxesPerPage,
-                            int widthPerPage, int heightPerPage,
-                            bool portrait);
-  // draw the legend box which indicates which pdf page number corresponds
-  // to which portion of the image; pImageWidth/Height are pattern image
-  // width/height, width/heightPerPage are pattern image dimensions per
-  // printer page, printerWidth/Height are printer page dimensions.
-  int drawPdfLegend(QPainter* painter, int xpages, int ypages,
-                    int pImageWidth, int pImageHeight,
-                    int widthPerPage, int heightPerPage,
-                    int printerWidth, int printerHeight) const;
-  // draw the symbol/color correspondence list; pageNum is the
-  // page number of the pdf so far and yused is the amount of y space
-  // used on <pageNum>.
-  void drawPdfColorList(QPainter* painter, QPrinter* printer,
-                        int pageNum, int yused) const;
-  // draw column headers for a section of the color list
-  void drawListHeader(QPainter* painter, int xStart, int y,
-                      int countTab, int codeTab, int nameTab) const;
-  // return the helpMode enum constant for this mode
   helpMode getHelpMode() const;
-  // [sWidth and sHeight used to be global functions that kept a
-  // static font metric for the application font, but that turned out
-  // to be problematic]
-  void setFontMetric(const QFontMetrics& fontMetric) {
-    fontMetrics_ = fontMetric;
-  }
-  //// WARNING: you better call setFontMetric before using these
-  // return the width of s
-  int sWidth(const QString& s) const {
-    return fontMetrics_.boundingRect(s).width();
-  }
-  // return the height of s
-  int sHeight(const QString& s) const {
-    return fontMetrics_.boundingRect(s).height();
-  }
-  // return the width of n
-  int sWidth(int n) const {
-    return sWidth(QString::number(n));
-  }
-  // return the height of n
-  int sHeight(int n) const {
-    return sHeight(QString::number(n));
-  }
 
  private slots:
   // pop up a dialog for the user to select an unused new symbol for

@@ -25,17 +25,18 @@
 
   <mainBody><![CDATA[
 <div class="note">
-<h1 class="note_title">A Note On DMC Color Names</h1>
+<h1 class="note_title">A Note On Floss Color Codes and Names</h1>
 <p>
-  DMC is a well known manufacturer of floss (cross stitch thread).
-    Each floss that DMC sells has a color name and code, but DMC
-    doesn't provide color (RGB) values for their floss, so the colors
-    you see associated with DMC color names in this program are best
-    guess approximations of the floss color associated with a given
-    DMC color name.  DMC does not endorse these associations and has
-    nothing to do with this program, nor does this program
-    particularly endorse DMC: they just seem to be one of the more
-    available suppliers of floss.
+DMC and Anchor are well known manufacturers of floss (cross stitch
+thread).  Each floss that DMC sells has a color name and numeric code
+and each floss that Anchor sells has a numeric code, but neither DMC
+nor Anchor provides color (RGB) values for their floss, so the colors
+you see associated with numeric codes and/or color names in this
+program are best guess approximations of the floss color associated
+with a given code and/or color name.  Neither DMC nor Anchor endorses
+these associations and neither has anything to do with this program,
+nor does this program particularly endorse DMC or Anchor: they just
+happen to be two common suppliers of floss.
 </p>
 </div>
 
@@ -249,18 +250,20 @@ the <a href="overview">Overview</a> before continuing with
 this documentation for the <i>Color Choosing Panel</i>.
 </p>
 
-<h1>A Note On DMC Color Names</h1>
+<h1>A Note On Floss Color Codes and Names</h1>
 <p>
-  DMC is a well known manufacturer of floss (cross stitch thread).
-    Each floss that DMC sells has a color name and code, but DMC
-    doesn't provide color (RGB) values for their floss, so the colors
-    you see associated with DMC color names in this program are best
-    guess approximations of the floss color associated with a given
-    DMC color name.  DMC does not endorse these associations and has
-    nothing to do with this program, nor does this program
-    particularly endorse DMC: they just seem to be one of the more
-    available suppliers of floss.
+DMC and Anchor are well known manufacturers of floss (cross stitch
+thread).  Each floss that DMC sells has a color name and numeric code
+and each floss that Anchor sells has a numeric code, but neither DMC
+nor Anchor provides color (RGB) values for their floss, so the colors
+you see associated with numeric codes and/or color names in this
+program are best guess approximations of the floss color associated
+with a given code and/or color name.  Neither DMC nor Anchor endorses
+these associations and neither has anything to do with this program,
+nor does this program particularly endorse DMC or Anchor: they just
+happen to be two common suppliers of floss.
 </p>
+</div>
 ]]>
   </intro>
 
@@ -337,6 +340,14 @@ floss!).
 </div>
 
 <div class="h3Div">
+<h3><i>Num colors to Anchor</i></h3>
+<p>
+This mode works exactly the same as the <i>Num colors to DMC</i>
+mode, except it creates Anchor colors instead of DMC colors.
+</p>
+</div>
+
+<div class="h3Div">
 <h3><i>Num colors</i></h3>
 <p>
 This mode is similar to <i>Num colors to DMC</i> mode, except that any
@@ -357,13 +368,20 @@ results of a DMC-mode image.
 
 <div class="h3Div">
 <h3><i>DMC</i></h3>
-
 <p>
 <i>DMC</i> mode will create a new image by replacing each color in
 your original image with the closest matching DMC color.  This
 program is aware of 428 DMC color names, so depending on
 the variety of colors in your original image, this mode can create a
 new image with anywhere from 1 to 428 colors.
+</p>
+</div>
+
+<div class="h3Div">
+<h3><i>Anchor</i></h3>
+<p>
+<i>Anchor</i> mode works the same as <i>DMC</i> mode except that it
+creates Anchor colors instead of DMC colors.
 </p>
 </div>
 
@@ -501,12 +519,13 @@ the <i>squaring mode</i> and the <i>square size</i> setting.
 </p>
 
 <p id="squareSize">
-The <i>square size</i> setting determines how large (in pixels) the
-squares to be created will be.  The size is set using the number box
-on the toolbar, and is allowed to have any value from 2 to 50.  The
-choice of square size, along with your choice of cross stitch fabric,
-will determine how large your final cross stitched piece will be - you
-can use the <i>Dimension Computer</i> (under the <i>Image</i> menu) to
+The <i>square size</i> setting determines how
+large (in pixels) the squares to be created will be.  The size is set
+using the number box on the toolbar, and is allowed to have any value
+from 2 to 50.  The choice of square size, along with your choice of
+cross stitch fabric, will determine how large your final cross
+stitched piece will be - click on the <i>Dimension Computer</i> icon
+<img src="dims.png" alt="dimension computer icon" /> on the toolbar to
 help you choose the correct square size based on your fabric type and
 your desired final dimensions.
 </p>
@@ -637,11 +656,15 @@ selected image to change it to the swatch color.
 
 <p>
 The color dialog offers up to five ways to choose a new color; you can
-alternate between the options using the menu in the lower left corner.
+alternate between the options using the menu in the lower left corner
+(depending on settings and situation some options may not be available).
 </p>
+
 <p>
-If the <i>DMC colors only</i> box is checked on the tools dock then
-the options below will only allow you to choose DMC colors.
+The combo box below the tools can be used to restrict the type of
+colors that can be chosen using the color dialog: choose "DMC colors
+only" or "Anchor colors only" to restrict to colors of type DMC or
+Anchor, respectively.
 </p>
 
 <div class="h3">
@@ -650,10 +673,6 @@ the options below will only allow you to choose DMC colors.
 If the square you click on contains more than one color <i>in the
 original image</i> then this mode will allow you to choose from the
 colors from the original image in the clicked square.
-</p>
-<p>
-(If there is only one color in the original image from the square you
-clicked then this option won't appear.)
 </p>
 </div>
 
@@ -677,6 +696,15 @@ List Color</i> option.
 </div>
 
 <div class="h3">
+<h3>Choose n Anchor Color</h3> 
+<p>
+With this option you can choose any Anchor
+color; colors are arranged in the same manner as for the <i>Choose a
+List Color</i> option.
+</p>
+</div>
+
+<div class="h3">
 <h3>Choose From an Image</h3>
 <p>
 This option allows you to choose a color from any image currently on
@@ -689,8 +717,8 @@ your choice - if you misclick simply click on a different color before
 hitting the Accept button.
 </p>
 <p>
-If you're in DMC only mode then the upper right square will always be
-translated to a DMC color.
+If you're in DMC only or Anchor only mode then the upper right square will always be
+translated to a DMC or Anchor color, respectively.
 </p>
 </div>
 
@@ -699,9 +727,6 @@ translated to a DMC color.
 <p>
 Use this option to choose a color from a color palette or by providing
 an RGB or HSV value. 
-</p>
-<p>
-In DMC only mode this option is unavailable.
 </p>
 </div>
 </div>
@@ -753,8 +778,8 @@ colors that will be used to recolor the area that you've marked.  Once
 you've marked an area and chosen the number of colors you'd like to
 use, click the <i>Detail</i> button.  The new colors for the marked
 region will be chosen from the colors on the original image in that
-region, or DMC versions of those colors if the <i>DMC colors only</i>
-box is checked.
+region, or DMC/Anchor versions of those colors if the <i>DMC/Anchor
+colors only</i> option is set.
 </p>
 </div>
 
@@ -922,9 +947,11 @@ Pattern Edit Panel).
 the square colored image, then a table illustrating how to piece
 together the pattern pages, then a list of symbol/color associations,
 then the pattern itself.  Any DMC colors are listed with their DMC
-name and code; if a color is non-DMC then the code is the RGB value of
-the color.  The count column lists the number of times a given color
-is used in the pattern.  </p>
+name and code; Anchor colors are listed with their anchor code and the
+code/name of the nearest DMC color; for all other colors the code is
+the RGB value of the color and the name is the code/name of the
+nearest DMC color.  The count column lists the number of times a given
+color is used in the pattern.  </p>
 
 <div class="h2Div">
 <h2>Choosing Your Image</h2>

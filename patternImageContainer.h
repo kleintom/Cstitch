@@ -78,7 +78,7 @@ class patternImageContainer : public QObject {
   // <colors> are the colors of <squareImage>
   patternImageContainer(const QImage& squareImage,
                         const QString& imageName, int squareDimension,
-                        int baseSymbolDim, const QVector<triC>& colors);
+                        int baseSymbolDim, const QVector<flossColor>& colors);
   // return the pattern image using the current symbol size setting
   QImage patternImageCurSymbolSize();
   const QImage& squareImage() const { return squareImage_; }
@@ -100,6 +100,7 @@ class patternImageContainer : public QObject {
   }
   int squareDimension() const { return squareDimension_; }
   QString name() const { return imageName_; }
+  QVector<flossColor> flossColors() const { return flossColors_; }
   // return the symbol for <color> with size <symbolDim> and no border
   QPixmap symbolNoBorder(const triC& color, int symbolDim);
   // return the symbols using the current symbol dimension and a default
@@ -108,7 +109,6 @@ class patternImageContainer : public QObject {
   // return the symbols using <symbolDim> as width and no border
   QHash<QRgb, QPixmap> symbolsNoBorder(int symbolDim);
   QHash<QRgb, QPixmap> colorSquares() const { return colorSquares_; }
-  const QVector<triC>& colors() { return colors_; }
   // pop up a symbol change dialog for the user to change the symbol for
   // <color>.
   // Return true if the symbol was actually changed.
@@ -138,6 +138,7 @@ class patternImageContainer : public QObject {
   void addToHistory(const historyIndex& historyRecord);
   // rewrite colorSquares_ using symbolDimension_ for the square size
   void generateColorSquares();
+  QVector<triC> colors() const;
 
  signals:
   // let users know that the symbol for <color> is now <symbol>
@@ -152,7 +153,7 @@ class patternImageContainer : public QObject {
   // the current symbol dimension
   int symbolDimension_;
   const QImage squareImage_;
-  const QVector<triC> colors_;
+  const QVector<flossColor> flossColors_;
   // handles construction and choice of symbols
   symbolChooser symbolChooser_;
   QHash<QRgb, QPixmap> colorSquares_;

@@ -330,7 +330,7 @@ void colorChooser::processProcessing() {
                                   processMode_.colorList());
     winManager()->addColorCompareImage(workingImage,
                                        processMode_.colorList(),
-                                       processMode_.modeIsDmcOnly(),
+                                       processMode_.flossMode(),
                                        saver);
   }
   else { // processing cancelled
@@ -369,7 +369,7 @@ int colorChooser::recreateImage(const colorCompareSaver& saver) {
                                  winManager()->getOriginalImageColorCount());
   winManager()->addColorCompareImage(workingImage,
                                      saver.colors(),
-                                     processMode_.modeIsDmcOnly(),
+                                     processMode_.flossMode(),
                                      saver,
                                      saver.index());
   return saver.hidden() ? saver.index() : -1;

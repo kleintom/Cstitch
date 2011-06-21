@@ -83,16 +83,15 @@ class colorCompare : public imageCompareBase {
   enum {SQ_MODE, SQ_MEDIAN};
 
  public:
-  // index is for the image description text (as in "Image 1")
-  // colors is the list of colors in image
-  // dmc says whether image uses dmc colors only or not
+  // <index> is for the image description text (as in "Image 1");
+  // <colors> is the list of colors in <image>, of floss type <type>
   colorCompare(const QImage& image, int index, const QVector<triC>& colors,
-               bool dmc, windowManager* winMgr);
+               flossType type, windowManager* winMgr);
   // add an <image>, to be named based on <index>, with the given <colors>,
-  // which are or are not all <dmc> colors.
+  // which are of floss type <type>.
   // Index must be unique among all other such indices.
   void addImage(const QImage& image, int index,
-                const QVector<triC>& colors, bool dmc);
+                const QVector<triC>& colors, flossType type);
   // recreate a square image using the data in <saver> as part of a project
   // restore
   int recreateImage(const squareWindowSaver& saver);

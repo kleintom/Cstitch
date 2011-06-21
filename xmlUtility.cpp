@@ -52,6 +52,13 @@ QString getElementText(const QDomElement& element,
   return element.firstChildElement(elementName).text();
 }
 
+QString getElementAttribute(const QDomDocument& doc,
+                            const QString& elementName,
+                            const QString& attributeName) {
+
+  return doc.firstChildElement(elementName).attribute(attributeName);
+}
+
 void appendColorList(QDomDocument* doc, const QVector<triC>& colors,
                      QDomElement* appendee,
                      const QString& attributeName,
@@ -104,6 +111,9 @@ QString coordinatesToString(const pairOfInts& p) {
 QVector<pairOfInts> xmlToCoordinatesList(const QString& list) {
 
   QVector<pairOfInts> returnList;
+  if (list.isEmpty()) {
+    return returnList;
+  }
   QStringList coordinates = list.split(";");
   QRegExp
     regex("^\\((\\d+),(\\d+)\\)$");
@@ -121,7 +131,7 @@ QVector<pairOfInts> xmlToCoordinatesList(const QString& list) {
         returnList.push_back(p);
       }
     }
-    else {
+    else if (size > 1) {
       qWarning() << "Bad match in xmlToCoordinatesList:" << coordinates[i];
     }
   }
@@ -136,7 +146,7 @@ void appendPixelList(QDomDocument* doc, const QVector<pixel>& pixels,
     pixelListString += ::pixelToString(pixels[i]) + ";";
   }
   if (pixelListString != "") { // remove trailing ;
-    pixelListString.remove(pixelListString.size() - 1, 1);
+    pixelListString.chop(1);
   }
   ::appendTextElement(doc, "pixel_list", pixelListString, appendee,
                       "count", QString::number(pixels.size()));
@@ -151,6 +161,9 @@ QString pixelToString(const pixel& p) {
 QVector<pixel> xmlToPixelList(const QString& list) {
 
   QVector<pixel> returnList;
+  if (list.isEmpty()) {
+    return returnList;
+  }
   const QStringList pixels = list.split(";");
   QRegExp
     regex("^\\[\\((\\d+),(\\d+)\\)\\.\\((\\d+),(\\d+),(\\d+)\\)\\]$");
@@ -169,7 +182,7 @@ QVector<pixel> xmlToPixelList(const QString& list) {
         returnList.push_back(p);
       }
     }
-    else {
+    else if (size > 1) {
       qWarning() << "Bad match in xmlToPixelList:" << pixels[i];
     }
   }
@@ -212,6 +225,10 @@ void appendColorChangeHistoryList(QDomDocument* doc,
 QList<colorChange> xmlToColorChangeList(const QString& list) {
 
   QList<colorChange> returnList;
+  if (list.isEmpty()) {
+    return returnList;
+  }
+
   const QStringList colorChanges = list.split("+");
   for (int i = 0, size = colorChanges.size(); i < size; ++i) {
     QString thisColorChangeString = colorChanges[i];
@@ -236,8 +253,11 @@ QList<colorChange> xmlToColorChangeList(const QString& list) {
 
 QVector<triC> loadColorListFromText(const QString& list) {
 
-  QStringList stringList(list.split(";"));
   QVector<triC> colorList;
+  if (list.isEmpty()) {
+    return colorList;
+  }
+  QStringList stringList(list.split(";"));
   for (int i = 0, size = stringList.size(); i < size; ++i) {
     colorList.push_back(::xmlStringToRgb(stringList[i]));
   }
@@ -250,7 +270,7 @@ QString rgbToString(const triC& color) {
     QString::number(color.g()) + "," + QString::number(color.b()) + ")";
 }
 
-QRgb xmlStringToRgb(QString string) {
+QRgb xmlStringToRgb(const QString& string) {
 
   QRegExp regex("^\\((\\d+),(\\d+),(\\d+)\\)$");
   if (regex.indexIn(string) != -1) {
@@ -261,6 +281,58 @@ QRgb xmlStringToRgb(QString string) {
   else {
     return qRgb(0, 0, 0);
   }
+}
+
+QString flossColorToString(const flossColor& color) {
+
+  return color.prefix() + ::rgbToString(color.color());
+}
+
+flossColor xmlStringToFlossColor(const QString& string) {
+
+  const QChar flossPrefix = string[0];
+  if (flossPrefix != '(') { // floss
+    const QString rgbString = string.mid(1); // all but the first
+    const triC color = ::xmlStringToRgb(rgbString);
+    return flossColor(color, flossPrefix);
+  }
+  else { // just rgb, no floss type
+    return flossColor(::xmlStringToRgb(string));
+  }    
+}
+
+QString flossSetToString(const QSet<flossColor>& colors) {
+
+  QString returnString;
+  for (QSet<flossColor>::const_iterator it = colors.constBegin(),
+         end = colors.constEnd(); it != end; ++it) {
+    returnString += ::flossColorToString(*it) + ";";
+  }
+  if (colors.size() > 0) {
+    returnString.chop(1); // remove trailing comma
+  }
+  return returnString;
+}
+
+void appendFlossList(QDomDocument* doc, const QSet<flossColor>& colors,
+                     QDomElement* appendee) {
+
+  const QString xmlString = ::flossSetToString(colors);
+  ::appendTextElement(doc, "floss_list", xmlString, appendee, "count",
+                      QString::number(colors.size()));
+}
+
+QSet<flossColor> xmlStringToFlossSet(const QString& string) {
+
+  QSet<flossColor> returnSet;
+  if (string.isEmpty()) {
+    return returnSet;
+  }
+  const QStringList stringList(string.split(';'));
+  for (int i = 0, size = stringList.size(); i < size; ++i) {
+    returnSet.insert(::xmlStringToFlossColor(stringList[i]));
+  }
+  return returnSet;
 }
 
 QString historyPixelToString(const historyPixel& p) {
@@ -274,7 +346,10 @@ QString historyPixelToString(const historyPixel& p) {
 QVector<historyPixel> xmlToHistoryPixelList(const QString& list) {
 
   QVector<historyPixel> returnList;
-  QStringList stringList(list.split(";"));
+  if (list.isEmpty()) {
+    return returnList;
+  }
+  const QStringList stringList(list.split(";"));
   QRegExp
     regex("^\\{\\[\\((\\d+),(\\d+)\\)\\.\\((\\d+),(\\d+),(\\d+)\\)\\]:\\((\\d+),(\\d+),(\\d+)\\):(true|false)\\}$");
   for (int i = 0, size = stringList.size(); i < size; ++i) {

@@ -37,6 +37,7 @@
 #include "imageUtility.h"
 #include "helpBrowser.h"
 #include "quickHelp.h"
+#include "floss.h"
 
 extern const int ZOOM_INCREMENT = 100;
 
@@ -311,7 +312,7 @@ void imageZoomWindow::helpAbout() {
 
   QMessageBox aboutBox(this);
   aboutBox.setWindowTitle(tr("About"));
-  const QString version = winManager()->getVersion();
+  const QString version = winManager()->getProgramVersion();
   aboutBox.setText(tr("<b>Cstitch</b><br />Version: ") + version +
                       tr("<br />Tom Klein<br />email: tomklein@users.sourceforge.net<br />http://cstitch.sourceforge.net/"));
   aboutBox.setIconPixmap(QPixmap(":aboutIcon.png"));
@@ -388,3 +389,15 @@ void imageZoomWindow::setSaveActionsEnabled(bool b) {
 void imageZoomWindow::setPermanentStatusEnabled(bool b) {
   permanentStatus_->setEnabled(b);
 }
+
+QString imageZoomWindow::imageInfoFlossString(flossType type) const {
+
+  const QString flossTypeText = type.shortText();
+  if (flossTypeText != "") {
+    return tr("contains only ") + flossTypeText + tr(" colors");
+  }
+  else {
+    return "";
+  }
+}
+  

@@ -23,6 +23,7 @@
 #include <QtCore/QSharedData>
 
 #include "triC.h"
+#include "floss.h"
 #include "squareDockTools.h"
 
 class pairOfInts;
@@ -102,39 +103,40 @@ class historyItem : public QSharedData {
 class changeAllHistoryItem : public historyItem {
 
  public:
- changeAllHistoryItem(QRgb oldColor, QRgb toolColor, bool toolColorIsNew,
-                      const QVector<pairOfInts>& coordinates)
+  changeAllHistoryItem(flossColor oldColor, flossColor toolColor,
+                       bool toolColorIsNew,
+                       const QVector<pairOfInts>& coordinates)
     : toolColor_(toolColor), toolColorIsNew_(toolColorIsNew),
-    priorColor_(oldColor), coordinates_(coordinates) {}
+      priorColor_(oldColor), coordinates_(coordinates) {}
   explicit changeAllHistoryItem(const QDomElement& xmlHistory);
   void toXml(QDomDocument* doc, QDomElement* appendee) const;
   dockListUpdate performHistoryEdit(mutableSquareImageContainer* container,
                                     historyDirection direction) const;
-  QRgb toolColor() const { return toolColor_; }
-  QRgb oldColor() const { return priorColor_; }
+  flossColor toolColor() const { return toolColor_; }
+  flossColor oldColor() const { return priorColor_; }
   QVector<pairOfInts> coordinates() const { return coordinates_; }
 
  private:
-  const QRgb toolColor_; // the color associated with the tool used
+  const flossColor toolColor_; // the color associated with the tool used
   const bool toolColorIsNew_; // true if the tool color didn't exist before
-  const QRgb priorColor_; // the color being painted over
+  const flossColor priorColor_; // the color being painted over
   const QVector<pairOfInts> coordinates_; // the coordinates painted over
 };
 
 class changeOneHistoryItem : public historyItem {
 
  public:
-  changeOneHistoryItem(QRgb toolColor, bool toolColorIsNew,
+  changeOneHistoryItem(flossColor toolColor, bool toolColorIsNew,
                        const QVector<pixel>& pixels)
     :  toolColor_(toolColor), toolColorIsNew_(toolColorIsNew),
-    pixels_(pixels) {}
+       pixels_(pixels) {}
   explicit changeOneHistoryItem(const QDomElement& xmlHistory);
   void toXml(QDomDocument* doc, QDomElement* appendee) const;
   dockListUpdate performHistoryEdit(mutableSquareImageContainer* container,
                                     historyDirection direction) const;
 
  private:
-  const QRgb toolColor_; // the color associated with the tool used
+  const flossColor toolColor_; // the color associated with the tool used
   const bool toolColorIsNew_; // true if the tool color didn't exist before
   const QVector<pixel> pixels_; // the old pixels we've changed
 };
@@ -142,19 +144,20 @@ class changeOneHistoryItem : public historyItem {
 class fillRegionHistoryItem : public historyItem {
 
  public:
-  fillRegionHistoryItem(QRgb oldColor, QRgb toolColor, bool toolColorIsNew,
+  fillRegionHistoryItem(flossColor oldColor, flossColor toolColor,
+                        bool toolColorIsNew,
                         const QVector<pairOfInts>& coordinates)
     :  toolColor_(toolColor), toolColorIsNew_(toolColorIsNew),
-    priorColor_(oldColor), coordinates_(coordinates) {}
+       priorColor_(oldColor), coordinates_(coordinates) {}
   explicit fillRegionHistoryItem(const QDomElement& xmlHistory);
   void toXml(QDomDocument* doc, QDomElement* appendee) const;
   dockListUpdate performHistoryEdit(mutableSquareImageContainer* container,
                                     historyDirection direction) const;
 
  private:
-  const QRgb toolColor_; // the color associated with the tool used
+  const flossColor toolColor_; // the color associated with the tool used
   const bool toolColorIsNew_; // true if the tool color didn't exist before
-  const QRgb priorColor_; // the color being painted over
+  const flossColor priorColor_; // the color being painted over
   // square coordinates of the squares painted over
   const QVector<pairOfInts> coordinates_;
 };
@@ -162,8 +165,10 @@ class fillRegionHistoryItem : public historyItem {
 class detailHistoryItem : public historyItem {
 
  public:
-  explicit detailHistoryItem(const QVector<historyPixel>& detailPixels)
-    : detailPixels_(detailPixels) {}
+  // <newColorsType> is the floss type of the new detail colors
+  explicit detailHistoryItem(const QVector<historyPixel>& detailPixels,
+                             flossType newColorsType)
+    : detailPixels_(detailPixels), newColorsType_(newColorsType) {}
   explicit detailHistoryItem(const QDomElement& xmlHistory);
   void toXml(QDomDocument* doc, QDomElement* appendee) const;
   dockListUpdate performHistoryEdit(mutableSquareImageContainer* container,
@@ -171,13 +176,16 @@ class detailHistoryItem : public historyItem {
 
  private:
   const QVector<historyPixel> detailPixels_;
+  // floss type of the new colors in detailPixels_
+  const flossType newColorsType_;
 };
 
 class rareColorsHistoryItem : public historyItem {
 
  public:
-  explicit rareColorsHistoryItem(const QList<colorChange>& items)
-    : items_(items) {}
+  rareColorsHistoryItem(const QList<colorChange>& items,
+                        const QSet<flossColor>& rareColorTypes)
+    : items_(items), rareColorTypes_(rareColorTypes) {}
   explicit rareColorsHistoryItem(const QDomElement& xmlHistory);
   void toXml(QDomDocument* doc, QDomElement* appendee) const;
   dockListUpdate performHistoryEdit(mutableSquareImageContainer* container,
@@ -186,6 +194,8 @@ class rareColorsHistoryItem : public historyItem {
  private:
   // a changeAllHistoryItem for each rare color that is replaced
   const QList<colorChange> items_;
+  // floss types of the rare colors that got replaced
+  const QSet<flossColor> rareColorTypes_;
 };
 
 #endif

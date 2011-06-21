@@ -20,16 +20,17 @@
 #ifndef SQUARETOOLDOCK_H
 #define SQUARETOOLDOCK_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QCheckBox>
-
 #include "squareDockTools.h"
 #include "detailToolDock.h"
 #include "constWidthDock.h"
+// it seems signal parameter types can't be forward declared, although I
+// can't find that documented anywhere
+#include "floss.h"
 
 class mousePressLabel;
 class triC;
 class QGridLayout;
+class QComboBox;
 
 //
 // squareToolDock is the dock widget for displaying the square editing
@@ -56,44 +57,56 @@ class squareToolDock : public constWidthDock {
 
  public:
   explicit squareToolDock(QWidget* parent);
-  QRgb getToolLabelColor() const;
-  void setDmcOnly(bool b) { dmcBox_->setChecked(b); }
-  bool dmcOnly() const { return dmcBox_->isChecked(); }
+  // Set the tool swatch to flossColor <color> if <color>'s floss type is
+  // at most as permissive as getFlossType()'s, otherwise transform
+  // <color> to getFlossType()'s type and set the swatch to that color.
+  void setToolLabelColor(const flossColor& color);
+  flossColor getToolLabelColor() const;
+  // Set the floss type in the floss type combo box.
+  void setFlossType(flossType type);
+  // Get the floss type in the floss type combo box.
+  flossType getFlossType() const;
   void setToolToNoop();
   void detailListIsEmpty(bool b) { detailDock_->detailListIsEmpty(b); }
 
  public slots:
-  // make the tool color swatch <color>
+  // Make the tool color swatch <color> (transformed to be of color type
+  // getFlossType()).
   void setToolLabelColor(QRgb color);
 
  private:
-  // constructor helper: make the tool objects, using <iconSize> for icons
+  // Constructor helper: make the tool objects, using <iconSize> for icons.
   void constructTools(const QSize& iconSize);
+  // Fill the color swatch with <color> transformed to be of color type
+  // getFlossType().
+  void fillToolColorSwatch(QRgb color);
   bool event(QEvent* e);
   void showDetailDock(bool show);
   QSize sizeHint() const;
-  // perform a tool activation or deactivation, as specified by <direction>
+  // Perform a tool activation or deactivation, as specified by <direction>
   // for the tool specified by <data>: (de)activate the tool's button,
   // signal the (re)moval of the tool's context action, (un)show the
-  // tool color label, and (un)show the detail tool widget
+  // tool color label, and (un)show the detail tool widget.
   void processToolChange(toolChangeDirection direction,
                          const toolChangeData& data);
 
  private slots:
-  // deactivate the old tool (curToolButton_) and activate the new tool
-  // (<action>)
+  // Deactivate the old tool (curToolButton_) and activate the new tool
+  // determined by <button>.
   void processToolChange(squareDockToolButton* button);
-  // the user clicked on the color swatch - pop up a color choose dialog
-  // for the user to choose a new color
+  // The user clicked on the color swatch, pass it on.
   void processToolLabelMousePressed();
-  // the user clicked the detail button, pass it on
+  // The user clicked the detail button, pass it on.
   void processDetailCall(int numColors) const {
     emit detailCall(numColors);
   }
-  // the user clicked the detail clear button, pass it on
+  // The user clicked the detail clear button, pass it on.
   void processDetailClearCall() const {
     emit detailClearCall();
   }
+  // The user changed the tool floss type, pass it on and update the
+  // tool swatch flossColor if necessary.
+  void processFlossTypeBoxChange(int index);
 
  signals:
   void announceToolChanged(squareToolCode currentTool) const;
@@ -101,7 +114,8 @@ class squareToolDock : public constWidthDock {
   void removeContextAction(contextColorAction* action) const;
   void detailCall(int numColors) const;
   void detailClearCall() const;
-  void toolLabelColorRequested(const triC& currentColor, bool dmcOnly);
+  void toolLabelColorRequested(const triC& currentColor, flossType type);
+  void toolFlossTypeChanged(flossType type) const;
 
  private:
   QVBoxLayout* dockLayout_;
@@ -122,8 +136,8 @@ class squareToolDock : public constWidthDock {
   // the settings widget for the detail tool
   detailToolDock* detailDock_;
 
-  // translate all chosen colors to DMC or no
-  QCheckBox* dmcBox_;
+  // determines what type of colors can be set
+  QComboBox* flossTypeBox_;
 };
 
 #endif

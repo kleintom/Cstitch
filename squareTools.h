@@ -36,7 +36,7 @@ struct changeOneDragCache {
     squaresVisited.clear();
     cacheIsActive = false;
   }
-  QRgb newColor; // the drawing color
+  flossColor newColor; // the drawing color
   int labelWidth, labelHeight, imageWidth, imageHeight, squareDim;
   bool cacheIsActive; // true if this cache is currently being used
   QSet<pairOfInts> squaresVisited; // squares we've already drawn on

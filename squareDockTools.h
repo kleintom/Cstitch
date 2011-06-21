@@ -26,7 +26,6 @@
 #include "utility.h"
 
 class squareToolDock;
-class triState;
 
 enum squareToolCode {T_NOOP, T_CHANGE_ALL, T_CHANGE_ONE, T_FILL_REGION,
                      T_DETAIL};

@@ -178,26 +178,35 @@ void dockListWidget::prependWidget(QWidget* widget) {
 
 void dockListWidget::addToList(const triC& color) {
 
-  QListWidgetItem* listItem = new QListWidgetItem(::ctos(color));
-  listItem->setData(Qt::UserRole, QVariant(color.qc()));
-  listItem->setTextAlignment(Qt::AlignLeft);
-  listItem->setIcon(QIcon(generateIconSwatch(color)));
-
-  // insert by intensity
-  const int inputIntensity = color.intensity();
-  bool added = false;
-  for (int i = 0, size = colorList_->count(); i < size; ++i) {
-    const triC thisColor =
-      triC(colorList_->item(i)->data(Qt::UserRole).value<QColor>());
-    if (inputIntensity < thisColor.intensity()) {
-      added = true;
-      // inserts in front of
-      colorList_->insertItem(i, listItem);
-      break;
-    }
+  QListWidgetItem* listItem = NULL;
+  const QString colorText = ::ctos(color);
+  QList<QListWidgetItem*> foundItem =
+    colorList_->findItems(colorText, Qt::MatchCaseSensitive);
+  if (!foundItem.isEmpty()) {
+    listItem = foundItem[0];
   }
-  if (!added) {
-    colorList_->insertItem(colorList_->count(), listItem);
+  else {
+    QListWidgetItem* listItem = new QListWidgetItem(::ctos(color));
+    listItem->setData(Qt::UserRole, QVariant(color.qc()));
+    listItem->setTextAlignment(Qt::AlignLeft);
+    listItem->setIcon(QIcon(generateIconSwatch(color)));
+    
+    // insert by intensity
+    const int inputIntensity = color.intensity();
+    bool added = false;
+    for (int i = 0, size = colorList_->count(); i < size; ++i) {
+      const triC thisColor =
+        triC(colorList_->item(i)->data(Qt::UserRole).value<QColor>());
+      if (inputIntensity < thisColor.intensity()) {
+        added = true;
+        // inserts in front of
+        colorList_->insertItem(i, listItem);
+        break;
+      }
+    }
+    if (!added) {
+      colorList_->insertItem(colorList_->count(), listItem);
+    }
   }
   colorList_->setCurrentItem(listItem);
   setNumColors(colorList_->count());

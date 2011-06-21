@@ -25,6 +25,7 @@
 #include "triC.h"
 #include "imageUtility.h"
 #include "cancelAcceptDialogBase.h"
+#include "floss.h"
 
 class imageLabel;
 class colorButtonGrid;
@@ -38,7 +39,11 @@ class baseDialogMode {
 
  public:
   baseDialogMode() : scrollArea_(NULL), grid_(NULL), widget_(NULL),
-    isNull_(true) { }
+                     isNull_(true) { }
+  baseDialogMode(flossType type) : flossType_(type), scrollArea_(NULL),
+                                   grid_(NULL), widget_(NULL),
+                                   isNull_(true) { }
+  flossType flossMode() const { return flossType_; }
   bool isNull() const { return isNull_; }
   void constructGrid(QVBoxLayout* dialogLayout, int gridWidth,
                      const QVector<triC>& colors, QWidget* parent);
@@ -58,6 +63,7 @@ class baseDialogMode {
   virtual void updateImageColorLabel(QRgb , bool ) {}
   void setWidget(QWidget* widget) { isNull_ = false; widget_ = widget; }
  private:
+  flossType flossType_;
   QScrollArea* scrollArea_;
   colorButtonGrid* grid_;
   QWidget* widget_;
@@ -71,21 +77,36 @@ class squareDialogMode : public baseDialogMode {
  public:
   squareDialogMode() { }
   squareDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
-                   bool dmcOnly, const triC& inputColor, QWidget* parent);
+                   flossType type, const triC& inputColor, QWidget* parent);
 };
 
 class listDialogMode : public baseDialogMode {
  public:
   listDialogMode() { }
   listDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
-                 bool dmcOnly, const triC& inputColor, QWidget* parent);
+                 flossType type, const triC& inputColor, QWidget* parent);
 };
 
-class dmcDialogMode : public baseDialogMode {
+class fixedListBaseDialogMode : public baseDialogMode {
+ public:
+  fixedListBaseDialogMode() { }
+  fixedListBaseDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+                          flossType type, QVector<triC> colorList,
+                          QWidget* parent);
+};
+
+class dmcDialogMode : public fixedListBaseDialogMode {
  public:
   dmcDialogMode() { }
   dmcDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-          QWidget* parent);
+                QWidget* parent);
+};
+
+class anchorDialogMode : public fixedListBaseDialogMode {
+ public:
+  anchorDialogMode() { }
+  anchorDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+                   QWidget* parent);
 };
 
 class imageDialogMode : public baseDialogMode {
@@ -97,7 +118,7 @@ class imageDialogMode : public baseDialogMode {
  public:
   imageDialogMode() : colorLabel_(NULL) { }
   imageDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-                  bool dmcOnly, QWidget* parent);
+                  flossType type, QWidget* parent);
   QSize sizeHint() const { return QSize(CFI_WIDTH, CFI_WIDTH + 30); }
   void updateImageColorLabel(QRgb color, bool mouseClick);
  private:
@@ -148,7 +169,7 @@ class imageDialogMode : public baseDialogMode {
 class colorDialog : public cancelAcceptDialogBase {
 
  public:
-  enum dialogMode {CD_SQUARE, CD_LIST, CD_DMC, CD_IMAGE, CD_NEW};
+  enum dialogMode {CD_SQUARE, CD_LIST, CD_DMC, CD_ANCHOR, CD_IMAGE, CD_NEW};
  private:
   // sizes for the left/right color comparison box
   enum {LR_BOX = 30, LR_BORDER = 5};
@@ -157,16 +178,17 @@ Q_OBJECT
 
  public:
   // <listColors> for list color mode, <inputColor> is the old color
-  // the new color will replace, if <dmcOnly> then the dialog will only
-  // allow the user to choose a DMC color
+  // the new color will replace, if <type> isn't flossVariable then
+  // the dialog will only allow the user to choose a color of the
+  // specified type
   colorDialog(const QVector<triC>& listColors, const triC& inputColor,
-              bool dmcOnly, int frameWidth, int frameHeight);
+              flossType type, int frameWidth, int frameHeight);
   // As for the other constructor, with squareColors for
   // Square Color mode (intended to be colors from squares close to the
   // <inputColor> square).
   colorDialog(const QVector<triC>& squareColors,
               const QVector<triC>& listColors, const triC& inputColor,
-              bool dmcOnly, int frameWidth, int frameHeight);
+              flossType type, int frameWidth, int frameHeight);
   // in image mode only, used to notify the dialog that the mouse has
   // moved over the image to <color>
   void updateMouseMove(QRgb color);
@@ -177,7 +199,7 @@ Q_OBJECT
 
  private:
   // if <useSquareColors> is true than we include the Square Colors mode
-  void constructorHelper(bool useSquareColors, bool dmcOnly);
+  void constructorHelper(bool useSquareColors, flossType type);
   // emits colorDialogClosing()
   void closeEvent(QCloseEvent* event);
   QSize sizeHint() const;
@@ -189,6 +211,11 @@ Q_OBJECT
   void activateNewChooser();
   void keyPressEvent(QKeyEvent* event);
   void setCurMode(dialogMode mode);
+  // Emit finished(QDialog::Accepted, inputColor_, flossColor) and
+  // close() the dialog, where flossColor's color is colorSelected_
+  // and its type is determined by curMode_ (<fromNewChooser> is true
+  // if we're called from the new color dialog).
+  void processMaybeNewAcceptClick(bool fromNewChooser = false);
 
  private slots:
   // Called by color buttons in scrolling modes
@@ -196,18 +223,16 @@ Q_OBJECT
   // color in the appropriate mode map for the current mode.
   // Update the color selected portion in the leftRightColorPatch_.
   void setColorSelected(QRgb color, int x, int y);
-  // emit finished(QDialog::Rejected, inputColor_, colorSelected_) and
-  // close() the dialog
+  // Emit finished(QDialog::Rejected, inputColor_, flossColor()) and
+  // close() the dialog.
   void processCancelClick();
-  // emit finished(QDialog::Accepted, inputColor_, colorSelected_) and
-  // close() the dialog
-  void processAcceptClick();
-  // called when the user chooses a new mode; <index> is the index of the
+  void processAcceptClick() { processMaybeNewAcceptClick(false); }
+  // Called when the user chooses a new mode; <index> is the index of the
   // user's choice from the drop down menu.  Return if the mode is already
   // in use, otherwise hide the old mode widgets and load the new mode
   // widgets.
   void processModeChange(int index);
-  // process a left click on the leftRight widget: "click" on the color
+  // Process a left click on the leftRight widget: "click" on the color
   // one to the left in the grid, setting its focus and making it the
   // current color; update the color browse buttons if there are now no
   // more colors to the left.
@@ -220,7 +245,7 @@ Q_OBJECT
   // submitted to this dialog to be changed, newColor is the last color
   // the user chose from this dialog
   void finished(int returnCode, const triC& oldColor,
-                const triC& newColor);
+                const flossColor& newColor);
   void colorDialogClosing();
 
  private:
@@ -231,13 +256,14 @@ Q_OBJECT
   // the last color selected (to be returned to the user on accept)
   triC colorSelected_;
 
-  bool dmcOnly_;
+  flossType flossType_;
   QVector<triC> listColors_;
   QVector<triC> squareColors_;
 
   squareDialogMode squareMode_;
   listDialogMode listMode_;
   dmcDialogMode dmcMode_;
+  anchorDialogMode anchorMode_;
   imageDialogMode imageMode_;
   baseDialogMode* curMode_;
 

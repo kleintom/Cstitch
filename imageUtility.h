@@ -20,14 +20,15 @@
 #ifndef IMAGEUTILITY_H
 #define IMAGEUTILITY_H
 
-#include "triC.h"
-
 #include <QtCore/QString>
 #include <QtCore/QVector>
 #include <QtCore/QHash>
 #include <QtGui/QColor>
 #include <QtGui/QPixmap>
 #include <QtGui/QStyle>
+
+#include "triC.h"
+#include "floss.h"
 
 class grid;
 class QImage;
@@ -212,6 +213,9 @@ inline uint qHash(const triC& key) {
 }
 inline uint qHash(const pixel& key) {
   return qHash(key.coordinates());
+}
+inline uint qHash(const flossColor& key) {
+  return qHash(key.qrgb());
 }
 
 #endif

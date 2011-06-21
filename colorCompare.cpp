@@ -26,7 +26,7 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QMessageBox>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "dockListWidget.h"
 #include "windowManager.h"
 #include "imageLabel.h"
@@ -44,7 +44,7 @@ extern const int SQUARE_SIZE_MIN = 2;
 extern const int SQUARE_SIZE_MAX = 50;
 
 colorCompare::colorCompare(const QImage& image, int index,
-                           const QVector<triC>& colors, bool dmc,
+                           const QVector<triC>& colors, flossType type,
                            windowManager* winMgr)
   : imageCompareBase(winMgr),
     leftImage_(NULL), rightImage_(NULL), curImage_(NULL) {
@@ -74,8 +74,8 @@ colorCompare::colorCompare(const QImage& image, int index,
   createSquaringOptions();
   populateToolbar();
 
-  addImage(originalImage(), 0, QVector<triC>(), false);
-  addImage(image, index, colors, dmc);
+  addImage(originalImage(), 0, QVector<triC>(), flossVariable);
+  addImage(image, index, colors, type);
   setInitialSquareSize(image.size());
   // everything is hidden now, so set focus by hand
   rightScroll()->setFocus();
@@ -154,7 +154,7 @@ void colorCompare::setInitialSquareSize(const QSize imageSize) {
 }
 
 void colorCompare::addImage(const QImage& image, int index,
-                            const QVector<triC>& colors, bool dmc) {
+                            const QVector<triC>& colors, flossType type) {
 
   const QString imageName = imageNameFromIndex(index);
 
@@ -167,7 +167,7 @@ void colorCompare::addImage(const QImage& image, int index,
   // create a new right image for this image
   if (index) { // not the original image
     rightImage_ =
-      new mutableImageContainer(imageName, image, colors, dmc);
+      new mutableImageContainer(imageName, image, colors, type);
   }
   else {
     rightImage_ = new immutableImageContainer(imageName, image);
@@ -299,7 +299,7 @@ void colorCompare::processSquareButton(imagePtr container,
     const squareWindowSaver saver(newIndex, parentIndex,
                                   squareModeString.toLower(), squareSize);
     winManager()->addSquareWindow(newImage, squareSize, colorsUsed,
-                                  container->originallyDmc(), saver,
+                                  container->flossMode(), saver,
                                   imageNameToIndex(container->name()),
                                   newIndex);
   }
@@ -325,17 +325,17 @@ void colorCompare::displayImageInfo() {
   const imageLabelBase* curLabel = activeLabel();
   const int width = curLabel->width();
   const int height = curLabel->height();
-  const QString dmc = ::colorsAreDmc(curImage_->colors()) ?
-    tr("contains only DMC colors.") :
-    tr("contains at least one non-DMC color.");
   if (curImage_->isOriginal()) {
     displayOriginalImageInfo(width, height);
   }
   else {
+    const flossType colorsType = ::getFlossType(curImage_->flossColors());
+    QString flossString = imageInfoFlossString(colorsType);
+    flossString = (flossString == "") ? "" : tr(" and ") + flossString;
     QMessageBox::information(this, curImage_->name(), curImage_->name() +
                              tr(" currently has dimensions ") +
                              ::itoqs(width) + "x" + ::itoqs(height) +
-                             tr(" and ") + dmc);
+                             flossString + tr("."));
   }
 }
 

@@ -45,6 +45,7 @@
 #include "patternImageLabel.h"
 #include "dockImage.h"
 #include "xmlUtility.h"
+#include "floss.h"
 
 // bounds for allowed symbol sizes (too large and file sizes are ridiculous,
 // too small and symbols can't be distinguished)
@@ -195,7 +196,7 @@ void patternWindow::constructToolbar() {
 }
 
 void patternWindow::addImage(const QImage& squareImage, int squareDimension,
-                             const QVector<triC>& colors, QRgb gridColor,
+                             const QVector<flossColor>& colors, QRgb gridColor,
                              int imageIndex) {
 
   patternImageContainer* container =

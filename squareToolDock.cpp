@@ -23,15 +23,16 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QStyle>
+#include <QtGui/QComboBox>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "mousePressLabel.h"
 #include "imageProcessing.h"
 #include "squareDockTools.h"
 #include "detailToolDock.h"
 
-squareToolDock::squareToolDock(QWidget* parent) : constWidthDock(parent),
-                                                  detailDock_(NULL) {
+squareToolDock::squareToolDock(QWidget* parent)
+  : constWidthDock(parent), detailDock_(NULL) {
 
   dockLayout_ = new QVBoxLayout(this);
   setLayout(dockLayout_);
@@ -63,8 +64,15 @@ squareToolDock::squareToolDock(QWidget* parent) : constWidthDock(parent),
 
   dockLayout_->addLayout(toolLayout_);
 
-  dmcBox_ = new QCheckBox(tr("DMC colors only"), this);
-  dockLayout_->addWidget(dmcBox_);
+  flossTypeBox_ = new QComboBox(this);
+  connect(flossTypeBox_, SIGNAL(currentIndexChanged(int )),
+          this, SLOT(processFlossTypeBoxChange(int )));
+  const QList<flossType> types = flossType::flossTypes();
+  for (int i = 0, size = types.size(); i < size; ++i) {
+    flossTypeBox_->addItem(types[i].text(),
+                           QVariant::fromValue(types[i]));
+  }
+  dockLayout_->addWidget(flossTypeBox_);
 
   setMinimumSize(sizeHint());
   setMaximumSize(sizeHint());
@@ -162,18 +170,29 @@ void squareToolDock::processToolChange(toolChangeDirection direction,
 
 void squareToolDock::processToolLabelMousePressed() {
 
-  emit toolLabelColorRequested(getToolLabelColor(), dmcOnly());
+  emit toolLabelColorRequested(getToolLabelColor().color(), getFlossType());
 }
 
-QRgb squareToolDock::getToolLabelColor() const {
+flossColor squareToolDock::getToolLabelColor() const {
 
-  return toolColorLabel_->pixmap()->toImage().pixel(1, 1);
+  const QRgb color = toolColorLabel_->pixmap()->toImage().pixel(1, 1);
+  return flossColor(color, getFlossType());
+}
+
+void squareToolDock::setToolLabelColor(const flossColor& color) {
+
+  fillToolColorSwatch(color.qrgb());
 }
 
 void squareToolDock::setToolLabelColor(QRgb color) {
 
+  fillToolColorSwatch(color);
+}
+
+void squareToolDock::fillToolColorSwatch(QRgb color) {
+
   QPixmap newLabel = QPixmap(swatchSize());
-  newLabel.fill(dmcOnly() ? ::rgbToDmc(color).qrgb() : color);
+  newLabel.fill(::transformColor(color, getFlossType()).qc());
   toolColorLabel_->setPixmap(newLabel);
 }
 
@@ -186,7 +205,7 @@ bool squareToolDock::event(QEvent* e) {
     return true;
   }
   return QWidget::event(e);
-}
+}  
 
 void squareToolDock::showDetailDock(bool show) {
 
@@ -224,4 +243,30 @@ QSize squareToolDock::sizeHint() const {
 void squareToolDock::setToolToNoop() {
 
   processToolChange(noopButton_);
+}
+
+void squareToolDock::setFlossType(flossType type) {
+
+  // make sure the current swatch color is valid for <type>
+  const flossType oldSwatchType = getFlossType();
+  if (!(oldSwatchType <= type)) { // incompatible types
+    setToolLabelColor(Qt::black);
+  }
+  flossTypeBox_->setCurrentIndex(flossTypeBox_->findText(type.text()));
+}
+
+flossType squareToolDock::getFlossType() const {
+
+  return flossTypeBox_->itemData(flossTypeBox_->currentIndex()).value<flossType>();
+}
+
+void squareToolDock::processFlossTypeBoxChange(int ) {
+
+  const flossType newFlossType = getFlossType();
+  if (newFlossType != flossVariable) {
+    // old and new floss types are probably incompatible (we can't know
+    // for sure unless we save the old floss type, which we currently don't)
+    setToolLabelColor(Qt::black);
+  }
+  emit toolFlossTypeChanged(newFlossType);
 }

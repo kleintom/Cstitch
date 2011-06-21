@@ -21,19 +21,20 @@
 
 #include <QtGui/QPainter>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "imageProcessing.h"
 #include "grid.h"
 #include "xmlUtility.h"
 #include "rareColorsDialog.h"
 #include "symbolChooser.h"
+#include "versionProcessing.h"
 
 mutableSquareImageContainer::mutableSquareImageContainer(const QString& name,
                                            const QVector<triC>& colors,
                                            const QImage& image,
-                                           int dimension, bool dmc)
-  : squareImageContainer(name, image.size(), dmc), image_(image),
-    colors_(colors), currentlyDMC_(dmc), originalDimension_(dimension),
+                                           int dimension, flossType type)
+  : squareImageContainer(name, image.size(), type), image_(image),
+    toolFlossType_(flossVariable), originalDimension_(dimension),
     widthSquareCount_(image.width()/dimension),
     heightSquareCount_(image.height()/dimension),
     colorListCheckNeeded_(false) {
@@ -42,11 +43,14 @@ mutableSquareImageContainer::mutableSquareImageContainer(const QString& name,
      colors.size() <= symbolChooser::maxNumberOfSymbols()) {
     valid_ = true;
     invalidColorCount_ = 0;
+    for (int i = 0, size = colors.size(); i < size; ++i) {
+      flossColors_.push_back(flossColor(colors[i], type));
+    }
   }
   else {
     valid_ = false;
     invalidColorCount_ = colors.size();
-    setColorList(QVector<triC>());
+    flossColors_ = QVector<flossColor>();
   }
   squareImageContainer::setScaledSize(QSize(0, 0));
 }
@@ -55,7 +59,7 @@ QVector<triC> mutableSquareImageContainer::checkColorList() {
 
   if (colorListCheckNeeded_) {
     const grid gridImage(image_);
-    const QVector<triC> colorsToRemove = ::findColors(gridImage, colors_);
+    const QVector<triC> colorsToRemove = ::findColors(gridImage, colors());
     removeColors(colorsToRemove);
     colorListCheckNeeded_ = false;
     return colorsToRemove;
@@ -65,24 +69,23 @@ QVector<triC> mutableSquareImageContainer::checkColorList() {
   }
 }
 
-void mutableSquareImageContainer::removeColor(const triC& color) {
+flossColor mutableSquareImageContainer::removeColor(const triC& color) {
 
-  removeColorNoDmcUpdate(color);
-  currentlyDMC_ = currentlyDMC_ ? true : ::colorsAreDmc(colors_);
-}
-
-void mutableSquareImageContainer::removeColorNoDmcUpdate(const triC& color) {
-
-  const int foundIndex = colors_.indexOf(color);
-  if (foundIndex != -1) {
-    colors_.remove(foundIndex);
+  const int removeIndex = flossColors_.indexOf(flossColor(color));
+  if (removeIndex != -1) {
+    const flossColor returnColor = flossColors_[removeIndex];
+    flossColors_.remove(removeIndex);
+    return returnColor;
+  }
+  else {
+    return flossColor(color);
   }
 }
 
 dockListUpdate mutableSquareImageContainer::
 performDetailing(const QImage& originalImage,
                  const QList<pixel>& detailSquares,
-                 int numColors, bool dmcOnly) {
+                 int numColors, flossType type) {
 
   if (detailSquares.empty()) {
     qWarning() << "Detail squares empty" << numColors;
@@ -97,9 +100,11 @@ performDetailing(const QImage& originalImage,
   }
 
   //// do the processing
+  colorTransformerPtr transformer =
+    colorTransformer::createColorTransformer(type);
   const QVector<triC> colors =
     ::chooseColors(originalImage, detailSquares, originalDimension_,
-                   numColors, dmcOnly);
+                   numColors, transformer);
   // this paints over our squareDetail marks (that's good)
   ::segment(originalImage, &image_, detailSquares, originalDimension_,
             colors);
@@ -110,34 +115,28 @@ performDetailing(const QImage& originalImage,
 
   //// complete the history
   QVector<triC> colorsToAdd; // just return the new ones
-  // iterating over both history and newColors
-  QVector<historyPixel>::iterator historyI = history.begin();
-  QVector<triC>::const_iterator colorI = newColors.begin();
-  for (; historyI != history.end(); ++historyI, ++colorI) {
-    (*historyI).setNewColor((*colorI).qrgb());
-    if (!colors_.contains(*colorI)) {
-      (*historyI).setNewColorIsNew(true);
-      colorsToAdd.push_back(*colorI);
-      colors_.push_back(*colorI);
+  for (int i = 0, size = history.size(); i < size; ++i) {
+    const triC thisColor(newColors[i]);
+    history[i].setNewColor(thisColor.qrgb());
+    const flossColor thisFlossColor(thisColor, type);
+    if (!flossColors_.contains(thisFlossColor)) {
+      history[i].setNewColorIsNew(true);
+      colorsToAdd.push_back(thisColor);
+      flossColors_.push_back(thisFlossColor);
     }
   }
   colorListCheckNeeded_ = true;
-  addToHistory(historyItemPtr(new detailHistoryItem(history)));
+  addToHistory(historyItemPtr(new detailHistoryItem(history, type)));
   return dockListUpdate(colorsToAdd);
 }
 
-void mutableSquareImageContainer::addColorNoDmcUpdate(const triC& color) {
+bool mutableSquareImageContainer::addColor(const flossColor& color) {
 
-  if (!colors_.contains(color)) {
-    colors_.push_back(color);
-  }
-}
-
-bool mutableSquareImageContainer::addColor(const triC& color) {
-
-  if (!colors_.contains(color)) {
-    colors_.push_back(color);
-    currentlyDMC_ = currentlyDMC_ ? ::colorIsDmc(color) : false;
+  if (!flossColors_.contains(color)) {
+    const addSquareColorVersionPtr addVersion =
+      versionProcessor::processor()->addSquareColor();
+    const flossColor versionColor = addVersion->transform(color);
+    flossColors_.push_back(versionColor);
     return true;
   }
   else {
@@ -145,35 +144,36 @@ bool mutableSquareImageContainer::addColor(const triC& color) {
   }
 }
 
-void mutableSquareImageContainer::removeColors(const QVector<triC>& colors) {
-
-  for (QVector<triC>::const_iterator it = colors.begin(), end = colors.end();
-       it != end; ++it) {
-    removeColorNoDmcUpdate(*it);
-  }
-  currentlyDMC_ = currentlyDMC_ ? true : ::colorsAreDmc(colors_);
-}
-
-void mutableSquareImageContainer::addColors(const QVector<triC>& colors) {
+void mutableSquareImageContainer::
+addColors(const QVector<flossColor>& colors) {
 
   for (int i = 0, size = colors.size(); i < size; ++i) {
-    addColorNoDmcUpdate(colors[i]);
+    addColor(colors[i]);
   }
-  currentlyDMC_ = !currentlyDMC_ ? false : ::colorsAreDmc(colors);
 }
 
-dockListUpdate mutableSquareImageContainer::changeColor(QRgb oldColor,
-                                                        QRgb newColor) {
+void mutableSquareImageContainer::removeColors(const QVector<triC>& colors) {
 
+  for (int i = 0, size = colors.size(); i < size; ++i) {
+    removeColor(colors[i]);
+  }
+}
+
+dockListUpdate
+mutableSquareImageContainer::changeColor(QRgb oldColor,
+                                         flossColor newFlossColor) {
+
+  const QRgb newColor = newFlossColor.color().qrgb();
   if (oldColor == newColor) {
     return dockListUpdate();
   }
   const QVector<pairOfInts> changedSquares =
     ::changeColor(&image_, oldColor, newColor, originalDimension_);
   if (!changedSquares.empty()) {
-    const bool colorAdded = addColor(newColor);
-    removeColor(oldColor);
-    addToHistory(historyItemPtr(new changeAllHistoryItem(oldColor, newColor,
+    const bool colorAdded = addColor(newFlossColor);
+    const flossColor oldFlossColor = removeColor(oldColor);
+    addToHistory(historyItemPtr(new changeAllHistoryItem(oldFlossColor,
+                                                         newFlossColor,
                                                          colorAdded,
                                                          changedSquares)));
     return dockListUpdate(newColor, colorAdded, oldColor);
@@ -184,44 +184,45 @@ dockListUpdate mutableSquareImageContainer::changeColor(QRgb oldColor,
 }
 
 dockListUpdate mutableSquareImageContainer::fillRegion(int x, int y,
-                                                       QRgb newColor) {
+                                                       flossColor newColor) {
 
   const triC oldColor = image_.pixel(x, y);
-  if (oldColor == newColor) {
+  if (newColor == oldColor) {
     return dockListUpdate();
   }
   const QVector<pairOfInts> coordinates =
-    ::fillRegion(&image_, x, y, newColor, originalDimension_);
-  //qDebug() << "fill time:" << double(t.elapsed())/1000.;
+    ::fillRegion(&image_, x, y, newColor.qrgb(), originalDimension_);
 
   const bool colorAdded = addColor(newColor);
-  addToHistory(historyItemPtr(new fillRegionHistoryItem(oldColor.qrgb(),
+  const flossColor oldFlossColor = getFlossColorFromColor(oldColor);
+  addToHistory(historyItemPtr(new fillRegionHistoryItem(oldFlossColor,
                                                         newColor,
                                                         colorAdded,
                                                         coordinates)));
   colorListCheckNeeded_ = true;
-  return dockListUpdate(newColor, colorAdded);
+  return dockListUpdate(newColor.color(), colorAdded);
 }
 
 dockListUpdate mutableSquareImageContainer::
-commitChangeOneDrag(const QSet<pairOfInts>& squares, QRgb newColor) {
+commitChangeOneDrag(const QSet<pairOfInts>& squares, flossColor newColor) {
 
+  const QRgb newRgbColor = newColor.qrgb();
   const bool colorAdded = addColor(newColor);
   QVector<pixel> historyPixels;
+  QVector<triC> pixelColors;
   for (QSet<pairOfInts>::const_iterator it = squares.begin(),
           end = squares.end(); it != end; ++it) {
-    const int x = (*it).x() * originalDimension_;
-    const int y = (*it).y() * originalDimension_;
+    const int x = it->x() * originalDimension_;
+    const int y = it->y() * originalDimension_;
     const QRgb thisColor = image_.pixel(x, y);
+    pixelColors.push_back(thisColor);
     historyPixels.push_back(pixel(thisColor, pairOfInts(x, y)));
-    //    ::changeOneBlock(&image_, x, y, newColor, originalDimension_);
   }
-  ::changeBlocks(&image_, historyPixels, newColor, originalDimension_);
-  QExplicitlySharedDataPointer<historyItem>(new changeOneHistoryItem(newColor, colorAdded, historyPixels));
+  ::changeBlocks(&image_, historyPixels, newRgbColor, originalDimension_);
   addToHistory(historyItemPtr(new changeOneHistoryItem(newColor, colorAdded,
                                                        historyPixels)));
   colorListCheckNeeded_ = true;
-  return dockListUpdate(newColor, colorAdded);
+  return dockListUpdate(newRgbColor, colorAdded);
 }
 
 dockListUpdate mutableSquareImageContainer::moveHistoryForward() {
@@ -267,6 +268,9 @@ QDomDocument mutableSquareImageContainer::backImageHistoryXml() const {
 void mutableSquareImageContainer::
 writeImageHistory(QDomDocument* doc, QDomElement* appendee) const {
 
+  ::appendTextElement(doc, "tool_floss_type", toolFlossType_.prefix(),
+                      appendee);
+
   if (backHistory_.empty() && forwardHistory_.empty()) {
     return;
   }
@@ -296,16 +300,25 @@ writeImageHistory(QDomDocument* doc, QDomElement* appendee) const {
 void mutableSquareImageContainer::
 updateImageHistory(const QDomElement& element) {
 
+  const QString toolFlossTypePrefix =
+    ::getElementText(element, "tool_floss_type");
+  if (!toolFlossTypePrefix.isNull()) {
+    toolFlossType_ = flossType(toolFlossTypePrefix);
+  }
+
+  const QDomElement& historyElement = element.firstChildElement("history");
   // we put everything on forwardHistory_ and then moveHistoryForward()
   // the number of back_history items
-  QDomElement backElement(element.firstChildElement("backward_history"));
+  QDomElement backElement =
+    historyElement.firstChildElement("backward_history");
   QDomNodeList backList(backElement.elementsByTagName("history_item"));
   for (int i = 0, size = backList.size(); i < size; ++i) {
     forwardHistory_.
       push_back(historyItem::xmlToHistoryItem(backList.item(i).toElement()));
   }
 
-  QDomElement forwardElement(element.firstChildElement("forward_history"));
+  QDomElement forwardElement =
+    historyElement.firstChildElement("forward_history");
   QDomNodeList forwardList(forwardElement.elementsByTagName("history_item"));
   for (int i = 0, size = forwardList.size(); i < size; ++i) {
     forwardHistory_.
@@ -337,10 +350,13 @@ dockListUpdate mutableSquareImageContainer::replaceRareColors() {
   QList<QRgbPair> pairs = countDialog.colorsToChange();
   if (dialogReturnCode == QDialog::Accepted && pairs.size() > 0) {
     QList<colorChange> changeHistories;
+    QSet<flossColor> oldFloss;
     QVector<triC> oldColors;
     for (int i = 0, size = pairs.size(); i < size; ++i) {
       const QRgb oldColor = pairs[i].first;
-      oldColors.push_back(triC(oldColor));
+      const triC oldTriColor(oldColor);
+      oldColors.push_back(oldTriColor);
+      oldFloss.insert(getFlossColorFromColor(oldTriColor));
       const QRgb newColor = pairs[i].second;
       const QVector<pairOfInts> changedSquares =
         ::changeColor(&image_, oldColor, newColor, originalDimension_);
@@ -350,7 +366,8 @@ dockListUpdate mutableSquareImageContainer::replaceRareColors() {
                                               changedSquares));
       }
     }
-    addToHistory(historyItemPtr(new rareColorsHistoryItem(changeHistories)));
+    addToHistory(historyItemPtr(new rareColorsHistoryItem(changeHistories,
+                                                          oldFloss)));
     return dockListUpdate(oldColors, true);
   }
   else {
@@ -461,4 +478,26 @@ QSize immutableSquareImageContainer::setScaledHeight(int heightHint) {
   const QSize newSize(newWidth, heightHint);
   imageContainer::setScaledSize(newSize);
   return newSize;
+}
+
+QVector<triC> mutableSquareImageContainer::colors() const {
+
+  QVector<triC> returnColors;
+  returnColors.reserve(flossColors_.size());
+  for (int i = 0, size = flossColors_.size(); i < size; ++i) {
+    returnColors.push_back(flossColors_[i].color());
+  }
+  return returnColors;
+}
+
+flossColor 
+mutableSquareImageContainer::getFlossColorFromColor(const triC& color) const {
+
+  const int foundIndex = flossColors_.indexOf(flossColor(color));
+  if (foundIndex != -1) {
+    return flossColors_[foundIndex];
+  }
+  else {
+    return flossColor(color);
+  }
 }

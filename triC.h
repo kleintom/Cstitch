@@ -21,6 +21,7 @@
 #define TRIC_H
 
 #include <QtCore/QString>
+
 #include <QtGui/QColor>
 
 // triC is a trimmer inlined unchecked version of QColor
@@ -92,50 +93,6 @@ class triCIntensity {
   bool operator()(const triC& c1, const triC& c2) const {
     return c1.intensity() < c2.intensity();
   }
-};
-class qRgbIntensity {
- public:
-  bool operator()(QRgb c1, QRgb c2) const {
-    return triC(c1).intensity() < triC(c2).intensity();
-  }
-};
-
-// a floss consists of a color, a name, and a DMC code (-1 for non-dmc)
-// (cross stitch "thread" is called and sold as floss)
-class floss {
-
- public:
-  floss() : code_(-1) {}
-  floss(const triC& color) : code_(-1), name_("N/A"), color_(color) {}
-  floss(int code, const QString& name, const triC& color)
-    : code_(code), name_(name), color_(color) {}
-  bool operator<(const floss& f) const {
-    // if neither is dmc
-    if ( code_ < 0 && f.code_ < 0 ) {
-      return color_.intensity() < f.color_.intensity();
-    }
-    // if both are dmc
-    else if ( code_ >= 0 && f.code_ >= 0 ) {
-      return code_ < f.code_;
-    }
-    // if the first is dmc and the second is not
-    else if ( code_ >= 0 && f.code_ < 0 ) {
-      return true;
-    }
-    // if the first is not dmc and the second is
-    else { // if( code < 0 && f.code >= 0 )
-      return false;
-    }
-  }
-  bool operator==(const triC& color) const { return color == color_; }
-  int code() const { return code_; }
-  QString name() const { return name_; }
-  triC color() const { return color_; }
-
- private:
-  int code_;
-  QString name_;
-  triC color_;
 };
 
 // "color to string"

@@ -17,10 +17,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef DMCLIST_H
-#define DMCLIST_H
+#ifndef COLORLISTS_H
+#define COLORLISTS_H
+
+#include <QtCore/QVector>
 
 #include "triC.h"
+#include "floss.h"
+
+class colorTransformer;
+template<class T> class QSharedPointer;
+typedef QSharedPointer<colorTransformer> colorTransformerPtr;
 
 const int GRAY_DIFF = 12;
 enum colorOrder {O_GRAY, O_RGB, O_RBG, O_GRB, O_GBR, O_BGR, O_BRG};
@@ -42,6 +49,84 @@ class iColor {
  private:
   triC color_;
   int intensity_;
+};
+
+class orderComparator {
+public:
+  virtual bool operator()(const triC& ) const = 0;
+};
+
+class grayComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (qAbs(color.r() - color.g()) < GRAY_DIFF &&
+            qAbs(color.r() - color.b()) < GRAY_DIFF &&
+            qAbs(color.g() - color.b()) < GRAY_DIFF);
+  }
+};
+
+class rgbComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (color.r() >= color.g() && color.g() >= color.b());
+  }
+};
+
+class rbgComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (color.r() >= color.b() && color.b() >= color.g());
+  }
+};
+
+class grbComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (color.g() >= color.r() && color.r() >= color.b());
+  }
+};
+
+class gbrComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (color.g() >= color.b() && color.b() >= color.r());
+  }
+};
+
+class brgComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (color.b() >= color.r() && color.r() >= color.g());
+  }
+};
+
+class bgrComparator : public orderComparator {
+public:
+  bool operator()(const triC& color) const {
+    return (color.b() >= color.g() && color.g() >= color.r());
+  }
+};
+
+class colorMatcher {
+ public:
+  colorMatcher(flossType type, const triC& color);
+  static void initializeIntensitySpreads();
+  // first looks for a "good" match to a color on colorList_ with the same
+  // rgb value order as color_; if that fails then it just returns the
+  // closest color to color_ on colorList_
+  triC closestMatch() const;
+ private:
+  void loadColorList(const orderComparator* comparator,
+                     const QVector<triC>& colors,
+                     QVector<iColor>* newList) const;
+ private:
+  const triC color_;
+  QVector<iColor> colorList_;
+  int intensitySpread_;
+  static QHash<colorOrder, QVector<iColor> > dmcColorsHash_;
+  static QHash<colorOrder, int> dmcIntensitySpreads_;
+  static QHash<colorOrder, QVector<iColor> > anchorColorsHash_;
+  static QHash<colorOrder, int> anchorIntensitySpreads_;
 };
 
 inline colorOrder getColorOrder(const triC& color) {
@@ -84,9 +169,11 @@ inline colorOrder getColorOrder(const triC& color) {
 
 // return floss data for the DMC colors
 QVector<floss> initializeDMC();
+QVector<floss> initializeAnchor();
 
 // return the DMC colors
 QVector<triC> loadDMC();
+QVector<triC> loadAnchor();
 // load DMC colors with intensities; assign to <intensitySpread> the
 // (smallest) distance that guarantess that an arbitrary color will be
 // within that distance of a color on the list in intensity
@@ -109,31 +196,33 @@ QVector<iColor> loadDmcBGR(int* intensitySpread);
 bool colorIsDmc(const triC& color);
 bool colorsAreDmc(const QVector<triC>& colors);
 
-// first looks for a "good" match to a color on <colorList> with the same
-// rgb value order as <color>; if that fails then it just returns the
-// closest color to <color> on <colorList>
 QRgb closestMatch(const triC& color, const QList<QRgb>& colorList);
 
-// return the color in <colorList> that is (Euclidean) closest to <color>
+// return the color in <colorList> that is (Euclidean) closest to <color>.
 // <colorList> MUST be non-empty and sorted by increasing intensity
 // and the intensity interval
 // [color.intensity() - intensitySpread, color.intensity() + intensitySpread]
-// BETTER contain an element of colorList (or you'll get nonsense)
+// BETTER contain an element of colorList (or you'll get nonsense).
 // <intensitySpread> should have the property that for an arbitary color,
 // the color on <colorList> at min distance from the arbitrary color
 // should be within <intensitySpread> intensity distance from the arbitrary
-// color
+// color.
 triC closestMatch(const triC& color, const QVector<iColor>& colorList,
                   int intensitySpread);
 // return the DMC color closest to <color>
 triC rgbToDmc(const triC& color);
+triC rgbToAnchor(const triC& color);
 // for each color, determine the DMC color closest to it.  Return those
 // colors in the same order as <colors>, keeping only the first of a
-// given DMC color if <noDups>
+// given DMC color if <noDups>.
 QVector<triC> rgbToDmc(const QVector<triC>& colors, bool noDups = false);
-// return floss information for the given <colors>, in the same order
-// if a color isn't DMC, give the floss the name of the closest DMC color
-// in the form ~[DMCcode]:[name], and make the code -1
-QVector<floss> rgbToFloss(const QVector<triC>& colors);
+QVector<triC> rgbToAnchor(const QVector<triC>& colors, bool noDups = false);
+// general implementation for rgbToDmc/rgbToAnchor/etc.
+QVector<triC> rgbToColorList(const QVector<triC>& rgbColors,
+                             const colorTransformerPtr& transformer,
+                             bool noDups = false);
+
+// Return the floss code for each flossColor in <colors> in the same order.
+QVector<int> rgbToCode(const QVector<flossColor>& colors);
 
 #endif

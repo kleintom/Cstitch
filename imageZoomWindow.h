@@ -29,6 +29,7 @@ class QDomElement;
 class QString;
 class QLabel;
 class QMenu;
+class flossType;
 
 extern const int ZOOM_INCREMENT;
 
@@ -125,6 +126,8 @@ class imageZoomWindow : public QMainWindow {
   // processing that requires geometry knowledge (which is unavailable
   // until the widget is literally visible on the screen)
   virtual void processFirstShow();
+  // Return a text string for image info display on colors of type <type>.
+  QString imageInfoFlossString(flossType type) const;
 
  protected slots:
   // reset image(s) to original size

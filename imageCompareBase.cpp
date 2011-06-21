@@ -354,8 +354,9 @@ imageCompareBase::zoomToHelper(const zoomHelperFunction& helperFunction) {
   }
   helperFunction(first, scrollSize);
   if (dualZoomingAction_->isChecked()) {
-    second.label()->setImageSize
-      (second.image()->setScaledSize(first.label()->size()));
+    const QSize newSize =
+      second.image()->setScaledSize(first.label()->size());
+    second.label()->setImageSize(newSize);
   }
   updateZoomValues();
 }

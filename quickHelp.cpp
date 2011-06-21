@@ -104,7 +104,7 @@ void quickHelp::loadModeHelp(helpMode mode) {
     title = "<h1>Stage 1 of 4: Choose your pattern colors</h1>";
     helpText = "In stage 1 you load an image and choose the colors you want to appear in your final pattern.<br/>"
       "Click the <img src=\":openImage.png\"> icon on the toolbar to open an image.<br/>"
-      "In the default (\"Num Colors to DMC\") mode, you can choose colors from the image (which will be converted to DMC) "
+      "In the default \"Num Colors to DMC\" mode, you can choose colors from the image (which will be converted to DMC) "
       "and/or you can have the program choose a set number of DMC colors for you."
       "<ul>"
       "<li>To choose colors manually, click on a color on your image - the closest DMC color to the color you click will be added to the list.</li>"
@@ -125,7 +125,7 @@ void quickHelp::loadModeHelp(helpMode mode) {
       "Once you're happy with an image, click on it to select it.  Then set the square dimension, which is the size of squares to be created on your "
       "image that will become cross stitch squares on your final pattern.  "
       "The choice of square size along with the type of cross stitch fabric you use will determine "
-      "the size of your finished cross stitch product.  You can use the dimension computer, under <i>Compute dimensions</i> in the <i>Image</i> menu, to "
+      "the size of your finished cross stitch product.  Click on the dimension computer icon <img src=\":dims.png\"> on the toolbar to "
       "figure out which square size you need.<br/><br/>"
       "When you click the \"Square\" button the program will generate a \"squared\" image based on your colors and the square dimension, which will then "
       "be displayed in stage 3.<br/><br/>"

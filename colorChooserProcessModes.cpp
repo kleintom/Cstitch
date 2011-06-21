@@ -21,7 +21,7 @@
 
 #include <QtXml/QDomElement>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "imageProcessing.h"
 #include "utility.h"
 #include "xmlUtility.h"
@@ -31,8 +31,10 @@ processModeGroup::processModeGroup() {
 
   // (add in the order they should appear in the widget comboBox)
   activeModes_.push_back(processModePtr(new numberOfColorsToDmcMode()));
+  activeModes_.push_back(processModePtr(new numberOfColorsToAnchorMode()));
   activeModes_.push_back(processModePtr(new numberOfColorsMode()));
   activeModes_.push_back(processModePtr(new dmcMode()));
+  activeModes_.push_back(processModePtr(new anchorMode()));
 }
 
 QList<QStringPair> processModeGroup::modeStrings() const {
@@ -133,7 +135,9 @@ void numColorsBaseModes::appendColorList(QDomDocument* doc,
   }
 }
 
-dmcMode::dmcMode() : colorChooserProcessMode(loadDMC()) {}
+dmcMode::dmcMode() : fixedListBaseMode(loadDMC()) {}
+
+anchorMode::anchorMode() : fixedListBaseMode(loadAnchor()) {}
 
 triC colorChooserProcessMode::addColor(const triC& color, bool* added) {
 
@@ -147,9 +151,38 @@ triC colorChooserProcessMode::addColor(const triC& color, bool* added) {
   return color;
 }
 
+flossType processModeGroup::flossMode() const {
+  return curMode_->flossMode();
+}
+
+flossType numberOfColorsMode::flossMode() const {
+  return flossVariable;
+}
+
+flossType numberOfColorsToDmcMode::flossMode() const {
+  return flossDMC;
+}
+
+flossType numberOfColorsToAnchorMode::flossMode() const {
+  return flossAnchor;
+}
+
+flossType dmcMode::flossMode() const {
+  return flossDMC;
+}
+
+flossType anchorMode::flossMode() const {
+  return flossAnchor;
+}
+
 triC numberOfColorsToDmcMode::addColor(const triC& color, bool* added) {
 
   return colorChooserProcessMode::addColor(::rgbToDmc(color), added);
+}
+
+triC numberOfColorsToAnchorMode::addColor(const triC& color, bool* added) {
+
+  return colorChooserProcessMode::addColor(::rgbToAnchor(color), added);
 }
 
 bool colorChooserProcessMode::removeColor(const triC& color) {
@@ -161,14 +194,16 @@ bool colorChooserProcessMode::removeColor(const triC& color) {
   return !clickedColors_.empty();
 }
 
-triState dmcMode::performProcessing(QImage* image, int ,
-                                    int numImageColors) {
+fixedListBaseMode::fixedListBaseMode(const QVector<triC>& colors)
+  : colorChooserProcessMode(colors) {}
+
+triState fixedListBaseMode::performProcessing(QImage* image, int ,
+                                              int numImageColors) {
 
   QVector<triC> segmentColors = ::segment(image, clickedColorList(),
                                           numImageColors);
   if (!segmentColors.empty()) {
     setGeneratedColorList(segmentColors);
-    //qDebug() << "segment dmc time:" << double(t.elapsed())/1000.;
     return triTrue;
   }
   else {
@@ -179,11 +214,12 @@ triState dmcMode::performProcessing(QImage* image, int ,
 triState numColorsBaseModes::performProcessing(QImage* image, int numColors,
                                                int numImageColors) {
 
+  colorTransformerPtr transformer =
+    colorTransformer::createColorTransformer(flossMode());
   QVector<triC> newColors = ::chooseColors(*image, numColors,
                                            clickedColorList(),
                                            numImageColors,
-                                           modeIsDmcOnly());
-  //qDebug() << "num colors choose time:" << double(t.elapsed())/1000.;
+                                           transformer);
   if (!newColors.empty()) {
     // remove the seed colors from newColors to create generatedColors
     const QVector<triC>& seedColors = clickedColorList();
@@ -197,7 +233,6 @@ triState numColorsBaseModes::performProcessing(QImage* image, int numColors,
     return triNoop;
   }
   if (!::segment(image, newColors, numImageColors).empty()) {
-    //qDebug() << "num colors segment time:" << double(t.elapsed())/1000.;
     //return triState(colorList().size() != savedColorsSize);
     return triTrue;
   }

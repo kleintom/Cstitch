@@ -142,18 +142,20 @@ class squareWindow : public imageCompareBase {
   // with dimension squareDimension, colors <colors> (which are or are not
   // all <dmc>)
   squareWindow(const QImage& newImage, int imageIndex, int squareDimension,
-               const QVector<triC>& colors, bool dmc,
+               const QVector<triC>& colors, flossType type,
                windowManager* winManager);
-  // add an <image>, to be named based on <index>, with the given <colors>,
-  // which are or are not all <dmc> colors, and the given dimension.
-  // Index must be unique among all other such indices.
+  // add an <image>, to be named based on <index>, with the given
+  // <colors>, which are of floss type <type>, and the given
+  // dimension.  Index must be unique among all other such indices.
   void addImage(const QImage& image, int squareDimension,
-                const QVector<triC>& colors, bool dmc, int index);
+                const QVector<triC>& colors, flossType type, int index);
+  // For each image, update the color list if necessary.
+  void checkAllColorLists();
   // recreate a pattern image using the data in <saver> as part of a
   // project restore
   void recreatePatternImage(const patternWindowSaver& saver);
-  // append the current history of the image with index <imageIndex>
-  // to <appendee> as xml
+  // append the current history and tool floss mode of the image with
+  // index <imageIndex> to <appendee> as xml
   void writeCurrentHistory(QDomDocument* doc, QDomElement* appendee,
                            int imageIndex);
   // update the edit history of the image whose information is contained
@@ -307,11 +309,11 @@ class squareWindow : public imageCompareBase {
   void updateImageLabelImage(const QRect& updateRectangle);
   // update the active image label to view curImage's image
   void updateImageLabelImage();
-  // initialize a colorDialog using the current image, <dmcOnly>, and
-  // <replacementColors>, setup signals/slots for the dialog, and show it
-  // if <changeToolColor> then setup signals/slots to just change the
+  // Initialize a colorDialog using the current image, <type>, and
+  // <replacementColors>, setup signals/slots for the dialog, and show it.
+  // If <changeToolColor> then setup signals/slots to just change the
   // tool color (and not change all <currentColor>)
-  void activateColorDialog(const triC& currentColor, bool dmcOnly,
+  void activateColorDialog(const triC& currentColor, flossType type,
                            const QVector<triC>& replacementColors,
                            bool changeToolColor = false);
 
@@ -329,7 +331,7 @@ class squareWindow : public imageCompareBase {
   // processing
   void processChangeAll(const QColor& oldColor);
   // change <oldColor> to <newColor> in the current image
-  void processChangeAll(const QColor& oldColor, const QColor& newColor);
+  void processChangeAll(const triC& oldColor, const flossColor& newColor);
   // perform detailing with the given number of colors on the current image
   void processDetailCall(int numColors);
   // remove and clear all detail squares on the current image
@@ -368,12 +370,12 @@ class squareWindow : public imageCompareBase {
   // the colorChooseDialog_ finished for a changeAll operation - if
   // the dialog was accepted then process the changeAll
   void changeAllDialogFinished(int returnCode, const triC& oldColor,
-                               const triC& newColor);
+                               const flossColor& newColor);
   // the colorChooseDialog_ finished for a color change operation - if
   // the dialog was accepted then set the tool dock color swatch to
   // <newColor>
   void changeColorDialogFinished(int returnCode, const triC& ,
-                                 const triC& newColor);
+                                 const flossColor& newColor);
   // the colorChooserDialog_ has closed, so set it to NULL and reenable
   // subwidgets for standard usage
   void processColorDialogClosing();
@@ -388,7 +390,8 @@ class squareWindow : public imageCompareBase {
   void updateDualZooming(bool dualZoomOn);
   void zoom(int zoomIncrement);
   void replaceRareColors();
-  void toolDockLabelColorRequested(const triC& currentColor, bool dmcOnly);
+  void toolDockLabelColorRequested(const triC& currentColor, flossType type);
+  void processToolFlossTypeChanged(flossType newType);
 
  private:
   // these pointers track which square image the left, right, and current

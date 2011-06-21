@@ -24,10 +24,11 @@
 #include <QtCore/QTime>
 #include <QtCore/QStack>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "grid.h"
 #include "utility.h"
 #include "imageUtility.h"
+#include "versionProcessing.h"
 
 // max ::ds distance between two colors
 extern const int D_MAX = 766;
@@ -38,6 +39,36 @@ extern const int D_SUM_MAX = 16777216;
 // have parents to center on)
 extern const int PROGRESS_X_COORDINATE = 300;
 extern const int PROGRESS_Y_COORDINATE = 250;
+
+variableTransformer::~variableTransformer() {
+
+  qDebug() << "deleting";
+}
+
+dmcTransformer::~dmcTransformer() {
+
+  qDebug() << "deleting dmc";
+}
+
+colorTransformerPtr
+colorTransformer::createColorTransformer(flossType type) {
+
+  switch(type.value()) {
+  case flossDMC:
+    return colorTransformerPtr(new dmcTransformer());
+    break;
+  case flossAnchor:
+    return colorTransformerPtr(new anchorTransformer());
+    break;
+  case flossVariable:
+    return colorTransformerPtr(new variableTransformer());
+    break;
+  default:
+    qWarning() << "Bad transformer floss type:" << type.value();
+    return colorTransformerPtr(new variableTransformer());
+    break;
+  }
+}
 
 void segment(const QImage& sourceImage, QImage* newImage,
              const QList<pixel>& squaresList, int dim,
@@ -75,8 +106,8 @@ QVector<triC> segment(QImage* newImage, const QVector<triC>& colors,
     qWarning() << "Empty color list in segment.";
     return QVector<triC>();
   }
-  QTime t;
-  t.start();
+  //QTime t;
+  //t.start();
 
   QSet<QRgb> colorsUsed;
   colorsUsed.reserve(colors.size());
@@ -102,7 +133,7 @@ QVector<triC> segment(QImage* newImage, const QVector<triC>& colors,
       //// [I removed lookahead to see if there are more of this color
       //// coming up since in photographs I think it's very rare that
       //// colors get repeated (and some tests confirmed that lookahead
-      //// was slower)]
+      //// was slower).]
       QRgb chosenQRgbColor;
       const QHash<QRgb, QRgb>::const_iterator foundIt =
         colorMap.find(thisColor);
@@ -350,10 +381,11 @@ QVector<triC> median(QImage* newImage, const QImage& originalImage,
 
 QVector<triC> chooseColors(const QImage& image, int numColors,
                            const QVector<triC>& seedColors,
-                           int numImageColors, bool dmcOut) {
+                           int numImageColors,
+                           const colorTransformerPtr& transformer) {
 
-  QTime t;
-  t.start();
+//  QTime t;
+//  t.start();
   const int width = image.width();
   const int height = image.height();
   altMeter progressMeter(QObject::tr("Choosing colors Step 1/2..."),
@@ -389,13 +421,14 @@ QVector<triC> chooseColors(const QImage& image, int numColors,
     seedRgbColors.push_back(seedColors[i].qrgb());
   }
   return chooseColorsFromList(colorCountMap, seedRgbColors,
-                              numColors + seedRgbColors.size(), dmcOut);
+                              numColors + seedRgbColors.size(),
+                              transformer);
 }
 
 QVector<triC> chooseColors(const QImage& image,
                                        const QList<pixel>& squaresList,
                                        int dimension, int numColors,
-                                       bool dmcOut) {
+                                       const colorTransformerPtr& transformer) {
 
   QHash<QRgb, int> colorCount;
   // fill in colorCountMap, with colors for keys and color counts for
@@ -413,14 +446,14 @@ QVector<triC> chooseColors(const QImage& image,
     }
   }
   return chooseColorsFromList(colorCount, QVector<QRgb>(), numColors,
-                              dmcOut);
+                              transformer);
 }
 
 QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
                                    const QVector<QRgb> seedColors,
-                                   int numColors, bool dmcOut) {
+                                   int numColors,
+                                   const colorTransformerPtr& transformer) {
 
-  QVector<triC> dmcColors = loadDMC();
   QHash<QRgb, QRgb> toDmc; // key is rgb, value is the closest dmc color
   toDmc.reserve(colorCountMap.size());
   QHash<QRgb, int> dmcCountMap; // counts of dmc colors
@@ -443,7 +476,7 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   //// blurred image (so large regions that never repeat a color but have
   //// all of their colors very close will get counted as one color).
   for (QHash<QRgb, int>::const_iterator it = colorCountMap.constBegin(),
-          end = colorCountMap.end(); it != end; ++it, ++progressCount) {
+         end = colorCountMap.end(); it != end; ++it, ++progressCount) {
     if (progressMeter.wasCanceled()) {
       return QVector<triC>();
     }
@@ -455,6 +488,7 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
     toDmc[keyColor] = dmcColor;
     dmcCountMap[dmcColor] += it.value();
   }
+  transformer->setDMCHash(toDmc);
 
   QVector<colorCount> colorCounts;
   colorCounts.reserve(colorCountMap.size());
@@ -486,10 +520,11 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   //// <minCount>.  If we reach the bottom of the count list and haven't
   //// chosen <numColors> yet, then reduce <separation> and run the list
   //// again.
+  const chooseColorsVersionPtr chooser =
+    versionProcessor::processor()->chooseColors();
   while (returnColors.size() < numColors && separation >= 0) {
     for (int i = 0; i < colorCountsSize; ++i) {
-      QRgb thisColor =
-        dmcOut ? toDmc[colorCounts[i].color()] : colorCounts[i].color();
+      QRgb thisColor = transformer->transform(colorCounts[i].color());
       if (colorCounts[i].count() >= minCount &&
           !returnColors.contains(thisColor)) {
         bool addColor = true;
@@ -502,15 +537,17 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
           }
         }
         if (addColor) {
-          if (!dmcOut && separation >= 10) {
+          if (separation >= 10) {
             // go back and see if we can do 10% better on count for
-            // just a small distance allowance (dmc colors are already
-            // spread out, so don't bother if we're dmcOut)
+            // just a small distance allowance
             const int newMinCount = 1.1 * colorCounts[i].count();
             for (int j = 0; j < i; ++j) {
-              const QRgb thisOldColor = colorCounts[j].color();
+              const QRgb thisOldColor =
+                chooser->transform(transformer, colorCounts[j].color());
+              // TODO: ::ds is probably very rarely <= 7 if the 
+              // transformer is to a fixed colors set
               if (colorCounts[j].count() >= newMinCount &&
-                  ds(thisOldColor, thisColor) <= 7 &&
+                  ::ds(thisOldColor, thisColor) <= 7 &&
                   !returnColors.contains(thisOldColor)) {
                 thisColor = thisOldColor;
                 break;
@@ -532,9 +569,8 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   //qDebug() << "Actual choose time:" << double(t.elapsed())/1000.;
   QVector<triC> tricReturnColors;
   tricReturnColors.reserve(returnColors.size());
-  for (QVector<QRgb>::const_iterator it = returnColors.begin(),
-          end = returnColors.end(); it != end; ++it) {
-    tricReturnColors.push_back(triC(*it));
+  for (int i = 0, size = returnColors.size(); i < size; ++i) {
+    tricReturnColors.push_back(returnColors[i]);
   }
   return tricReturnColors;
 }

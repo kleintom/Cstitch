@@ -35,24 +35,22 @@
 #include <QtGui/QColorDialog>
 #include <QtGui/QDesktopWidget>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "colorButton.h"
 #include "imageLabel.h"
 #include "imageProcessing.h"
 #include "buttonGrid.h"
 
-
 // a less than functor used to sort colors by distance from the input color
 class triCDistanceSort {
  public:
-  explicit triCDistanceSort(const triC& c) : c_(c) {}
-  bool operator()(const triC& c1, const triC& c2) const {
-    return ::ds(c_, c1) < ::ds(c_, c2);
+  explicit triCDistanceSort(const triC& color) : color_(color) {}
+  bool operator()(const triC& color1, const triC& color2) const {
+    return ::ds(color_, color1) < ::ds(color_, color2);
   }
  private:
-  const triC c_;
+  const triC color_;
 };
-
 
 void baseDialogMode::constructGrid(QVBoxLayout* dialogLayout, int gridWidth,
                                    const QVector<triC>& colors,
@@ -118,13 +116,14 @@ void baseDialogMode::setGridFocus(const pairOfInts& coordinates) {
 
 squareDialogMode::
 squareDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
-                 bool dmcOnly, const triC& inputColor, QWidget* parent) {
+                 flossType type, const triC& inputColor, QWidget* parent)
+  : baseDialogMode(type) {
 
   const int gridWidth = 10;
   setGridWidth(gridWidth);
-  if (dmcOnly) {
-    colors = ::rgbToDmc(colors, true);
-  }
+  colors = ::rgbToColorList(colors,
+                            colorTransformer::createColorTransformer(type),
+                            true);
   std::sort(colors.begin(), colors.end(), triCDistanceSort(inputColor));
   constructGrid(dialogLayout, gridWidth, colors, parent);
   disable();
@@ -132,36 +131,50 @@ squareDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
 
 listDialogMode::
 listDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
-               bool dmcOnly, const triC& inputColor, QWidget* parent) {
+               flossType type, const triC& inputColor, QWidget* parent)
+  : baseDialogMode(type) {
 
   const int gridWidth = qMax(static_cast<int>(ceil(sqrt(colors.size()))),
                              10);
   setGridWidth(gridWidth);
-  if (dmcOnly) {
-    colors = ::rgbToDmc(colors, true);
-  }
+  colors = ::rgbToColorList(colors,
+                            colorTransformer::createColorTransformer(type),
+                            true);
   std::sort(colors.begin(), colors.end(), triCDistanceSort(inputColor));
   constructGrid(dialogLayout, gridWidth, colors, parent);
   disable();
 }
 
-dmcDialogMode::
-dmcDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-              QWidget* parent) {
+fixedListBaseDialogMode::fixedListBaseDialogMode(QVBoxLayout* dialogLayout,
+                                                 const triC& inputColor,
+                                                 flossType type,
+                                                 QVector<triC> colorList,
+                                                 QWidget* parent)
+  : baseDialogMode(type) {
 
-  QVector<triC> dmcColors = ::loadDMC();
-  std::sort(dmcColors.begin(), dmcColors.end(),
-            triCDistanceSort(inputColor));
-  int gridWidth = qMax(static_cast<int>(ceil(sqrt(dmcColors.size()))), 10);
+  std::sort(colorList.begin(), colorList.end(), triCDistanceSort(inputColor));
+  int gridWidth = qMax(static_cast<int>(ceil(sqrt(colorList.size()))), 10);
   gridWidth += gridWidth/4;
   setGridWidth(gridWidth);
-  constructGrid(dialogLayout, gridWidth, dmcColors, parent);
+  constructGrid(dialogLayout, gridWidth, colorList, parent);
   disable();
 }
 
+dmcDialogMode::dmcDialogMode(QVBoxLayout* dialogLayout,
+                             const triC& inputColor,
+                             QWidget* parent)
+  : fixedListBaseDialogMode(dialogLayout, inputColor, flossDMC, ::loadDMC(),
+                            parent) {}
+
+anchorDialogMode::anchorDialogMode(QVBoxLayout* dialogLayout,
+                             const triC& inputColor,
+                             QWidget* parent)
+  : fixedListBaseDialogMode(dialogLayout, inputColor, flossAnchor,
+                            ::loadAnchor(), parent) {}
+
 imageDialogMode::
 imageDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-                bool dmcOnly, QWidget* parent) {
+                flossType type, QWidget* parent) {
 
   const QColor inputColorQC(inputColor.qc());
   colorLabel_ = new QLabel(parent);
@@ -174,8 +187,7 @@ imageDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
   // fill the whole thing with the color from the image
   painter.fillRect(CFI_BORDER, CFI_BORDER,
                    CFI_INNER_WIDTH, CFI_INNER_WIDTH, inputColorQC);
-  const QColor baseColor =
-    dmcOnly ? ::rgbToDmc(inputColor).qc() : inputColorQC;
+  const QColor baseColor = ::transformColor(inputColor, type).qc();
   // fill "chosen" square with dmc version of input image color
   painter.fillRect(CFI_WIDTH/2, CFI_BORDER,
                    CFI_INNER_WIDTH/2, CFI_INNER_WIDTH/2, baseColor);
@@ -211,10 +223,10 @@ void imageDialogMode::updateImageColorLabel(QRgb color, bool mouseClick) {
 }
 
 colorDialog::colorDialog(const QVector<triC>& listColors,
-                         const triC& inputColor, bool dmcOnly,
+                         const triC& inputColor, flossType type,
                          int frameWidth, int frameHeight)
   : cancelAcceptDialogBase(NULL), dialogLayout_(new QVBoxLayout),
-    inputColor_(inputColor), colorSelected_(inputColor), dmcOnly_(dmcOnly),
+    inputColor_(inputColor), colorSelected_(inputColor), flossType_(type),
     listColors_(listColors), curMode_(NULL),
     frameWidth_(frameWidth), frameHeight_(frameHeight) {
 
@@ -222,7 +234,7 @@ colorDialog::colorDialog(const QVector<triC>& listColors,
   dialogLayout_->setSpacing(0);
   setLayout(dialogLayout_);
 
-  constructorHelper(false, dmcOnly);
+  constructorHelper(false, type);
   setCurMode(CD_LIST);
 
   setWindowTitle(tr("Select color"));
@@ -231,30 +243,32 @@ colorDialog::colorDialog(const QVector<triC>& listColors,
 
 colorDialog::colorDialog(const QVector<triC>& squareColors,
                          const QVector<triC>& listColors,
-                         const triC& inputColor, bool dmcOnly,
+                         const triC& inputColor, flossType type,
                          int frameWidth, int frameHeight)
   : cancelAcceptDialogBase(NULL), dialogLayout_(new QVBoxLayout),
-    inputColor_(inputColor), colorSelected_(inputColor), dmcOnly_(dmcOnly),
+    inputColor_(inputColor), colorSelected_(inputColor), flossType_(type),
     listColors_(listColors),
-    squareColors_(dmcOnly_ ? squareColors : ::rgbToDmc(squareColors, true)),
+    squareColors_(::rgbToColorList(squareColors, 
+                                   colorTransformer::createColorTransformer(type),
+                                   true)),
     curMode_(NULL), frameWidth_(frameWidth), frameHeight_(frameHeight) {
 
   setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
   dialogLayout_->setSpacing(0);
   setLayout(dialogLayout_);
   if (squareColors.size() > 1) {
-    constructorHelper(true, dmcOnly);
+    constructorHelper(true, type);
     setCurMode(CD_SQUARE);
   }
   else {
-    constructorHelper(false, dmcOnly);
+    constructorHelper(false, type);
     setCurMode(CD_LIST);
   }
   setWindowTitle(tr("Select color"));
   fitDialog();
 }
 
-void colorDialog::constructorHelper(bool useSquareColors, bool dmcOnly) {
+void colorDialog::constructorHelper(bool useSquareColors, flossType type) {
 
   setAttribute(Qt::WA_DeleteOnClose);
 
@@ -300,11 +314,17 @@ void colorDialog::constructorHelper(bool useSquareColors, bool dmcOnly) {
   }
   modeChoiceBox_->addItem("Choose a list color",
                           QVariant::fromValue(CD_LIST));
-  modeChoiceBox_->addItem("Choose a DMC color",
-                          QVariant::fromValue(CD_DMC));
+  if (type == flossDMC || type == flossVariable) {
+    modeChoiceBox_->addItem("Choose a DMC color",
+                            QVariant::fromValue(CD_DMC));
+  }
+  if (type == flossAnchor || type == flossVariable) {
+    modeChoiceBox_->addItem("Choose an Anchor color",
+                            QVariant::fromValue(CD_ANCHOR));
+  }
   modeChoiceBox_->addItem("Choose from an image",
                           QVariant::fromValue(CD_IMAGE));
-  if (!dmcOnly) {
+  if (type == flossVariable) {
     modeChoiceBox_->addItem("Choose a new color",
                             QVariant::fromValue(CD_NEW));
   }
@@ -513,13 +533,16 @@ void colorDialog::processRightClick() {
 
 void colorDialog::processCancelClick() {
 
-  emit finished(QDialog::Rejected, inputColor_, colorSelected_);
+  emit finished(QDialog::Rejected, inputColor_, flossColor());
   close();
 }
 
-void colorDialog::processAcceptClick() {
+void colorDialog::processMaybeNewAcceptClick(bool fromNewChooser) {
 
-  emit finished(QDialog::Accepted, inputColor_, colorSelected_);
+  const flossType type =
+    fromNewChooser ? flossVariable : curMode_->flossMode();
+  const flossColor newColor(colorSelected_, type);
+  emit finished(QDialog::Accepted, inputColor_, newColor);
   close();
 }
 
@@ -531,7 +554,7 @@ void colorDialog::activateNewChooser() {
   const QColor returnedColor = QColorDialog::getColor(inputColor_.qc());
   if (returnedColor.isValid()) {
     colorSelected_ = returnedColor;
-    processAcceptClick();
+    processMaybeNewAcceptClick(true);
   }
   else {
     processCancelClick();
@@ -545,7 +568,7 @@ void colorDialog::updateMouseMove(QRgb color) {
 
 void colorDialog::updateMouseClick(QRgb color) {
 
-  colorSelected_ = dmcOnly_ ? ::rgbToDmc(color) : color;
+  colorSelected_ = ::transformColor(color, flossType_);
   curMode_->updateImageColorLabel(colorSelected_.qrgb(), true);
 }
 
@@ -564,7 +587,7 @@ void colorDialog::setCurMode(dialogMode mode) {
   switch (mode) {
   case CD_SQUARE:
     if (squareMode_.isNull()) {
-      squareMode_ = squareDialogMode(dialogLayout_, squareColors_, dmcOnly_,
+      squareMode_ = squareDialogMode(dialogLayout_, squareColors_, flossType_,
                                      inputColor_, this);
     }
     curMode_ = &squareMode_;
@@ -572,7 +595,7 @@ void colorDialog::setCurMode(dialogMode mode) {
     break;
   case CD_LIST:
     if (listMode_.isNull()) {
-      listMode_ = listDialogMode(dialogLayout_, listColors_, dmcOnly_,
+      listMode_ = listDialogMode(dialogLayout_, listColors_, flossType_,
                                  inputColor_, this);
     }
     curMode_ = &listMode_;
@@ -585,9 +608,16 @@ void colorDialog::setCurMode(dialogMode mode) {
     curMode_ = &dmcMode_;
     leftRightHolder_->show();
     break;
+  case CD_ANCHOR:
+    if (anchorMode_.isNull()) {
+      anchorMode_ = anchorDialogMode(dialogLayout_, inputColor_, this);
+    }
+    curMode_ = &anchorMode_;
+    leftRightHolder_->show();
+    break;
   case CD_IMAGE:
     if (imageMode_.isNull()) {
-      imageMode_ = imageDialogMode(dialogLayout_, inputColor_, dmcOnly_,
+      imageMode_ = imageDialogMode(dialogLayout_, inputColor_, flossType_,
                                    this);
     }
     curMode_ = &imageMode_;

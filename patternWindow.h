@@ -31,6 +31,7 @@ class windowManager;
 class comboBox;
 class dockImage;
 class triC;
+class flossColor;
 class helpMode;
 template<class T> class findActionName;
 class QDomDocument;
@@ -122,7 +123,7 @@ class patternWindow : public imageSaverWindow {
   // Add <squareImage> to the list of images with the given data, named
   // from <imageIndex>.  Set the global grid color to <gridColor>.
   void addImage(const QImage& squareImage, int squareDimension,
-                const QVector<triC>& colors, QRgb gridColor,
+                const QVector<flossColor>& colors, QRgb gridColor,
                 int imageIndex);
   // append the current edit history for the image with index <imageIndex>
   // to appendee

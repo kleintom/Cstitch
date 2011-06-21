@@ -30,91 +30,94 @@ class squareImageContainer;
 typedef QExplicitlySharedDataPointer<squareImageContainer> squareImagePtr;
 
 // squareImageContainer extends imageContainer by providing a pure abstract
-// interface for functionality required by a squared image
+// interface for functionality required by a squared image.
 class squareImageContainer : public imageContainer {
 
  public:
   squareImageContainer(const QString& name, const QSize initialImageSize,
-                       bool dmc)
-   : imageContainer(name, initialImageSize, dmc) {}
-  // overrides imageContainer; provided there as an alternative to
+                       flossType type)
+   : imageContainer(name, initialImageSize, type) {}
+  // Overrides imageContainer; provided there as an alternative to
   // dynamic_casting, which was being used as a workaround for QT's lack
-  // of template support
+  // of template support.
   const squareImageContainer* squareContainer() const { return this; }
   squareImageContainer* squareContainer() { return this; }
-  // return true if the current color list is dmc colors only
-  virtual bool currentlyDMC() const = 0;
-  // return the original dimension of the image's squares
+  virtual QVector<triC> colors() const = 0;
+  virtual QVector<flossColor> flossColors() const = 0;
+  // Remember the floss type to be used for the tools.
+  virtual void setCurrentToolFlossType(flossType type) = 0;
+  virtual flossType getCurrentToolFlossType() const = 0;
+  // Return the original dimension of the image's squares.
   virtual int originalDimension() const = 0;
-  // return the current (scaled) dimension of the image's squares
+  // Return the current (scaled) dimension of the image's squares.
   virtual int scaledDimension() const = 0;
-  // return the number of squares in the horizontal direction
+  // Return the number of squares in the horizontal direction.
   virtual int xSquareCount() const = 0;
   virtual int ySquareCount() const = 0;
-  // return true if the image is valid (where valid is defined by derived
-  // classes)
+  // Return true if the image is valid (where valid is defined by derived
+  // classes).
   virtual bool isValid() const = 0;
-  // return the number of colors on the image's color list
+  // Return the number of colors on the image's color list.
   virtual int numColors() const = 0;
-  // remove the given <colors> from the image's color list and update
-  // currentlyDMC() accordingly
+  // Remove the given <colors> from the image's color list.
   virtual void removeColors(const QVector<triC>& colors) = 0;
-  // return true if the back history is non-empty
+  // Return true if the back history is non-empty.
   virtual bool backHistory() const = 0;
-  // return true if the forward history is non-empty
+  // Return true if the forward history is non-empty.
   virtual bool forwardHistory() const = 0;
-  // move forward one on the history list
-  // return a dockListUpdate for the history item performed
+  // Move forward one on the history list.
+  // Return a dockListUpdate for the history item performed.
   virtual dockListUpdate moveHistoryForward() = 0;
-  // move back one on the history list
-  // return a dockListUpdate for the history item performed
+  // Move back one on the history list.
+  // Return a dockListUpdate for the history item performed.
   virtual dockListUpdate moveHistoryBack() = 0;
-  // return true if the image and its color list should be checked to make
-  // sure they're in sync
+  // Return true if the image and its color list should be checked to make
+  // sure they're in sync.
   virtual bool colorListCheckNeeded() const = 0;
-  // compare the image and the color list to make sure they give the same
-  // list of colors
-  // return the colors on the list that aren't on the image
+  // Compare the image and the color list to make sure they give the same
+  // list of colors.
+  // Return the colors on the list that aren't on the image.
   virtual QVector<triC> checkColorList() = 0;
-  // change every occurrence of <oldColor> in the image to <newColor>
-  // return a dockListUpdate for the change and update currentlyDMC()
-  virtual dockListUpdate changeColor(QRgb oldColor, QRgb newColor) = 0;
-  // change <squares> to have <newColor> in the image
+  // Change every occurrence of <oldColor> in the image to <newColor>.
+  // Return a dockListUpdate for the change.
+  virtual dockListUpdate changeColor(QRgb oldColor,
+                                     flossColor newFlossColor) = 0;
+  // Change <squares> to have <newColor> in the image.
   virtual dockListUpdate commitChangeOneDrag(const QSet<pairOfInts>& squares,
-                                             QRgb newColor) = 0;
-  // fill the region containing (<x>, <y>) with <newColor>
-  virtual dockListUpdate fillRegion(int x, int y, QRgb newColor) = 0;
-  // perform detailing on <detailSquares> from the container's image,
+                                             flossColor newColor) = 0;
+  // Fill the region containing (<x>, <y>) with <newColor>.
+  virtual dockListUpdate fillRegion(int x, int y, flossColor newColor) = 0;
+  // Perform detailing on <detailSquares> from the container's image,
   // using <originalImage> for reference colors and
   // choosing at most <numColors> colors for the detail squares,
-  // making those colors all dmc if <dmcOnly>
+  // making those colors all floss type <type>.
   virtual dockListUpdate
     performDetailing(const QImage& originalImage,
                      const QList<pixel>& detailSquares,
-                     int numColors, bool dmcOnly) = 0;
-  // return the current backward history as xml
+                     int numColors, flossType type) = 0;
+  // Return the current backward history as xml.
   virtual QDomDocument backImageHistoryXml() const = 0;
-  // append the entire edit history as xml to <appendee>
+  // Append the entire edit history as xml to <appendee>.
   virtual void writeImageHistory(QDomDocument* doc,
                                  QDomElement* appendee) const = 0;
-  // restore this image's history from <element>, running back history
-  // if any
+  // Restore this image's history from <element>, running back history
+  // if any.
   virtual void updateImageHistory(const QDomElement& element) = 0;
-  // undo back history and then clear both histories
+  // Undo back history and then clear both histories.
   virtual void rewindAndClearHistory() = 0;
-  // setScaledSize for (mutable) square images is a set once affair; this
-  // allows scaled size to be set again
+  // SetScaledSize for (mutable) square images is a set once affair; this
+  // allows scaled size to be set again.
   virtual void resetZoom() = 0;
   virtual QSize setScaledWidth(int widthHint) = 0;
   virtual QSize setScaledHeight(int heightHint) = 0;
   virtual dockListUpdate replaceRareColors() = 0;
 };
 
-// a mutableSquareImageContainer copies in its image so that it can be
-// altered by the container
+// A mutableSquareImageContainer copies in its image so that it can be
+// altered by the container.
 class mutableSquareImageContainer : public squareImageContainer {
 
-  // historyItem classes perform history updates on this class's data
+  // historyItem classes perform history updates on this class's data.
   friend dockListUpdate
     changeAllHistoryItem::performHistoryEdit(mutableSquareImageContainer* ,
                                              historyDirection ) const;
@@ -134,17 +137,24 @@ class mutableSquareImageContainer : public squareImageContainer {
  public:
   mutableSquareImageContainer(const QString& name,
                               const QVector<triC>& colors,
-                              const QImage& image, int dimension, bool dmc);
+                              const QImage& image, int dimension,
+                              flossType type);
   const QImage& image() const { return image_; }
-  const QVector<triC>& colors() const { return colors_; }
-  bool currentlyDMC() const { return currentlyDMC_; }
+  QVector<triC> colors() const;
+  QVector<flossColor> flossColors() const { return flossColors_; }
+  virtual void setCurrentToolFlossType(flossType type) {
+    toolFlossType_ = type;
+  }
+  virtual flossType getCurrentToolFlossType() const {
+    return toolFlossType_;
+  }
   int originalDimension() const { return originalDimension_; }
   int scaledDimension() const { return scaledWidth()/widthSquareCount_; }
   int xSquareCount() const { return widthSquareCount_; }
   int ySquareCount() const { return heightSquareCount_; }
   bool isValid() const { return valid_; }
   int numColors() const {
-    return valid_ ? colors_.size() : invalidColorCount_;
+    return valid_ ? flossColors_.size() : invalidColorCount_;
   }
   void removeColors(const QVector<triC>& colors);
   bool backHistory() const { return !backHistory_.isEmpty(); }
@@ -153,60 +163,58 @@ class mutableSquareImageContainer : public squareImageContainer {
   dockListUpdate moveHistoryBack();
   bool colorListCheckNeeded() const { return colorListCheckNeeded_; }
   QVector<triC> checkColorList();
-  dockListUpdate changeColor(QRgb oldColor, QRgb newColor);
+  dockListUpdate changeColor(QRgb oldColor, flossColor newFlossColor);
   dockListUpdate commitChangeOneDrag(const QSet<pairOfInts>& squares,
-                                     QRgb newColor);
-  dockListUpdate fillRegion(int x, int y, QRgb newColor);
+                                     flossColor newColor);
+  dockListUpdate fillRegion(int x, int y, flossColor newColor);
   dockListUpdate performDetailing(const QImage& originalImage,
                                   const QList<pixel>& detailSquares,
-                                  int numColors, bool dmcOnly);
+                                  int numColors, flossType type);
   QDomDocument backImageHistoryXml() const;
   void writeImageHistory(QDomDocument* doc, QDomElement* appendee) const;
   void updateImageHistory(const QDomElement& element);
   void rewindAndClearHistory();
-  // increases or decreases the scaled square size by one
+  // Increases or decreases the scaled square size by one.
   QSize zoom(bool zoomIn);
   // setScaledSize for (mutable) square images is a set once affair; this
-  // allows scaled size to be set again
+  // allows scaled size to be set again.
   void resetZoom() { imageContainer::setScaledSize(QSize(0, 0)); }
-  // set scaled size to the largest true square size that is <= <sizeHint>
-  // return the new size
+  // Set scaled size to the largest true square size that is <= <sizeHint>.
+  // Return the new size.
   QSize setScaledSize(const QSize& sizeHint);
-  // set scaled size to the largest true square width that
-  // is <= <widthHint>; return the new size
+  // Set scaled size to the largest true square width that
+  // is <= <widthHint>; return the new size.
   QSize setScaledWidth(int widthHint);
-  // set scaled size to the largest true square height that is
-  // <= heightHint; return the new size
+  // Set scaled size to the largest true square height that is
+  // <= heightHint; return the new size.
   QSize setScaledHeight(int heightHint);
   dockListUpdate replaceRareColors();
   bool isOriginal() const { return false; }
   QImage scaledImage() const;
 
  private:
-  void setColorList(const QVector<triC>& colorList) {
-    colors_ = colorList;
-  }
   void drawDetail(int xStart, int yStart, const QColor& color);
-  void addColors(const QVector<triC>& colors);
-  // add <color> to colors_
-  // caller should adjust currentlyDMC_ accordingly
-  void addColorNoDmcUpdate(const triC& color);
-  // add <color> to colors_ and update currentlyDMC_
-  bool addColor(const triC& color);
-  // remove <color> from colors_
-  // caller should adjust currentlyDMC_ accordingly
-  void removeColorNoDmcUpdate(const triC& color);
-  // remove <color> from colors_ and adjust currentlyDMC_ accordingly
-  void removeColor(const triC& color);
+  // Add <color> to the color list if it's not already there.
+  // Return true if the color was added, otherwise return false.
+  bool addColor(const flossColor& color);
+  void addColors(const QVector<flossColor>& colors);
+  // Remove <color> from the color list.  Return the floss color that was
+  // on the list.
+  flossColor removeColor(const triC& color);
+  flossColor removeColor(const flossColor& color) {
+    return removeColor(color.color());
+  }
   void addToHistory(const historyItemPtr& ptr) {
     backHistory_.push_back(ptr);
     forwardHistory_.clear();
   }
+  // Return the flossColor corresponding to <color> on flossColors_.
+  flossColor getFlossColorFromColor(const triC& color) const;
 
  private:
   QImage image_; // the square image (at its original size)
-  QVector<triC> colors_;
-  bool currentlyDMC_; // true if colors_ contains only dmc colors
+  QVector<flossColor> flossColors_;
+  flossType toolFlossType_; // current floss type used by the tools
   const int originalDimension_; // square dimension
   // for convenience: the number of horizontal and vertical squares
   const int widthSquareCount_;
@@ -215,7 +223,7 @@ class mutableSquareImageContainer : public squareImageContainer {
   // backHistory
   QList<historyItemPtr> backHistory_;
   QList<historyItemPtr> forwardHistory_;
-  // valid_ if colors_.size() <= numSymbols && > 0
+  // valid_ if flossColors_.size() <= numSymbols && > 0
   bool valid_;
   // set only if valid = false, in which case colors should be set to 0
   int invalidColorCount_;
@@ -232,11 +240,15 @@ class immutableSquareImageContainer : public squareImageContainer {
 
  public:
   immutableSquareImageContainer(const QString& name, const QImage& image)
-    : squareImageContainer(name, image.size(), false),
-    image_(image), colors_(QVector<triC>(0)) { }
+    : squareImageContainer(name, image.size(), flossVariable),
+      image_(image), flossColors_(QVector<flossColor>()) {}
   const QImage& image() const { return image_; }
-  const QVector<triC>& colors() const { return colors_; }
-  bool currentlyDMC() const { return false; }
+  QVector<triC> colors() const { return QVector<triC>(); }
+  QVector<flossColor> flossColors() const {
+    return flossColors_;
+  }
+  virtual void setCurrentToolFlossType(flossType ) { }
+  virtual flossType getCurrentToolFlossType() const { return flossVariable; }
   int originalDimension() const { return 1; }
   int scaledDimension() const { return 1; }
   int xSquareCount() const { return originalWidth(); }
@@ -250,18 +262,18 @@ class immutableSquareImageContainer : public squareImageContainer {
   dockListUpdate moveHistoryBack() { return dockListUpdate(); }
   bool colorListCheckNeeded() const { return false; }
   QVector<triC> checkColorList() { return QVector<triC>(); }
-  dockListUpdate changeColor(QRgb , QRgb ) {
+  dockListUpdate changeColor(QRgb , flossColor ) {
     return dockListUpdate();
   }
   dockListUpdate commitChangeOneDrag(const QSet<pairOfInts>& ,
-                                     QRgb ) {
+                                     flossColor ) {
     return dockListUpdate();
   }
-  dockListUpdate fillRegion(int , int , QRgb ) {
+  dockListUpdate fillRegion(int , int , flossColor ) {
     return dockListUpdate();
   }
   dockListUpdate performDetailing(const QImage& , const QList<pixel>& ,
-                                  int , bool ) {
+                                  int , flossType ) {
     return dockListUpdate();
   }
   QDomDocument backImageHistoryXml() const { return QDomDocument(); }
@@ -276,7 +288,7 @@ class immutableSquareImageContainer : public squareImageContainer {
 
  private:
   const QImage& image_;
-  const QVector<triC> colors_;
+  const QVector<flossColor> flossColors_;
 };
 
 #endif

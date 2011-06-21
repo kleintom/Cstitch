@@ -23,12 +23,11 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPrinter>
 
-#include "triC.h"
+#include "floss.h"
 #include "patternImageContainer.h"
 
 class patternMetadata;
 class QImage;
-class floss;
 
 // patternPrinter prints a pattern to a pdf.
 class patternPrinter {
@@ -74,7 +73,7 @@ class patternPrinter {
   // return true if the user cancelled during drawing
   bool drawPatternPages();
   // return the code representation of floss <f>
-  QString flossToCode(const floss& f) const;
+  QString flossToCode(const typedFloss& f, bool useCodeAbbreviations) const;
   // return the width of s
   int sWidth(const QString& s) const {
     return fontMetrics_.boundingRect(s).width();
@@ -91,6 +90,10 @@ class patternPrinter {
   int sHeight(int n) const {
     return sHeight(QString::number(n));
   }
+  // Print the color list description.  Adjust <yUsed> to account for the
+  // height used, return true if color codes in the color list should be
+  // preceded with their code type.
+  bool printListDescription(int* yUsed, int fontHeight);
 
  private:
   QPrinter printer_;
@@ -100,7 +103,7 @@ class patternPrinter {
   const int squareDim_;
   const QImage& originalImage_;
   int pdfSymbolDim_;
-  const QVector<triC>& colors_;
+  const QVector<flossColor> colors_;
   int patternImageWidth_;
   int patternImageHeight_;
   // x and y coordinates of the uppper left corner for pattern drawing

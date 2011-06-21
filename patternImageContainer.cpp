@@ -65,11 +65,13 @@ patternImageContainer::patternImageContainer(const QImage& squareImage,
                                              const QString& imageName,
                                              int squareDimension,
                                              int baseSymbolDim,
-                                             const QVector<triC>& colors)
+                                             const QVector<flossColor>& colors)
   : ref(0), imageName_(imageName), squareDimension_(squareDimension),
     baseSymbolDim_(baseSymbolDim), symbolDimension_(baseSymbolDim),
-    squareImage_(squareImage), colors_(colors),
-    symbolChooser_(baseSymbolDim, colors), viewingSquareImage_(false) {
+    squareImage_(squareImage), flossColors_(colors),
+    symbolChooser_(baseSymbolDim,
+                   patternImageContainer::colors()),
+    viewingSquareImage_(false) {
 
   generateColorSquares();
 }
@@ -77,17 +79,17 @@ patternImageContainer::patternImageContainer(const QImage& squareImage,
 void patternImageContainer::generateColorSquares() {
 
   QPixmap colorSquare(symbolDimension_, symbolDimension_);
-  for (QVector<triC>::const_iterator it = colors_.begin(),
-          end = colors_.end(); it != end; ++it) {
-    colorSquare.fill((*it).qc());
-    colorSquares_[(*it).qrgb()] = colorSquare;
+  for (int i = 0, size = flossColors_.size(); i < size; ++i) {
+    const triC thisColor = flossColors_[i].color();
+    colorSquare.fill(thisColor.qc());
+    colorSquares_[thisColor.qrgb()] = colorSquare;
   }
 }
 
 QImage patternImageContainer::patternImageCurSymbolSize() {
 
   const QHash<QRgb, QPixmap> symbols =
-    symbolChooser_.getSymbols(colors_, symbolDimension_);
+    symbolChooser_.getSymbols(colors(), symbolDimension_);
   const int xBoxes = squareImage_.width()/squareDimension_;
   const int yBoxes = squareImage_.height()/squareDimension_;
   QImage returnImage(xBoxes * symbolDimension_, yBoxes * symbolDimension_,
@@ -174,12 +176,12 @@ QPixmap patternImageContainer::symbolNoBorder(const triC& color,
 
 QHash<QRgb, QPixmap> patternImageContainer::symbols() {
 
-  return symbolChooser_.getSymbols(colors_, symbolDimension_);
+  return symbolChooser_.getSymbols(colors(), symbolDimension_);
 }
 
 QHash<QRgb, QPixmap> patternImageContainer::symbolsNoBorder(int symbolDim) {
 
-  return symbolChooser_.getSymbolsNoBorder(colors_, symbolDim);
+  return symbolChooser_.getSymbolsNoBorder(colors(), symbolDim);
 }
 
 bool patternImageContainer::updatePatternImage(const triC& color,
@@ -286,3 +288,12 @@ void patternImageContainer::updateHistory(const QDomElement& xmlHistory) {
   }
 }
 
+QVector<triC> patternImageContainer::colors() const {
+
+  QVector<triC> returnColors;
+  returnColors.reserve(flossColors_.size());
+  for (int i = 0, size = flossColors_.size(); i < size; ++i) {
+    returnColors.push_back(flossColors_[i].color());
+  }
+  return returnColors;
+}

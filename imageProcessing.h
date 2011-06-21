@@ -20,6 +20,12 @@
 #ifndef IMAGEPROCESSING_H
 #define IMAGEPROCESSING_H
 
+#include <QtCore/QHash>
+#include <QtCore/QSharedPointer>
+
+#include "colorLists.h"
+#include "floss.h"
+
 class grid;
 class triC;
 class pixel;
@@ -47,6 +53,93 @@ class colorCount {
   QRgb color_;
   int count_;
 };
+
+class colorTransformer;
+
+// base class for a functor that takes a color and returns a
+// transformed version of that color; this base class performs the
+// identity transformation
+class colorTransformer {
+ public:
+  // create the right kind of transformer based on <type>;
+  // caller is responsible for destruction of the returned pointer
+  static colorTransformerPtr createColorTransformer(flossType type);
+  virtual QRgb transform(QRgb input) const = 0;
+  virtual triC transform(const triC& input) const = 0;
+  virtual QVector<triC> transform(const QVector<triC>& colors) const = 0;
+  // there may already be a DMC transformation hash available; use it if
+  // you can
+  virtual void setDMCHash(const QHash<QRgb, QRgb>& ) {}
+};
+
+// return whatever's given unchanged
+class variableTransformer : public colorTransformer {
+ public:
+  ~variableTransformer();
+  QRgb transform(QRgb input) const { return input; }
+  triC transform(const triC& input) const { return input; }
+  QVector<triC> transform(const QVector<triC>& colors) const {
+    return colors;
+  }
+};
+
+// transform to the "nearest" dmc color
+class dmcTransformer : public colorTransformer {
+ public:
+  ~dmcTransformer();
+  QRgb transform(QRgb input) const {
+    if (!colorHash_.isEmpty()) {
+      return colorHash_[input];
+    }
+    else {
+      return ::rgbToDmc(input).qrgb();
+    }
+  }
+  triC transform(const triC& input) const {
+    return ::rgbToDmc(input);
+  }
+  QVector<triC> transform(const QVector<triC>& colors) const {
+    return ::rgbToDmc(colors);
+  }
+  void setDMCHash(const QHash<QRgb, QRgb>& hash) {
+    colorHash_ = hash;
+  }
+ private:
+  QHash<QRgb, QRgb> colorHash_;
+};
+
+// transform to the "nearest" anchor color
+class anchorTransformer : public colorTransformer {
+ public:
+  QRgb transform(QRgb input) const {
+    return ::rgbToAnchor(input).qrgb();
+  }
+  triC transform(const triC& input) const {
+    return ::rgbToAnchor(input);
+  }
+  QVector<triC> transform(const QVector<triC>& colors) const {
+    return ::rgbToAnchor(colors);
+  }
+};
+
+inline triC transformColor(const triC& color, flossType type) {
+  
+  const colorTransformerPtr transformer =
+    colorTransformer::createColorTransformer(type);
+  return transformer->transform(color);
+}
+
+inline triC transformColor(const flossColor& color) {
+
+  return ::transformColor(color.color(), color.type());
+}
+
+inline QVector<triC> transformColors(const QVector<triC>& colors, flossType type) {
+  
+  const colorTransformerPtr transformer =
+    colorTransformer::createColorTransformer(type);
+  return transformer->transform(colors);
+}
 
 // for each pixel in <newImage>, choose a new color from <colors> closest
 // to the pixel's color, and replace the old pixel with the new.
@@ -92,7 +185,8 @@ QVector<triC> median(QImage* newImage, const QImage& originalImage,
 // Returns the chosen colors.
 QVector<triC> chooseColors(const QImage& image, int numColors,
                            const QVector<triC>& seedColors,
-                           int numImageColors, bool dmcOut = false);
+                           int numImageColors,
+                           const colorTransformerPtr& transformer);
 
 // choose (up to) <numColors> colors that best represent the colors in
 // the square regions determined by <squaresList> and <dimension> in
@@ -101,14 +195,16 @@ QVector<triC> chooseColors(const QImage& image, int numColors,
 // Returns the chosen colors.
 QVector<triC> chooseColors(const QImage& image,
                            const QList<pixel>& squaresList,
-                           int dimension, int numColors, bool dmcOut);
+                           int dimension, int numColors,
+                           const colorTransformerPtr& transformer);
 
 // use the <colorCountMap>, which gives the number of pixels with a
 // given color, to choose (up to) <numColors> colors, all dmc if
 // <dmcOut>.  See .cpp for the algorithm.
 QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
                                    const QVector<QRgb> seedColors,
-                                   int numColors, bool dmcOut);
+                                   int numColors,
+                                   const colorTransformerPtr& transformer);
 
 // change any old square (of dimension <dimension>) with color <oldColor>
 // to <newColor>.

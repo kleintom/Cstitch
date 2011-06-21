@@ -186,10 +186,10 @@ bool squareImageLabel::clearHashes() {
   }
 }
 
-void squareImageLabel::setImageAndSize(const QImage& image,
-                                       const QList<QRgb>& colors,
-                                       int xSquareCount, int ySquareCount,
-                                       bool imageIsOriginal) {
+void squareImageLabel::setNewImage(const QImage& image,
+                                   const QList<QRgb>& colors,
+                                   int xSquareCount, int ySquareCount,
+                                   bool imageIsOriginal) {
 
   baseImage_ = image;
   imageIsOriginal_ = imageIsOriginal;
@@ -208,11 +208,13 @@ void squareImageLabel::setImageAndSize(const QImage& image,
 
 void squareImageLabel::setImageSize(const QSize& newSize) {
 
-  scaledDimension_ = newSize.width()/xSquareCount_;
   if (imageIsFlat()) {
+    xSquareCount_ = newSize.width();
+    ySquareCount_ = newSize.height();
     scaledImage_ = QPixmap::fromImage(baseImage_).scaled(newSize);
   }
   else {
+    scaledDimension_ = newSize.width()/xSquareCount_;
     Q_ASSERT_X(newSize.width() % scaledDimension_ == 0 &&
                newSize.height() % scaledDimension_ == 0, "setImageSize",
                QString(tr("Bad scaled square image size: (") +

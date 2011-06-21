@@ -52,11 +52,12 @@ historyItemPtr historyItem::xmlToHistoryItem(const QDomElement& xml) {
 }
 
 changeAllHistoryItem::changeAllHistoryItem(const QDomElement& xmlHistory)
-  : toolColor_(::xmlStringToRgb(::getElementText(xmlHistory,
-                                                 "tool_color"))),
+  : toolColor_(::xmlStringToFlossColor(::getElementText(xmlHistory,
+                                                        "tool_color"))),
     toolColorIsNew_(::stringToBool(::getElementText(xmlHistory,
                                                     "color_is_new"))),
-    priorColor_(::xmlStringToRgb(::getElementText(xmlHistory, "old_color"))),
+    priorColor_(::xmlStringToFlossColor(::getElementText(xmlHistory,
+                                                         "old_color"))),
     coordinates_(::xmlToCoordinatesList(::getElementText(xmlHistory,
                                                          "coordinate_list")))
 { }
@@ -67,12 +68,12 @@ void changeAllHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
   QDomElement itemElement(doc->createElement("history_item"));
   appendee->appendChild(itemElement);
   ::appendTextElement(doc, "tool",  "change all", &itemElement);
-  ::appendTextElement(doc, "tool_color",  ::rgbToString(toolColor_),
+  ::appendTextElement(doc, "tool_color",  ::flossColorToString(toolColor_),
                       &itemElement);
   ::appendTextElement(doc, "color_is_new",
                       ::boolToString(toolColorIsNew_),
                       &itemElement);
-  ::appendTextElement(doc, "old_color", ::rgbToString(priorColor_),
+  ::appendTextElement(doc, "old_color", ::flossColorToString(priorColor_),
                         &itemElement);
   ::appendCoordinatesList(doc, coordinates_, &itemElement);
 }
@@ -81,7 +82,7 @@ dockListUpdate changeAllHistoryItem::
 performHistoryEdit(mutableSquareImageContainer* container,
                    historyDirection direction) const {
 
-  QRgb addedColor, removedColor;
+  flossColor addedColor, removedColor;
   if (direction == H_BACK) {
     addedColor = priorColor_;
     removedColor = toolColor_;
@@ -92,28 +93,28 @@ performHistoryEdit(mutableSquareImageContainer* container,
   }
 
   ::changeBlocks(&container->image_, coordinates_,
-                 addedColor, container->originalDimension_, true);
+                 addedColor.qrgb(), container->originalDimension_, true);
 
   if (toolColorIsNew_) {
     container->addColor(addedColor);
     container->removeColor(removedColor);
-    return dockListUpdate(triC(addedColor), true, triC(removedColor));
+    return dockListUpdate(addedColor.color(), true, removedColor.color());
   }
   else {
     if (direction == H_BACK) {
       container->addColor(addedColor);
-      return dockListUpdate(addedColor, true);
+      return dockListUpdate(addedColor.color(), true);
     }
     else {
       container->removeColor(removedColor);
-      return dockListUpdate(triC(addedColor), false, triC(removedColor));
+      return dockListUpdate(addedColor.color(), false, removedColor.color());
     }
   }
 }
 
 changeOneHistoryItem::changeOneHistoryItem(const QDomElement& xmlHistory)
-  : toolColor_(::xmlStringToRgb(::getElementText(xmlHistory,
-                                                 "tool_color"))),
+  : toolColor_(::xmlStringToFlossColor(::getElementText(xmlHistory,
+                                                        "tool_color"))),
     toolColorIsNew_(::stringToBool(::getElementText(xmlHistory,
                                                     "color_is_new"))),
     pixels_(::xmlToPixelList(::getElementText(xmlHistory, "pixel_list")))
@@ -125,7 +126,7 @@ void changeOneHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
   QDomElement itemElement(doc->createElement("history_item"));
   appendee->appendChild(itemElement);
   ::appendTextElement(doc, "tool",  "change one", &itemElement);
-  ::appendTextElement(doc, "tool_color",  ::rgbToString(toolColor_),
+  ::appendTextElement(doc, "tool_color",  ::flossColorToString(toolColor_),
                       &itemElement);
   ::appendTextElement(doc, "color_is_new",
                       ::boolToString(toolColorIsNew_),
@@ -137,22 +138,23 @@ dockListUpdate changeOneHistoryItem::
 performHistoryEdit(mutableSquareImageContainer* container,
                    historyDirection direction) const {
 
-  const QRgb newColor = toolColor_;
+  const flossColor newColor = toolColor_;
   if (direction == H_BACK) {
     ::changeBlocks(&container->image_, pixels_, container->originalDimension_);
   }
   else { // forward
-    ::changeBlocks(&container->image_, pixels_, newColor,
+    ::changeBlocks(&container->image_, pixels_, newColor.qrgb(),
                    container->originalDimension_);
+    container->colorListCheckNeeded_ = true;
   }
   if (toolColorIsNew_) {
     if (direction == H_BACK) {
       container->removeColor(newColor);
-      return dockListUpdate(triC(), false, triC(newColor));
+      return dockListUpdate(triC(), false, newColor.color());
     }
     else { // forward
       container->addColor(newColor);
-      return dockListUpdate(newColor, true);
+      return dockListUpdate(newColor.color(), true);
     }
   }
   else {
@@ -160,17 +162,18 @@ performHistoryEdit(mutableSquareImageContainer* container,
       return dockListUpdate();
     }
     else { // forward
-      return dockListUpdate(newColor, false);
+      return dockListUpdate(newColor.color(), false);
     }
   }
 }
 
 fillRegionHistoryItem::fillRegionHistoryItem(const QDomElement& xmlHistory)
-  : toolColor_(::xmlStringToRgb(::getElementText(xmlHistory,
-                                                 "tool_color"))),
+  : toolColor_(::xmlStringToFlossColor(::getElementText(xmlHistory,
+                                                        "tool_color"))),
     toolColorIsNew_(::stringToBool(::getElementText(xmlHistory,
                                                     "color_is_new"))),
-    priorColor_(::xmlStringToRgb(::getElementText(xmlHistory, "old_color"))),
+    priorColor_(::xmlStringToFlossColor(::getElementText(xmlHistory,
+                                                         "old_color"))),
     coordinates_(::xmlToCoordinatesList(::getElementText(xmlHistory,
                                                          "coordinate_list")))
 { }
@@ -181,12 +184,12 @@ void fillRegionHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
   QDomElement itemElement(doc->createElement("history_item"));
   appendee->appendChild(itemElement);
   ::appendTextElement(doc, "tool", "fill region", &itemElement);
-  ::appendTextElement(doc, "tool_color",  ::rgbToString(toolColor_),
+  ::appendTextElement(doc, "tool_color",  ::flossColorToString(toolColor_),
                       &itemElement);
   ::appendTextElement(doc, "color_is_new",
                       ::boolToString(toolColorIsNew_),
                       &itemElement);
-  ::appendTextElement(doc, "old_color", ::rgbToString(priorColor_),
+  ::appendTextElement(doc, "old_color", ::flossColorToString(priorColor_),
                         &itemElement);
   ::appendCoordinatesList(doc, coordinates_, &itemElement);
 }
@@ -195,38 +198,45 @@ dockListUpdate fillRegionHistoryItem::
 performHistoryEdit(mutableSquareImageContainer* container,
                    historyDirection direction) const {
 
-  const QRgb newColor = toolColor_;
+  const flossColor newColor = toolColor_;
   if (direction == H_BACK) {
-    ::changeBlocks(&container->image_, coordinates_, priorColor_,
+    ::changeBlocks(&container->image_, coordinates_, priorColor_.qrgb(),
                    container->originalDimension_, true);
   }
   else { // forward
-    ::changeBlocks(&container->image_, coordinates_, newColor,
+    ::changeBlocks(&container->image_, coordinates_, newColor.qrgb(),
                    container->originalDimension_, true);
+    container->colorListCheckNeeded_ = true;
   }
   if (toolColorIsNew_) {
     if (direction == H_BACK) {
       container->removeColor(newColor);
-      return dockListUpdate(triC(), false, triC(newColor));
+      // the add will be an empty operation unless this history's fill
+      // completely overwrote the old color and the color list was
+      // updated to reflect that
+      bool colorAdded = container->addColor(priorColor_);
+      return dockListUpdate(priorColor_.color(), colorAdded, newColor.color());
     }
     else { // forward
       container->addColor(newColor);
-      return dockListUpdate(newColor, true);
+      return dockListUpdate(newColor.color(), true);
     }
   }
   else {
     if (direction == H_BACK) {
-      return dockListUpdate();
+      bool colorAdded = container->addColor(priorColor_);
+      return dockListUpdate(priorColor_.color(), colorAdded);
     }
     else { // forward
-      return dockListUpdate(newColor, false);
+      return dockListUpdate(newColor.color(), false);
     }
   }
 }
 
 detailHistoryItem::detailHistoryItem(const QDomElement& xmlHistory)
   : detailPixels_(::xmlToHistoryPixelList(::getElementText(xmlHistory,
-                                                           "history_pixel_list")))
+                                                           "history_pixel_list"))),
+    newColorsType_(::getElementText(xmlHistory, "new_colors_type"))
 {}
 
 void detailHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
@@ -236,6 +246,8 @@ void detailHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
   appendee->appendChild(itemElement);
   ::appendTextElement(doc, "tool", "detail", &itemElement);
   ::appendHistoryPixelList(doc, detailPixels_, &itemElement);
+  ::appendTextElement(doc, "new_colors_type", newColorsType_.prefix(),
+                      &itemElement);
 }
 
 dockListUpdate detailHistoryItem::
@@ -244,37 +256,43 @@ performHistoryEdit(mutableSquareImageContainer* container,
 
   if (direction == H_BACK) {
     QVector<triC> colorsToRemove;
-    for (QVector<historyPixel>::const_iterator it = detailPixels_.begin(),
-           end = detailPixels_.end(); it != end; ++it) {
-      ::changeOneBlock(&container->image_, (*it).x(), (*it).y(),
-                       (*it).oldColor().qrgb(), container->originalDimension_,
-                       true);
-      if ((*it).newColorIsNew()) {
-        colorsToRemove.push_back((*it).newColor());
+    for (int i = 0, size = detailPixels_.size(); i < size; ++i) {
+      const historyPixel thisPixel = detailPixels_[i];
+      ::changeOneBlock(&container->image_, thisPixel.x(), thisPixel.y(),
+                       thisPixel.oldColor().qrgb(),
+                       container->originalDimension_, true);
+      if (thisPixel.newColorIsNew()) {
+        colorsToRemove.push_back(thisPixel.newColor());
       }
     }
     container->removeColors(colorsToRemove);
     return dockListUpdate(triC(), false, colorsToRemove);
   }
   else { // forward
-    QVector<triC> colorsToAdd;
-    for (QVector<historyPixel>::const_iterator it = detailPixels_.begin(),
-           end = detailPixels_.end(); it != end; ++it) {
-      ::changeOneBlock(&container->image_, (*it).x(), (*it).y(),
-                       (*it).newColor().qrgb(), container->originalDimension_,
-                       true);
-      if ((*it).newColorIsNew()) {
-        colorsToAdd.push_back((*it).newColor());
+    QVector<flossColor> colorsToAdd;
+    QVector<triC> updateColors;
+    for (int i = 0, size = detailPixels_.size(); i < size; ++i) {
+      const historyPixel thisPixel = detailPixels_[i];
+      ::changeOneBlock(&container->image_, thisPixel.x(), thisPixel.y(),
+                       thisPixel.newColor().qrgb(),
+                       container->originalDimension_, true);
+      if (thisPixel.newColorIsNew()) {
+        const triC newColor = thisPixel.newColor();
+        updateColors.push_back(newColor);
+        colorsToAdd.push_back(flossColor(newColor, newColorsType_));
       }
     }
     container->addColors(colorsToAdd);
-    return dockListUpdate(colorsToAdd);
+    container->colorListCheckNeeded_ = true;
+    return dockListUpdate(updateColors);
   }
 }
 
 rareColorsHistoryItem::rareColorsHistoryItem(const QDomElement& xmlHistory)
   : items_(::xmlToColorChangeList(::getElementText(xmlHistory,
-                                                   "color_change_list"))) {}
+                                                   "color_change_list"))),
+    rareColorTypes_(::xmlStringToFlossSet(::getElementText(xmlHistory,
+                                                           "floss_list"))) {}
 
 void rareColorsHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
   const {
@@ -283,6 +301,7 @@ void rareColorsHistoryItem::toXml(QDomDocument* doc, QDomElement* appendee)
   appendee->appendChild(itemElement);
   ::appendTextElement(doc, "tool", "rare colors", &itemElement);
   ::appendColorChangeHistoryList(doc, items_, &itemElement);
+  ::appendFlossList(doc, rareColorTypes_, &itemElement);
 }
 
 dockListUpdate rareColorsHistoryItem::
@@ -290,16 +309,29 @@ performHistoryEdit(mutableSquareImageContainer* container,
                    historyDirection direction) const {
 
   if (direction == H_BACK) {
-    QVector<triC> colorsToAdd;
+    QVector<flossColor> colorsToAdd;
+    QVector<triC> updateColors;
     for (int i = 0, size = items_.size(); i < size; ++i) {
       const colorChange thisColorChange = items_[i];
+      const triC oldColor = thisColorChange.oldColor();
       ::changeBlocks(&container->image_, thisColorChange.coordinates(),
-                     thisColorChange.oldColor(), container->originalDimension_,
-                     true);
-      colorsToAdd.push_back(thisColorChange.oldColor());
+                     oldColor.qrgb(), container->originalDimension_, true);
+      updateColors.push_back(oldColor);
+      const QSet<flossColor>::const_iterator it =
+        rareColorTypes_.constFind(flossColor(oldColor));
+      if (it != rareColorTypes_.constEnd()) {
+        colorsToAdd.push_back(*it);
+      }
+      else {
+        if (!rareColorTypes_.empty()) {
+          // we're storing types but couldn't find one we should have
+          qWarning() << "Lost pixel in rareHistoryEdit" << ::ctos(oldColor);
+        }
+        colorsToAdd.push_back(flossColor(oldColor));
+      }
     }
     container->addColors(colorsToAdd);
-    return dockListUpdate(colorsToAdd);
+    return dockListUpdate(updateColors);
   }
   else { // forward
     QVector<triC> colorsToRemove;

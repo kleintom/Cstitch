@@ -29,13 +29,14 @@
 
 // special floss color codes
 const int DMC_COUNT = 427; // number of dmc colors
+const int ANCHOR_COUNT = 444; // number of anchor colors
 // DMC doesn't assign codes for white or ecru
 const int WHITE_CODE = -10;
 const int ECRU_CODE = -11;
 
 // a "bool with three states"
 enum triStateValue {triFalse = 0, triTrue = 1, triNoop = 2};
-// using a struct instead of a bare enum so that triState can be forward
+// using a class instead of a bare enum so that triState can be forward
 // declared
 class triState {
  public:
@@ -46,10 +47,10 @@ class triState {
   bool toBool() const {
     return (value_ == triTrue) ? true : false;
   }
-  bool operator==(const triStateValue value) const {
+  bool operator==(const triStateValue& value) const {
     return value_ == value;
   }
-  bool operator!=(const triStateValue value) const {
+  bool operator!=(const triStateValue& value) const {
     return value_ != value;
   }
  private:

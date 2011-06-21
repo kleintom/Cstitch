@@ -73,10 +73,10 @@ void inactiveImageClickBase::inactiveImageClick(QMouseEvent* event) {
 void inactiveImageClickBase::connectChangeColorDialog(colorDialog* dialog) {
 
   QObject::connect(dialog, SIGNAL(finished(int,
-                                           const triC& , const triC& )),
-                   parent(), SLOT(changeColorDialogFinished(int,
-                                                            const triC& ,
-                                                            const triC& )));
+                                           const triC& , const flossColor& )),
+                   parent(),
+                   SLOT(changeColorDialogFinished(int, const triC& ,
+                                                  const flossColor& )));
 }
 
 void changeOneTool::activeImageClick(QMouseEvent* event) {
@@ -112,10 +112,10 @@ void changeOneTool::activeImageClick(QMouseEvent* event) {
                                 originalImageWidth, originalImageHeight);
     dragCache_.matrix = matrix;
     const pairOfInts boxCoordinates(boxX, boxY);
-    const QRgb newColor = parent()->toolDock_->getToolLabelColor();
+    const flossColor newColor = parent()->toolDock_->getToolLabelColor();
     dragCache_.newColor = newColor;
     dragCache_.squaresVisited.insert(boxCoordinates);
-    label->setSquaresColor(newColor);
+    label->setSquaresColor(newColor.qrgb());
     label->addSquare(boxCoordinates);
     const int d = parent()->roughCurDim();
     label->update(x-d, y-d, 2*d, 2*d);
@@ -208,7 +208,7 @@ void fillTool::activeImageClick(QMouseEvent* event) {
   const int originalY = (y * originalImageHeight)/labelHeight;
   const Qt::MouseButton mouseButton = event->button();
   if (mouseButton == Qt::LeftButton) {
-    const QRgb newColor = parent()->toolDock_->getToolLabelColor();
+    const flossColor newColor = parent()->toolDock_->getToolLabelColor();
     const dockListUpdate update =
       parent()->curImage_->fillRegion(originalX, originalY, newColor);
     parent()->curImageUpdated(update);

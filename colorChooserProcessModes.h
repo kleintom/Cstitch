@@ -26,6 +26,7 @@
 #include "triC.h"
 
 class triState;
+class flossType;
 class colorChooserProcessMode;
 class QImage;
 class QDomDocument;
@@ -83,6 +84,7 @@ class colorChooserProcessMode : public QSharedData {
   const QVector<triC>& generatedColorList() const {
     return generatedColors_;
   }
+  // colorList = clickedColors + generatedColors
   virtual QVector<triC> colorList() const;
   void setClickedColorList(const QVector<triC>& colorList) {
     clickedColors_ = colorList;
@@ -113,7 +115,9 @@ class colorChooserProcessMode : public QSharedData {
   // completed but the color list doesn't need updating
   virtual triState performProcessing(QImage* image, int numColors,
                                      int numImageColors) = 0;
-  virtual bool modeIsDmcOnly() const = 0;
+  // if we're only using one floss type, return that type, otherwise
+  // return flossVariable
+  virtual flossType flossMode() const = 0;
   // return the mode description for this mode
   virtual QString modeText() const = 0;
   // return a status message for this mode
@@ -148,13 +152,12 @@ class processModeGroup {
   void setNewMode(const QString& mode);
   // clear the color lists of all modes in this group
   void clearColorLists();
-  bool modeIsDmcOnly() const { return curMode_->modeIsDmcOnly(); }
+  flossType flossMode() const;
   //// methods below delegate to curMode_
   QString modeText() const { return curMode_->modeText(); }
   processChange makeProcessChange() const {
     return curMode_->makeProcessChange();
   }
-  // defined in .cpp just so we don't need an include for triState
   triState performProcessing(QImage* image, int numColors,
                              int numImageColors);
   QString statusHint() const { return curMode_->statusHint(); }
@@ -196,7 +199,7 @@ class processModeGroup {
   QList<processModePtr> activeModes_;
 };
 
-// base for num_colors and num_colors_to_dmc modes
+// base for num_colors, num_colors_to_dmc, and num_colors_to_anchor modes
 class numColorsBaseModes : public colorChooserProcessMode {
  public:
   bool removeColor(const triC& ) { return true; }
@@ -216,7 +219,7 @@ class numColorsBaseModes : public colorChooserProcessMode {
 
 class numberOfColorsMode : public numColorsBaseModes {
  public:
-  bool modeIsDmcOnly() const { return false; }
+  flossType flossMode() const;
   QString modeText() const { return QObject::tr("Num Colors"); }
   QString toolTip() const {
     return QObject::tr("Click on colors and/or let the program pick a specified number of colors");
@@ -226,26 +229,42 @@ class numberOfColorsMode : public numColorsBaseModes {
 class numberOfColorsToDmcMode : public numColorsBaseModes {
  public:
   triC addColor(const triC& color, bool* added);
-  bool modeIsDmcOnly() const { return true; }
+  flossType flossMode() const;
   QString modeText() const { return QObject::tr("Num Colors to DMC"); }
   QString toolTip() const {
     return QObject::tr("Click on colors and/or let the program pick a specified number of DMC colors");
   }
 };
 
-class dmcMode : public colorChooserProcessMode {
+class numberOfColorsToAnchorMode : public numColorsBaseModes {
  public:
-  dmcMode();
+  triC addColor(const triC& color, bool* added);
+  flossType flossMode() const;
+  QString modeText() const { return QObject::tr("Num Colors to Anchor"); }
+  QString toolTip() const {
+    return QObject::tr("Click on colors and/or let the program pick a specified number of Anchor colors");
+  }
+};
+
+class fixedListBaseMode : public colorChooserProcessMode {
+ public:
+  fixedListBaseMode(const QVector<triC>& colors);
   QVector<triC> colorList() const { return generatedColorList(); }
   bool resetColorList() { return false; }
   bool removeColor(const triC& ) { return true; }
+  void appendColorList(QDomDocument* , QDomElement* ) { return; }
+  triState performProcessing(QImage* image, int numColors,
+                             int numImageColors);
+};
+
+class dmcMode : public fixedListBaseMode {
+ public:
+  dmcMode();
   processChange makeProcessChange() const {
     return processChange(false, false, false, QObject::tr("DMC colors"),
                          clickedColorList(), generatedColorList());
   }
-  triState performProcessing(QImage* image, int numColors,
-                             int numImageColors);
-  bool modeIsDmcOnly() const { return true; }
+  flossType flossMode() const;
   QString modeText() const { return QObject::tr("DMC"); }
   QString statusHint() const {
     return QObject::tr("Colors will be chosen from the displayed list of DMC colors");
@@ -253,7 +272,23 @@ class dmcMode : public colorChooserProcessMode {
   QString toolTip() const {
     return QObject::tr("Let the program choose colors from the DMC color list");
   }
-  void appendColorList(QDomDocument* , QDomElement* ) { return; }
+};
+
+class anchorMode : public fixedListBaseMode {
+ public:
+  anchorMode();
+  processChange makeProcessChange() const {
+    return processChange(false, false, false, QObject::tr("Anchor colors"),
+                         clickedColorList(), generatedColorList());
+  }
+  flossType flossMode() const;
+  QString modeText() const { return QObject::tr("Anchor"); }
+  QString statusHint() const {
+    return QObject::tr("Colors will be chosen from the displayed list of Anchor colors");
+  }
+  QString toolTip() const {
+    return QObject::tr("Let the program choose colors from the Anchor color list");
+  }
 };
 
 #endif

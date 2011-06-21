@@ -23,6 +23,7 @@
 #include <QtCore/QString>
 
 #include "triC.h"
+#include "floss.h"
 
 class pairOfInts;
 class pixel;
@@ -40,6 +41,9 @@ QString getElementText(const QDomDocument& doc,
                        const QString& elementName);
 QString getElementText(const QDomElement& element,
                        const QString& elementName);
+QString getElementAttribute(const QDomDocument& doc,
+                            const QString& elementName,
+                            const QString& attributeName);
 
 void appendColorList(QDomDocument* doc, const QVector<triC>& colors,
                      QDomElement* appendee,
@@ -66,7 +70,15 @@ QList<colorChange> xmlToColorChangeList(const QString& list);
 
 QString rgbToString(const triC& color);
 inline QString rgbToString(QRgb color) { return rgbToString(triC(color)); }
-QRgb xmlStringToRgb(QString string);
+QRgb xmlStringToRgb(const QString& string);
+
+QString flossColorToString(const flossColor& color);
+flossColor xmlStringToFlossColor(const QString& string);
+
+QString flossSetToString(const QSet<flossColor>& colors);
+QSet<flossColor> xmlStringToFlossSet(const QString& string);
+void appendFlossList(QDomDocument* doc, const QSet<flossColor>& colors,
+                     QDomElement* appendee);
 
 inline QString boolToString(bool b) { return b ? "true" : "false"; }
 inline bool stringToBool(const QString& s) {

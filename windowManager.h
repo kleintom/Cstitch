@@ -29,6 +29,8 @@
 #include "windowSavers.h"
 
 class triC;
+class flossType;
+class flossColor;
 class colorChooser;
 class squareWindow;
 class patternWindow;
@@ -139,11 +141,11 @@ class windowManager : public QObject {
   windowManager();
   // add a new colorChooser
   void addColorChooserWindow(colorChooser* window);
-  // add <image> with <colors> (all <dmc> or no) and image number <index>
-  // (incremented from the highest past value if -1) to the colorCompare
-  // object (creating colorCompare first if necessary)
+  // add <image> with <colors> (of floss type <type>) and image number
+  // <index> (incremented from the highest past value if -1) to the
+  // colorCompare object (creating colorCompare first if necessary)
   void addColorCompareImage(const QImage& image,
-                            const QVector<triC>& colors, bool dmc,
+                            const QVector<triC>& colors, flossType type,
                             colorCompareSaver saver, int imageIndex = -1);
   // the color compare image with index <imageIndex> was deleted
   void colorCompareImageDeleted(int imageIndex);
@@ -151,7 +153,7 @@ class windowManager : public QObject {
   // <dimension> to the squareWindow object (creating squareWindow first if
   // necessary)
   void addSquareWindow(const QImage& image, int dimension,
-                       const QVector<triC>& colors, bool dmc,
+                       const QVector<triC>& colors, flossType type,
                        squareWindowSaver saver,
                        int parentIndex, int imageIndex = -1);
   // the square compare image with index <imageIndex> was deleted
@@ -160,7 +162,7 @@ class windowManager : public QObject {
   // and history <xmlHistory> to the patternWindow object (creating
   // patternWindow first if necessary)
   void addPatternWindow(const QImage& image, int dimension,
-                        const QVector<triC>& colors, QRgb gridColor,
+                        const QVector<flossColor>& colors, QRgb gridColor,
                         patternWindowSaver saver,
                         int parentIndex, int imageIndex = -1);
   // the pattern image with index <imageIndex> was deleted
@@ -194,9 +196,10 @@ class windowManager : public QObject {
   // current environment (or 0s if the colorChooser object doesn't exist
   // yet)
   void frameWidthAndHeight(int* w, int* h) const;
-  // set the application version
-  void setVersion(const QString& version) { version_ = version; }
-  QString getVersion() const { return version_; }
+  void setProgramVersion(const QString& version) {
+    programVersion_ = version;
+  }
+  QString getProgramVersion() const { return programVersion_; }
 
  public slots:
   // save all current data to file
@@ -254,6 +257,7 @@ class windowManager : public QObject {
   QList<imageZoomWindow*> constructedWidgets() const;
   // common setup code for a new <stage> main window
   void configureNewWindow(imageZoomWindow* window, windowStage stage);
+  void setProjectVersion(const QString& projectVersion);
 
  private slots:
   void autoShowQuickHelp(bool show);
@@ -330,7 +334,10 @@ class windowManager : public QObject {
   QList<squareWindowSaver> squareWindowSavers_;
   QList<patternWindowSaver> patternWindowSavers_;
 
-  QString version_;
+  QString programVersion_;
+  // projectVersion is the same as programVersion_ until we load a project,
+  // at which point it becomes the project version(!).
+  QString projectVersion_;
 };
 
 #endif

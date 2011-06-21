@@ -65,10 +65,10 @@ class squareImageLabel : public imageLabelBase {
   void setImageSize(const QSize& size);
   void setImageWidth(int newWidth);
   void setImageHeight(int newHeight);
-  // user must call update
-  void setImageAndSize(const QImage& image, const QList<QRgb>& colors,
-                       int xSquareCount, int ySquareCount,
-                       bool imageIsOriginal);
+  // sets size to <image>'s size; user must call update
+  void setNewImage(const QImage& image, const QList<QRgb>& colors,
+                   int xSquareCount, int ySquareCount,
+                   bool imageIsOriginal);
   void updateImage(const QImage& image, const QList<QRgb>& colors,
                    const QRect& updateRectangle) {
     baseImage_ = image;
@@ -140,13 +140,14 @@ class squareImageLabel : public imageLabelBase {
   QPixmap scaledImage_;
   
   // number of horizontal squares in baseImage_
-  // (just a more convenient way of saying "original square dimension")
+  // (just a more convenient way of saying "original square dimension"
+  // (but always real scaled width for the original image))
   int xSquareCount_;
   int ySquareCount_; // (for convenience)
   // key is an image color, value is the square image square to draw for
   // that color
   QHash<QRgb, QPixmap> colorSquares_;
-  // square dimension of the scaled image
+  // square dimension of the scaled image (always 1 for the original image)
   int scaledDimension_;
   bool gridOn_;
   QRgb gridColor_;

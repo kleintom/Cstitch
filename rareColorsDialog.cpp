@@ -27,13 +27,20 @@
 #include <QtGui/QScrollArea>
 #include <QtGui/QPainter>
 
-#include "dmcList.h"
+#include "colorLists.h"
 #include "imageUtility.h"
 #include "triC.h"
 #include "utility.h"
 
 extern const int D_MAX; // max distance between two colors
 static const int ICON_SIZE = 32;
+
+class qRgbIntensity {
+ public:
+  bool operator()(QRgb c1, QRgb c2) const {
+    return triC(c1).intensity() < triC(c2).intensity();
+  }
+};
 
 rareColorsDialog::rareColorsDialog(const QHash<QRgb, int>& colorCounts)
   : cancelAcceptDialogBase(NULL), colorCounts_(colorCounts) {

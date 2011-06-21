@@ -43,7 +43,7 @@
 
 squareWindow::squareWindow(const QImage& newImage, int imageIndex,
                            int squareDimension, const QVector<triC>& colors,
-                           bool dmc, windowManager* winManager)
+                           flossType type, windowManager* winManager)
   : imageCompareBase(winManager),
     leftImage_(NULL), rightImage_(NULL), curImage_(NULL),
     noopTool_(this), changeOneTool_(this), changeAllTool_(this),
@@ -62,8 +62,8 @@ squareWindow::squareWindow(const QImage& newImage, int imageIndex,
   rightLabel()->setMouseTracking(true);
   leftLabel()->setMouseTracking(true);
 
-  addImage(originalImage(), 0, QVector<triC>(), false, 0);
-  addImage(newImage, squareDimension, colors, dmc, imageIndex);
+  addImage(originalImage(), 0, QVector<triC>(), flossVariable, 0);
+  addImage(newImage, squareDimension, colors, type, imageIndex);
   // everything is hidden now, so addImage doesn't know what's what,
   // so set focus by hand
   rightScroll()->setFocus();
@@ -168,8 +168,8 @@ void squareWindow::setConnections() {
           this, SLOT(processForwardHistoryAction()));
   connect(toolDock_, SIGNAL(announceToolChanged(squareToolCode )),
           this, SLOT(processToolChanged(squareToolCode)));
-  connect(toolDock_, SIGNAL(toolLabelColorRequested(const triC& , bool )),
-          this, SLOT(toolDockLabelColorRequested(const triC& , bool )));
+  connect(toolDock_, SIGNAL(toolLabelColorRequested(const triC& , flossType )),
+          this, SLOT(toolDockLabelColorRequested(const triC& , flossType )));
   connect(rightLabel(), SIGNAL(mouseMoved(QMouseEvent* )),
           this, SLOT(processRightMouseMove(QMouseEvent* )));
   connect(leftLabel(), SIGNAL(mouseMoved(QMouseEvent* )),
@@ -190,10 +190,12 @@ void squareWindow::setConnections() {
           this, SLOT(processDetailCall(int )));
   connect(toolDock_, SIGNAL(detailClearCall()),
           this, SLOT(processDetailClearCall()));
+  connect(toolDock_, SIGNAL(toolFlossTypeChanged(flossType )),
+          this, SLOT(processToolFlossTypeChanged(flossType )));
 }
 
 void squareWindow::addImage(const QImage& image, int squareDimension,
-                            const QVector<triC>& colors, bool dmc,
+                            const QVector<triC>& colors, flossType type,
                             int index) {
 
   const QString name = imageNameFromIndex(index);
@@ -206,7 +208,7 @@ void squareWindow::addImage(const QImage& image, int squareDimension,
   // create a new right image
   if (index) { // not the original image
     rightImage_ = new mutableSquareImageContainer(name, colors, image,
-                                                  squareDimension, dmc);
+                                                  squareDimension, type);
   }
   else {
     rightImage_ = new immutableSquareImageContainer(name, image);
@@ -222,6 +224,7 @@ void squareWindow::addImage(const QImage& image, int squareDimension,
   QAction* rightMenuAction = new QAction(name, this);
   rightMenuAction->setData(QVariant::fromValue(rightImage()));
   addRightImageMenuAction(rightMenuAction);
+  rightImage_->setCurrentToolFlossType(type);
   setCur(rightImage_);
   if ((!curImage_->isValid()) && curImage_->numColors()) {
     QMessageBox::information(this, tr("Info"),
@@ -265,8 +268,8 @@ void squareWindow::updateSubWidgetStates() {
   // an image is valid if it doesn't have too many (or no) colors
   if (curValid) {
     colorListDock_->setColorList(curImage_->colors());
-    toolDock_->setDmcOnly(curImage_->currentlyDMC());
     curTool_->setMouseHint();
+    toolDock_->setFlossType(curImage_->getCurrentToolFlossType());
   }
   else {
     colorListDock_->setColorList(QVector<triC>());
@@ -305,9 +308,9 @@ void squareWindow::colorDialogTracking(bool usingColorDialog,
   if (usingColorDialog) {
     deactivateWidgetsForColorDialog(true);
     if (changeAllRequest) { // context call for change all colors
-      connect(dialog, SIGNAL(finished(int, const triC& , const triC& )),
+      connect(dialog, SIGNAL(finished(int, const triC& , const flossColor& )),
               this, SLOT(changeAllDialogFinished(int, const triC& ,
-                                                 const triC& )));
+                                                 const flossColor& )));
     }
     else {
       curTool_->connectChangeColorDialog(dialog);
@@ -499,7 +502,7 @@ void squareWindow::processPatternButton(squareImagePtr image,
                                  image->backImageHistoryXml());
   winManager()->addPatternWindow(image->image(),
                                  squareDimension,
-                                 image->colors(),
+                                 image->flossColors(),
                                  leftLabel_->gridColor(),
                                  saver,
                                  parentIndex, patternIndex);
@@ -508,7 +511,6 @@ void squareWindow::processPatternButton(squareImagePtr image,
 void squareWindow::checkColorList() {
 
   const QVector<triC> colorsToRemove = curImage_->checkColorList();
-  //qDebug() << "findColor time: " << double(t.elapsed())/1000.;
   updateColorListAction_->setEnabled(curImage_->colorListCheckNeeded());
   const int numColorsRemoved = colorsToRemove.size();
   if (numColorsRemoved > 0) {
@@ -524,11 +526,11 @@ void squareWindow::checkColorList() {
 
 void squareWindow::processChangeAll(const QColor& oldColor) {
 
-  activateColorDialog(oldColor, toolDock_->dmcOnly(), QVector<triC>());
+  activateColorDialog(oldColor, toolDock_->getFlossType(), QVector<triC>());
 }
 
 void squareWindow::
-activateColorDialog(const triC& currentColor, bool dmcOnly,
+activateColorDialog(const triC& currentColor, flossType type,
                     const QVector<triC>& replacementColors,
                     bool changeToolColor) {
 
@@ -536,30 +538,24 @@ activateColorDialog(const triC& currentColor, bool dmcOnly,
   winManager()->frameWidthAndHeight(&frameWidth, &frameHeight);
   if (replacementColors.isEmpty() && !changeToolColor) {
     colorChooseDialog_ = new colorDialog(curImage_->colors(), currentColor,
-                                         dmcOnly, frameWidth, frameHeight);
+                                         type, frameWidth, frameHeight);
     colorDialogTracking(true, colorChooseDialog_, true);
   }
   else {
     colorChooseDialog_ = new colorDialog(replacementColors,
                                          curImage_->colors(), currentColor,
-                                         dmcOnly, frameWidth, frameHeight);
+                                         type, frameWidth, frameHeight);
     colorDialogTracking(true, colorChooseDialog_);
   }
   colorChooseDialog_->show();
 }
 
-void squareWindow::processChangeAll(const QColor& oldColor,
-                                    const QColor& newColor) {
+void squareWindow::processChangeAll(const triC& oldColor,
+                                    const flossColor& newColor) {
 
-  if (oldColor.isValid() && newColor.isValid()) {
-    const dockListUpdate update =
-      curImage_->changeColor(oldColor.rgb(), newColor.rgb());
-    curImageUpdated(update);
-  }
-  else {
-    qWarning() << "Bad color in processChangeAll:" << ::ctos(oldColor) <<
-      ::ctos(newColor);
-  }
+  const dockListUpdate update = curImage_->changeColor(oldColor.qrgb(),
+                                                       newColor);
+  curImageUpdated(update);
 }
 
 void squareWindow::processImageClickLR(const leftRightAccessor& lra,
@@ -705,18 +701,18 @@ void squareWindow::processMouseRelease(QMouseEvent* ) {
 
 void squareWindow::changeAllDialogFinished(int returnCode,
                                            const triC& oldColor,
-                                           const triC& newColor) {
+                                           const flossColor& newColor) {
 
   if (returnCode == QDialog::Accepted) {
-    processChangeAll(oldColor.qc(), newColor.qc());
+    processChangeAll(oldColor.qrgb(), newColor);
   }
 }
 
 void squareWindow::changeColorDialogFinished(int returnCode, const triC& ,
-                                             const triC& newColor) {
+                                             const flossColor& newColor) {
 
   if (returnCode == QDialog::Accepted) {
-    toolDock_->setToolLabelColor(newColor.qrgb());
+    toolDock_->setToolLabelColor(newColor);
   }
 }
 
@@ -754,7 +750,7 @@ void squareWindow::requestSquareColor(int originalX, int originalY,
       }
     }
   }
-  activateColorDialog(oldColor, toolDock_->dmcOnly(), neighborColors);
+  activateColorDialog(oldColor, toolDock_->getFlossType(), neighborColors);
 }
 
 QImage squareWindow::gridedImage(const QImage& image, int originalSquareDim,
@@ -840,7 +836,7 @@ void squareWindow::processDetailCall(int numColors) {
 
   const dockListUpdate update =
     curImage_->performDetailing(originalImage(), detailTool_.coordinates(),
-                                numColors, toolDock_->dmcOnly());
+                                numColors, toolDock_->getFlossType());
   ensureDetailSquaresCleared();
   curImageUpdated(update);
 }
@@ -863,17 +859,17 @@ void squareWindow::displayImageInfo() {
     const int squareDim = curImage_->originalDimension();
     const int xBoxes = curImage_->originalWidth()/squareDim;
     const int yBoxes = curImage_->originalHeight()/squareDim;
-    const QString dmc = curImage_->currentlyDMC() ?
-      "contains only DMC colors." :
-      "contains at least one non-DMC color.";
-
+    const flossType colorsType = ::getFlossType(curImage_->flossColors());
+    const QString flossString = imageInfoFlossString(colorsType);
+    const QString maybeAnd = (flossString == "") ? ", and" : ", ";
+    const QString maybeComma = (flossString == "") ? "" : ", and ";
     QMessageBox::information(this, curImage_->name(), curImage_->name() +
                              tr(" currently has dimensions ") +
                              ::itoqs(width) + "x" + ::itoqs(height) +
                              tr(", box dimension ") + ::itoqs(squareDim) +
-                             tr(", is ") + ::itoqs(xBoxes) +
-                             tr(" by ") + ::itoqs(yBoxes) + tr(" boxes,") +
-                             tr(" and ") + dmc);
+                             maybeAnd + tr(" is ") + ::itoqs(xBoxes) +
+                             tr(" by ") + ::itoqs(yBoxes) + tr(" boxes") +
+                             maybeComma + flossString + tr("."));
   }
 }
 
@@ -898,10 +894,9 @@ void squareWindow::writeCurrentHistory(QDomDocument* doc,
 void squareWindow::updateImageHistory(const QDomElement& xml) {
 
   const int imageIndex = ::getElementText(xml, "index").toInt();
-  const QDomElement& historyElement = xml.firstChildElement("history");
   squareImagePtr container = squareImageFromIndex(imageIndex);
   if (container) {
-    container->updateImageHistory(historyElement);
+    container->updateImageHistory(xml);
   }
   else {
     qWarning() << "Lost image in updateImageHistory:" << imageIndex;
@@ -1107,15 +1102,34 @@ void squareWindow::updateImageLabelImage() {
   for (int i = 0, size = colors.size(); i < size; ++i) {
     rgbColors.push_back(colors[i].qrgb());
   }
-  activeSquareLabel()->setImageAndSize(curImage_->image(),
-                                       rgbColors,
-                                       curImage_->xSquareCount(),
-                                       curImage_->ySquareCount(),
-                                       curImage_->isOriginal());
+  activeSquareLabel()->setNewImage(curImage_->image(),
+                                   rgbColors,
+                                   curImage_->xSquareCount(),
+                                   curImage_->ySquareCount(),
+                                   curImage_->isOriginal());
 }
 
 void squareWindow::toolDockLabelColorRequested(const triC& currentColor,
-                                               bool dmcOnly) {
+                                               flossType type) {
 
-  activateColorDialog(currentColor, dmcOnly, QVector<triC>(), true);
+  activateColorDialog(currentColor, type, QVector<triC>(), true);
+}
+
+void squareWindow::processToolFlossTypeChanged(flossType newType) {
+
+  curImage_->setCurrentToolFlossType(newType);
+}
+
+void squareWindow::checkAllColorLists() {
+
+  const QList<imagePtr> curImages = images();
+  for (int i = 0, size = curImages.size(); i < size; ++i) {
+    squareImagePtr thisImage(curImages[i]->squareContainer());
+    if (thisImage == curImage_) {
+      checkColorList();
+    }
+    else {
+      thisImage->checkColorList();
+    }
+  }
 }

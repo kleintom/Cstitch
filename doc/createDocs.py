@@ -20,8 +20,10 @@
 # Convert an xml file containing documentation data into various
 # formats for use in areas such as application help or webpage help.
 
-import xml.dom.minidom, re
-from abc import ABCMeta, abstractmethod
+import xml.dom.minidom, re, os.path
+#from abc import ABCMeta, abstractmethod
+
+sourceDirectory = os.path.dirname(os.path.realpath(__file__))
 
 ## functions ##################################################################
 def getText(node, tag):
@@ -38,7 +40,7 @@ def getText(node, tag):
 class parts:
     """Abstract base class for data holding classes"""
 
-    __metaclass__ = ABCMeta
+    #__metaclass__ = ABCMeta
 
     def __init__(self, element):
         self.title = getText(element, 'title')
@@ -46,8 +48,10 @@ class parts:
         self.mainBody = getText(element, 'mainBody')
         self.outro = getText(element, 'outro')
 
-    @abstractmethod
-    def cleanData(): pass
+    #@abstractmethod
+    def cleanData(): 
+        """Clean this object's data for its required use."""
+        pass
 
 class qtParts(parts):
     """Data handler for data destined for QT docs"""
@@ -93,11 +97,11 @@ class singleWebParts(parts):
 
 class sections:
     """Sections consists of a collection of parts, loaded from an
-    external xml source"""
+    external xml source."""
 
     def __init__(self, xmlFilename, partsType):
         """Load "pages" of data from <xmlFilename>; <partsType>
-        determines the type of object used to hold the data"""
+        determines the type of object used to hold the data."""
         if partsType == "multi": # Qt doc: multiple output files
             createParts = lambda element: qtParts(element)
         elif partsType == "singleWeb":
@@ -114,19 +118,22 @@ class sections:
 #### processor classes
 class sectionsProcessor:
     """Abstract base class for classes that handle the formatting and
-    writing of doc data"""
+    writing of doc data."""
 
-    __metaclass__ = ABCMeta
+    #__metaclass__ = ABCMeta
 
-    @abstractmethod
-    def processSections(self): pass
+    #@abstractmethod
+    def processSections(self):
+        """Process the individual sections of data this object holds."""
+        pass
 
     def writeHtml(self, outputFile, htmlTitle, css, htmlBody):
         """Write html to <outputFile>.  <css> should be a string
         holding all css instructions that belong in <head>.  The
         header title is <htmlTitle> and the html body is <htmlBody>."""
 
-        template = open('docTemplate.html').read()
+        templateFile = os.path.join(sourceDirectory, 'docTemplate.html')
+        template = open(templateFile).read()
         template = re.sub(r'@@title', htmlTitle, template)
         template = re.sub(r'@@css', css, template)
         template = re.sub(r'@@body', htmlBody, template)
@@ -135,7 +142,7 @@ class sectionsProcessor:
         outFile.write(template)
 
 class qtPageProcessor(sectionsProcessor):
-    """Processor for producing Qt multi page docs"""
+    """Processor for producing Qt multi page docs."""
 
     def __init__(self, xmlFilename):
         self.sections = sections(xmlFilename, "multi")
@@ -156,12 +163,12 @@ class qtPageProcessor(sectionsProcessor):
 
     def writeNav(self, direction, href, title):
         """Return a "navigation" string used to navigate through the
-        documentation"""
+        documentation."""
         return direction + ': <a href="' + href + '">' + title + '</a>;\n'
 
     def previousStrings(self, index):
         """Return a [filename, title] navigation pair for the page
-        prior to <index>"""
+        prior to <index>."""
         if index != 0:
             filename = self.sections.pages[index - 1].filename()
             title = self.sections.pages[index - 1].title
@@ -173,7 +180,7 @@ class qtPageProcessor(sectionsProcessor):
 
     def nextStrings(self, index, lastIndex):
         """Return a [filename, title] navigation pair for the page
-        after <index>"""
+        after <index>."""
         if index != lastIndex:
             filename = self.sections.pages[index + 1].filename()
             title = "The " + self.sections.pages[index + 1].title + " panel"
@@ -204,7 +211,7 @@ class qtPageProcessor(sectionsProcessor):
                                                   overviewFile,
                                                   overviewTitle)
             navLine = "<p>\n" + navLine.strip().rstrip(";") + "\n</p>"
-            outputFile = page.filename()
+            outputFile = os.path.join(sourceDirectory, page.filename())
             self.writeHtml(outputFile, self.sections.pages[i].title,
                            self.css(), 
                            navLine + page.allTextParts() + navLine)
@@ -229,16 +236,16 @@ class singleWebProcessor(sectionsProcessor):
         htmlBody = ""
         for page in self.sections.pages:
             htmlBody = htmlBody + page.mainBody
-        self.writeHtml("doc.shtml", "Cstitch documentation",
-                       self.css(), htmlBody)
-        self.writeHtml("web/doc.shtml", "Cstitch documentation",
-                       self.css(), htmlBody)
+        self.writeHtml(os.path.join(sourceDirectory, "doc.shtml"),
+                       "Cstitch documentation", self.css(), htmlBody)
+        self.writeHtml(os.path.join(sourceDirectory, "web", "doc.shtml"),
+                       "Cstitch documentation", self.css(), htmlBody)
 
 ## main #######################################################################
 
 if __name__ == '__main__':
 
-    dataFile = 'docData.xml'
+    dataFile = os.path.join(sourceDirectory, 'docData.xml')
 
     qtDoc = qtPageProcessor(dataFile)
     qtDoc.processSections()

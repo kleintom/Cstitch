@@ -1,6 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file alias="about.png">icons/32x32_about.png</file>
     <file alias="aboutIcon.png">icons/aboutIcon.png</file>
     <file alias="changeAll.png">icons/32x32_changeAll.png</file>
     <file alias="colorChooser.png">icons/32x32_colorChooser.png</file>

@@ -1,0 +1,49 @@
+Compiling Cstitch from source on Linux.
+
+
+1.  Install the QT (gui toolkit) headers and libraries.
+
+On Debian-based systems the package you're after is probably called
+libqt4-dev - it provides the QT header files and pulls in the required
+librairies and build tools.
+From a terminal (as root):
+     apt-get install libqt4-dev
+(If you're not using a Debian-based distribution you'll need to
+replace apt-get with your distribution's package installer, and the name of
+the qt development package may be different for your distribution.)
+     
+2.  Download the CStitch source files.
+
+It's possible to download the files as a tarball from the project
+page (the "snapshot" link at
+http://cstitch.git.sourceforge.net/git/gitweb.cgi?p=cstitch/cstitch;a=summary),
+but I recommend you download them instead as a git repository.
+Downloading in repository form will make it simple to update to the
+latest version at any time.
+
+To populate the initial git repository (run one time only):
+     git clone git://cstitch.git.sourceforge.net/gitroot/cstitch/cstitch
+
+The git command will create a directory named cstitch and download the
+latest version of the CStitch files into that directory.
+
+If you decide you want to download a new version of the CStitch files
+at some later point, just run 'git pull' from the cstitch directory
+and all files will be updated to the latest version.
+
+3.  Download the program icon files.
+Download the icons zip file from
+http://sourceforge.net/projects/cstitch/files/Cstitch/Icons/
+and unzip it in the cstitch/icons/ directory.
+
+4.  Generate the documentation.
+From the cstitch directory run 'doc/createDocs.py'.
+
+5.  Generate the build files.
+From the cstitch directory run the following:
+     qmake -project (generates a cstitch.pro file)
+     progen (adds some options to the cstitch.pro file)
+     qmake (generates a Makefile based on the cstitch.pro contents)
+
+6.  Compile.
+From the cstitch directory run 'make' (generates the 'cstitch' executable).

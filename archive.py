@@ -37,7 +37,7 @@ class archiver:
         self.versionsDir = "versions/"
         # figure out the version of our binary (or quit)
         self.version = ""
-        versionRE = re.compile(r'setVersion\("([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+"')
+        versionRE = re.compile(r'setProgramVersion\("([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+"')
         for line in open("main.cpp"):
             found = versionRE.search(line)
             if found:

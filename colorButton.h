@@ -22,7 +22,7 @@
 
 #include "imageUtility.h"
 
-#include <QtGui/QToolButton>
+#include <QtWidgets/QToolButton>
 #include <QtGui/QColor>
 
 class QIcon;

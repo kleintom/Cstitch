@@ -50,10 +50,10 @@ typedef QExplicitlySharedDataPointer<imageContainer> imagePtr;
 class imageContainer : public QSharedData {
 
  public:
-  // <dmc> if the initial image is DMC colors only
   imageContainer(const QString& imageName, const QSize initialImageSize,
                  flossType type)
    : name_(imageName), scaledSize_(initialImageSize), flossType_(type) {}
+  virtual ~imageContainer() {}
   virtual const squareImageContainer* squareContainer() const { return NULL; }
   virtual squareImageContainer* squareContainer() { return NULL; }
   QString name() const { return name_; }
@@ -99,7 +99,6 @@ class imageContainer : public QSharedData {
   QSize scaledSize_; // current scaled size
   // are the colors for this image all of one floss type?
   const flossType flossType_;
-
 };
 // make imagePtr known to QVariant
 Q_DECLARE_METATYPE(imagePtr)

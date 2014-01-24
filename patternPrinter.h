@@ -20,8 +20,8 @@
 #ifndef PATTERNPRINTER_H
 #define PATTERNPRINTER_H
 
-#include <QtGui/QPainter>
-#include <QtGui/QPrinter>
+#include <QPainter>
+#include <QtPrintSupport/QPrinter>
 
 #include "floss.h"
 #include "patternImageContainer.h"

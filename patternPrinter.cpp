@@ -24,7 +24,7 @@
 #include <QtCore/QProcess>
 
 #include <QtGui/QImage>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 
 #include "patternMetadata.h"
 #include "imageUtility.h"
@@ -45,6 +45,9 @@ patternPrinter::patternPrinter(patternImagePtr image,
 void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
 
   printer_.setOutputFormat(QPrinter::PdfFormat);  // actually default
+  //qreal l,r,t,b;
+  //printer_.getPageMargins(&l, &t, &r, &b, QPrinter::Point);
+  printer_.setPageMargins(.35, .35, .35, .35, QPrinter::Inch);
   const QRect printerRect = printer_.pageRect();
   printerWidth_ = printerRect.width();
   printerHeight_ = printerRect.height();
@@ -376,6 +379,13 @@ int patternPrinter::drawLegend() {
   return ystart + legendHeight;
 }
 
+class flossIntensity {
+ public:
+  bool operator()(const typedFloss& f1, const typedFloss& f2) const {
+    return ::definiteIntensityCompare(f1.color(), f2.color());
+  }
+};
+
 void patternPrinter::drawColorList(int startHeight) {
 
   painter_.save();
@@ -428,7 +438,7 @@ void patternPrinter::drawColorList(int startHeight) {
   int xtab = 0;
   bool partial = true; // the first page list may be a partial page
   QVector<typedFloss> flossVector = ::rgbToFloss(colors_);
-  qSort(flossVector.begin(), flossVector.end());
+  std::sort(flossVector.begin(), flossVector.end(), flossIntensity());
 
   // build a color count map
   QHash<QRgb, int> countsHash;
@@ -460,9 +470,9 @@ void patternPrinter::drawColorList(int startHeight) {
         painter_.setFont(boldFont);
         if (partial) { // second column on first page of listing
           yused = yusedSaved;
-          drawListHeader(xtab, 2 * fontHeight + yused, countTab,
+          drawListHeader(xtab, fontHeight + yused, countTab,
                          codeTab, nameTab);
-          yused += 2 * fontHeight;
+          yused += fontHeight;
         }
         else {
           yused = 0;
@@ -533,12 +543,12 @@ QString patternPrinter::flossToCode(const typedFloss& f,
   }
 }
 
-void patternPrinter::drawListHeader(int margin_, int y, int countTab,
+void patternPrinter::drawListHeader(int margin, int y, int countTab,
                                     int codeTab, int nameTab) {
 
-  painter_.drawText(margin_ + countTab, y, QObject::tr("Count"));
-  painter_.drawText(margin_ + codeTab, y, QObject::tr("Code"));
-  painter_.drawText(margin_ + nameTab, y, QObject::tr("Name"));
+  painter_.drawText(margin + countTab, y, QObject::tr("Count"));
+  painter_.drawText(margin + codeTab, y, QObject::tr("Code"));
+  painter_.drawText(margin + nameTab, y, QObject::tr("Name"));
 }
 
 bool patternPrinter::drawPatternPages() {

@@ -21,9 +21,9 @@
 
 #include <QtCore/QDebug>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPainter>
+#include <QtWidgets/QMessageBox>
+#include <QMouseEvent>
+#include <QPainter>
 
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
@@ -69,8 +69,7 @@ patternImageContainer::patternImageContainer(const QImage& squareImage,
   : ref(0), imageName_(imageName), squareDimension_(squareDimension),
     baseSymbolDim_(baseSymbolDim), symbolDimension_(baseSymbolDim),
     squareImage_(squareImage), flossColors_(colors),
-    symbolChooser_(baseSymbolDim,
-                   patternImageContainer::colors()),
+    symbolChooser_(baseSymbolDim, patternImageContainer::colors()),
     viewingSquareImage_(false) {
 
   generateColorSquares();
@@ -89,7 +88,7 @@ void patternImageContainer::generateColorSquares() {
 QImage patternImageContainer::patternImageCurSymbolSize() {
 
   const QHash<QRgb, QPixmap> symbols =
-    symbolChooser_.getSymbols(colors(), symbolDimension_);
+    symbolChooser_.getSymbols(symbolDimension_);
   const int xBoxes = squareImage_.width()/squareDimension_;
   const int yBoxes = squareImage_.height()/squareDimension_;
   QImage returnImage(xBoxes * symbolDimension_, yBoxes * symbolDimension_,
@@ -130,8 +129,11 @@ bool patternImageContainer::changeSymbol(const triC& color) {
   const QVector<patternSymbolIndex> availableSymbols =
     symbolChooser_.symbolsAvailable(color, baseSymbolDim_);
   if (!availableSymbols.empty()) {
+    const QPixmap originalSymbol = 
+      symbolChooser_.getSymbol(color, baseSymbolDim_).symbol();
     symbolDialog dialog(symbolChooser_.symbolsAvailable(color,
-                                                        baseSymbolDim_));
+                                                        baseSymbolDim_),
+                        originalSymbol);
     const int returnCode = dialog.exec();
     if (returnCode == QDialog::Accepted) {
       const int oldIndex = symbolChooser_.colorIndex(color);
@@ -176,12 +178,12 @@ QPixmap patternImageContainer::symbolNoBorder(const triC& color,
 
 QHash<QRgb, QPixmap> patternImageContainer::symbols() {
 
-  return symbolChooser_.getSymbols(colors(), symbolDimension_);
+  return symbolChooser_.getSymbols(symbolDimension_);
 }
 
 QHash<QRgb, QPixmap> patternImageContainer::symbolsNoBorder(int symbolDim) {
 
-  return symbolChooser_.getSymbolsNoBorder(colors(), symbolDim);
+  return symbolChooser_.getSymbolsNoBorder(symbolDim);
 }
 
 bool patternImageContainer::updatePatternImage(const triC& color,

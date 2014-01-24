@@ -88,6 +88,7 @@ class dockListUpdate {
 class historyItem : public QSharedData {
 
  public :
+  virtual ~historyItem() {}
   // append the xml version of this history item to <appendee>
   virtual void toXml(QDomDocument* doc, QDomElement* appendee) const = 0;
   // perform a history edit on <container> given the data of this history

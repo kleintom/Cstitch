@@ -19,13 +19,13 @@
 
 #include "imageSaverWindow.h"
 
-#include <QtGui/QMenu>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPrinter>
-#include <QtGui/QPainter>
-#include <QtGui/QImageWriter>
-#include <QtGui/QImageReader>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtPrintSupport/QPrinter>
+#include <QPainter>
+#include <QImageWriter>
+#include <QImageReader>
 
 #include "sliderSpinBoxDialog.h"
 #include "utility.h"
@@ -64,7 +64,7 @@ QString imageSaverWindow::getValidSaveFile(const QList<QByteArray>& formats) {
       QFileDialog::getSaveFileName(this, tr("Save image"), ".", extensions);
     // return if the user canceled or the extension is valid
     if (returnString.isEmpty() ||
-        formats.contains(::extension(returnString).toAscii())) {
+        formats.contains(::extension(returnString).toLatin1())) {
       return returnString;
     }
     QMessageBox messageBox;

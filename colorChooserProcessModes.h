@@ -80,6 +80,7 @@ class colorChooserProcessMode : public QSharedData {
   // input the color list for this mode
   colorChooserProcessMode(const QVector<triC>& colors = QVector<triC>())
    : clickedColors_(colors) {}
+  virtual ~colorChooserProcessMode() {}
   const QVector<triC>& clickedColorList() const { return clickedColors_; }
   const QVector<triC>& generatedColorList() const {
     return generatedColors_;

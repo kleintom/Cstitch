@@ -23,10 +23,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
-#include <QtGui/QImageWriter>
-#include <QtGui/QPainter>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QImageWriter>
+#include <QPainter>
 
 extern const int PROGRESS_X_COORDINATE;
 extern const int PROGRESS_Y_COORDINATE;
@@ -123,4 +123,16 @@ void setFontHeight(QPainter* painter, int height) {
       return;
     }
   }
+}
+
+QStringList existingFiles(const QStringList& fileList) {
+
+  QStringList returnList;
+  for (int i = 0, size = fileList.size(); i < size; ++i) {
+    const QFile thisFile(fileList[i]);
+    if (thisFile.exists()) {
+      returnList.push_back(thisFile.fileName());
+    }
+  }
+  return returnList;
 }

@@ -23,10 +23,10 @@
 
 #include <QtCore/QDebug>
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QMenu>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QPainter>
+#include <QtWidgets/QMenu>
 
 #include "triC.h"
 #include "imageProcessing.h"

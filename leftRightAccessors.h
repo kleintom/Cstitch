@@ -45,6 +45,7 @@ class baseAccessor {
   friend class leftRightAccessor;
  public:
   explicit baseAccessor(const imageCompareBase* parent) : parent_(parent) {}
+  virtual ~baseAccessor() {}
   virtual QScrollArea* scroll() const = 0;
   virtual QScrollArea* oppositeScroll() const = 0;
   virtual stateLabel* toolbarLabel() const = 0;

@@ -19,10 +19,10 @@
 
 #include "dimensionComputer.h"
 
-#include <QtGui/QSpinBox>
-#include <QtGui/QLabel>
-#include <QtGui/QGroupBox>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QVBoxLayout>
 
 #include "utility.h"
 

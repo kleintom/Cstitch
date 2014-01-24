@@ -61,6 +61,7 @@ class colorTransformer;
 // identity transformation
 class colorTransformer {
  public:
+  virtual ~colorTransformer() {}
   // create the right kind of transformer based on <type>;
   // caller is responsible for destruction of the returned pointer
   static colorTransformerPtr createColorTransformer(flossType type);
@@ -75,7 +76,6 @@ class colorTransformer {
 // return whatever's given unchanged
 class variableTransformer : public colorTransformer {
  public:
-  ~variableTransformer();
   QRgb transform(QRgb input) const { return input; }
   triC transform(const triC& input) const { return input; }
   QVector<triC> transform(const QVector<triC>& colors) const {
@@ -86,7 +86,6 @@ class variableTransformer : public colorTransformer {
 // transform to the "nearest" dmc color
 class dmcTransformer : public colorTransformer {
  public:
-  ~dmcTransformer();
   QRgb transform(QRgb input) const {
     if (!colorHash_.isEmpty()) {
       return colorHash_[input];

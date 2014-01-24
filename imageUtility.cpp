@@ -21,9 +21,9 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/qmath.h>
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
+#include <QtWidgets/QWidget>
+#include <QPainter>
+#include <QPen>
 
 extern const int D_MAX;
 
@@ -168,6 +168,28 @@ void colorCounts(const QImage& image, int squareSize,
       }
       hashRef[gij] += dup/squareSize;
       i += dup - squareSize;
+    }
+  }
+}
+
+bool definiteIntensityCompare(const triC& c1, const triC& c2) {
+
+  const int c1Intensity = c1.intensity();
+  const int c2Intensity = c2.intensity();
+
+  if (c1Intensity != c2Intensity) {
+    return c1Intensity < c2Intensity;
+  }
+  else {
+    // return whichever is first in the dictionary order
+    if (c1.r() != c2.r()) {
+      return c1.r() < c2.r();
+    }
+    else if (c1.g() != c2.g()) {
+      return c1.g() < c2.g();
+    }
+    else {
+      return c1.r() < c2.r();
     }
   }
 }

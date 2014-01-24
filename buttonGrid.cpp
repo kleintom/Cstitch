@@ -21,10 +21,10 @@
 
 #include <QtCore/qmath.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
-#include <QtGui/QMouseEvent>
+#include <QtWidgets/QApplication>
+#include <QPainter>
+#include <QPen>
+#include <QMouseEvent>
 
 #include "triC.h"
 
@@ -109,7 +109,7 @@ void buttonGrid::paintEvent(QPaintEvent* ) {
     painter.save();
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(Qt::black, 1.2, Qt::DotLine));
-    painter.drawRoundedRect(QRect(gridX_*buttonDim_ + 4, gridY_*buttonDim_ + 4,
+    painter.drawRoundedRect(QRect(gridX_ * buttonDim_ + 4, gridY_ * buttonDim_ + 4,
                                   buttonDim_ - 8, buttonDim_ - 8), 0., 0.);
     painter.restore();
   }
@@ -120,7 +120,11 @@ void buttonGrid::mousePressEvent(QMouseEvent* event) {
   if (event->button() == Qt::LeftButton) {
     gridX_ = event->x()/buttonDim_;
     gridY_ = event->y()/buttonDim_;
-    emit buttonSelected(gridY_*buttonsPerRow_ + gridX_);
+    const int index = gridY_ * buttonsPerRow() + gridX_;
+    if (index >= icons_.size() || index < 0) {
+      return;
+    }
+    emit buttonSelected(index);
     update();
   }
 }
@@ -139,7 +143,11 @@ void colorButtonGrid::mousePressEvent(QMouseEvent* event) {
   if (event->button() == Qt::LeftButton) {
     int gridX = event->x()/buttonDim();
     int gridY = event->y()/buttonDim();
-    int index = gridY*buttonsPerRow() + gridX;
+    const int index = gridY * buttonsPerRow() + gridX;
+    // click on an empty grid tile does nothing
+    if (index >= colors_.size() || index < 0) {
+      return;
+    }
     setButtonClickedX(gridX);
     setButtonClickedY(gridY);
     update();
@@ -149,10 +157,14 @@ void colorButtonGrid::mousePressEvent(QMouseEvent* event) {
 
 void colorButtonGrid::focusButton(int x, int y) {
 
+  const int buttonCount = y * buttonsPerRow() + x;
+  if (buttonCount >= colors_.size() || buttonCount < 0) {
+    return;
+  }
   setButtonClickedX(x);
   setButtonClickedY(y);
   update();
-  emit buttonSelected(colors_[y*buttonsPerRow() + x].qrgb(), x, y);
+  emit buttonSelected(colors_[buttonCount].qrgb(), x, y);
 }
 
 QSize colorButtonGrid::sizeHint() const {

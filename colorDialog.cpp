@@ -24,16 +24,16 @@
 #include <QtCore/qmath.h>
 #include <QtCore/QDebug>
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QApplication>
-#include <QtGui/QComboBox>
-#include <QtGui/QPainter>
-#include <QtGui/QCloseEvent>
-#include <QtGui/QColorDialog>
-#include <QtGui/QDesktopWidget>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QPainter>
+#include <QCloseEvent>
+#include <QtWidgets/QColorDialog>
+#include <QtWidgets/QDesktopWidget>
 
 #include "colorLists.h"
 #include "colorButton.h"
@@ -402,12 +402,10 @@ QSize colorDialog::sizeHint() const {
 
   w += 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
   h += 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-#ifdef Q_OS_WIN
   // [yuk. I don't know why these are needed - if only updateGeometry()
   // worked...]
   w += 2;
   h += 2;
-#endif
   return QSize(w, h);
 }
 

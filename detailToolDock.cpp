@@ -19,11 +19,11 @@
 
 #include "detailToolDock.h"
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QSpinBox>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 
 detailToolDock::detailToolDock(QWidget* parent)
   : QWidget(parent) {

@@ -23,11 +23,11 @@
 
 #include <QtCore/qmath.h>
 
-#include <QtGui/QSplitter>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QScrollArea>
-#include <QtGui/QScrollBar>
+#include <QtWidgets/QSplitter>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QScrollBar>
 
 #include "windowManager.h"
 #include "imageLabel.h"
@@ -91,6 +91,7 @@ void imageCompareBase::constructScrolling() {
   leftScroll_->viewport()->setAutoFillBackground(true);
   leftScroll_->setFrameStyle(QFrame::Box|QFrame::Plain);
   leftScroll_->installEventFilter(this);
+  leftScroll_->viewport()->installEventFilter(this);
   leftScroll_->hide();
 
   rightScroll_ = new QScrollArea(this);
@@ -98,6 +99,7 @@ void imageCompareBase::constructScrolling() {
   rightScroll_->viewport()->setAutoFillBackground(true);
   rightScroll_->setFrameStyle(QFrame::Box|QFrame::Plain);
   rightScroll_->installEventFilter(this);
+  rightScroll_->viewport()->installEventFilter(this);
   rightScroll_->hide();
 
   dualScrollingAction_ = new QAction(tr("Dual scrolling"), this);
@@ -461,12 +463,42 @@ bool imageCompareBase::eventFilter(QObject* watched, QEvent* event) {
       setCur(rightImage());
     }
   }
-  else if (event->type() == QEvent::QEvent::KeyPress) {
+  else if (event->type() == QEvent::KeyPress) {
     QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
     return filterKeyEvent(keyEvent);
   }
+  else if (event->type() == QEvent::Wheel) {
+    QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
+    // shift scroll should give a horizontal scroll
+    if (wheelEvent->modifiers() == Qt::ShiftModifier) {
+      // must check both the scroll and its viewport
+      if (watched == rightScroll_ || watched == rightScroll_->viewport()) {
+        rightScroll_->horizontalScrollBar()->event(event);
+        return true;
+      }
+      else if (watched == leftScroll_ || watched == leftScroll_->viewport()) {
+        leftScroll_->horizontalScrollBar()->event(event);
+        return true;
+      }
+    }
+  }
   return imageSaverWindow::eventFilter(watched, event);
 }
+
+bool imageCompareBase::horizontalWheelScrollEvent(QObject* watched,
+                                                  QWheelEvent* event) const{
+
+  // must check both the scroll and its viewport
+  if (watched == rightScroll_ || watched == rightScroll_->viewport()) {
+    rightScroll_->horizontalScrollBar()->event(event);
+    return true;
+  }
+  else if (watched == leftScroll_ || watched == leftScroll_->viewport()) {
+    leftScroll_->horizontalScrollBar()->event(event);
+    return true;
+  }
+  return false;
+}  
 
 bool imageCompareBase::filterKeyEvent(QKeyEvent* event) {
 

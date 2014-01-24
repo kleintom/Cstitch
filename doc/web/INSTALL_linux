@@ -1,15 +1,21 @@
 Compiling Cstitch from source on Linux.
 
+1.  Install the QT (gui toolkit) headers and libraries.  Starting with
+version 0.9.4, cstitch is built using Qt 5 (I've tested on 5.2.0).  Qt
+include locations were changed in going from Qt4 to Qt5, so >= 0,9.4
+cstitch versions will not compile under Qt4 (though I suspect that if
+you simply change the includes back to their Qt4 locations, you would
+be very close to compiling).
 
-1.  Install the QT (gui toolkit) headers and libraries.
+On Fedora-like systems the package you're after is probably called
+qt5-qtbase-devel - it provides the QT header files and pulls in the
+required librairies and build tools.  If your distribution does not
+yet support Qt5, you may need to download directly from Qt.
 
-On Debian-based systems the package you're after is probably called
-libqt4-dev - it provides the QT header files and pulls in the required
-librairies and build tools.
 From a terminal (as root):
-     apt-get install libqt4-dev
-(If you're not using a Debian-based distribution you'll need to
-replace apt-get with your distribution's package installer, and the name of
+     yum install qt5-qtbase-devel
+(If you're not using a yum-based distribution you'll need to
+replace yum with your distribution's package installer, and the name of
 the qt development package may be different for your distribution.)
      
 2.  Download the CStitch source files.

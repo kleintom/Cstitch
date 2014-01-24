@@ -20,7 +20,7 @@
 #ifndef MOUSEPRESSLABEL_H
 #define MOUSEPRESSLABEL_H
 
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 // a QLabel that emits a signal when clicked with the mouse
 class mousePressLabel : public QLabel {

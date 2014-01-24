@@ -22,18 +22,19 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QDateTime>
-#include <QtCore/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 
-#include <QtGui/QMenu>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QImageWriter>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QImageWriter>
 
 #include "colorChooser.h"
 #include "colorCompare.h"
-#include "squareWindow.h"
-#include "patternWindow.h"
+#include "fileListMenu.h"
 #include "imageUtility.h"
+#include "patternWindow.h"
+#include "squareWindow.h"
 #include "versionProcessing.h"
 #include "xmlUtility.h"
 
@@ -81,11 +82,40 @@ windowManager::windowManager() : originalImageColorCount_(0),
   windowMenu_->addSeparator();
   windowMenu_->addAction(patternWindowAction_);
 
+  const QSettings settings("cstitch", "cstitch");
+  const int recentFilesLength = 7;
+  QStringList recentImages;
+  if (settings.contains("recent_images")) {
+    recentImages = 
+      ::existingFiles(settings.value("recent_images").toStringList());
+  }
+  recentImagesMenu_ = new fileListMenu(tr("Recent images"),
+                                       recentFilesLength,
+                                       recentImages);
+  connect(recentImagesMenu_, SIGNAL(triggered(const QString& )),
+          this, SLOT(openRecentImage(const QString& )));
+  if (recentImages.isEmpty()) {
+    recentImagesMenu_->setEnabled(false);
+  }
+  QStringList recentProjects;
+  if (settings.contains("recent_projects")) {
+    recentProjects =
+      ::existingFiles(settings.value("recent_projects").toStringList());
+  }
+
+  recentProjectsMenu_ = new fileListMenu(tr("Recent projects"),
+                                         recentFilesLength,
+                                         recentProjects);
+  connect(recentProjectsMenu_, SIGNAL(triggered(const QString& )),
+          this, SLOT(openRecentProject(const QString& )));
+  if (recentProjects.isEmpty()) {
+    recentProjectsMenu_->setEnabled(false);
+  }
+
   autoShowQuickHelp_ = new QAction(tr("Auto display Quick Help windows"),
                                    this);
   autoShowQuickHelp_->setCheckable(true);
   // restore the autoShowQuickHelp_ setting if it exists
-  const QSettings settings("cstitch", "cstitch");
   if (settings.contains("auto_show_quick_help")) {
     const bool checked = settings.value("auto_show_quick_help").toBool();
     autoShowQuickHelp_->setChecked(checked);
@@ -115,6 +145,7 @@ void windowManager::configureNewWindow(imageZoomWindow* window,
   actions << stage0 << stage1 << stage2 << stage3;
 
   window->addWindowActions(actions, windowMenu_);
+  window->addRecentlyOpenedMenus(recentImagesMenu_, recentProjectsMenu_);
   window->setWindowTitle(getWindowTitle());
   window->addQuickHelp(autoShowQuickHelp_);
   window->showQuickHelp(false); // close any current quick help
@@ -266,7 +297,6 @@ void windowManager::save() {
 
 void windowManager::saveAs(const QString projectFilename) {
 
-  //const QString fileString = "test.xst";
   if (projectFilename.isNull()) {
     const QString fileString =
       QFileDialog::getSaveFileName(activeWindow(), tr("Save project"), ".", "Cstitch files (*.xst)\nAll files (*.*)");
@@ -381,19 +411,26 @@ void windowManager::saveAs(const QString projectFilename) {
   setWindowTitles(QFileInfo(projectFilename_).fileName());
   activeWindow()->showTemporaryStatusMessage(tr("Saved project to ") +
                                              projectFilename_);
+  updateRecentFiles(projectFilename_, recentProjectsMenu_);
 }
 
 void windowManager::openProject() {
 
-  //const QString fileString = "test.out";
   const QString fileString =
     QFileDialog::getOpenFileName(activeWindow(), tr("Open project"), ".",
                                  "Cstitch files (*.xst)\nAll files (*.*)");
-  if (fileString.isEmpty()) {
-    return;
-  }
 
-  QFile inFile(fileString);
+  if (!fileString.isEmpty()) {
+    const bool success = openProject(fileString);
+    if (success) {
+      updateRecentFiles(fileString, recentProjectsMenu_);
+    }
+  }
+}
+
+bool windowManager::openProject(const QString& projectFile) {
+
+  QFile inFile(projectFile);
   inFile.open(QIODevice::ReadOnly);
   // the save file starts with xml text, so read that first
   QTextStream textInStream(&inFile);
@@ -406,10 +443,10 @@ void windowManager::openProject() {
   const QString programName = rx.cap(1);
   if (programName != "cstitch" && programName != "stitch") { // uh oh
     QMessageBox::critical(NULL, tr("Bad project file"),
-                          tr("Sorry, ") + fileString +
+                          tr("Sorry, ") + projectFile +
                           tr(" is not a valid project file ") +
                           tr("(diagnostic: wrong first line)"));
-    return;
+    return false;
   }
 
   int lineCount = 0;
@@ -422,10 +459,10 @@ void windowManager::openProject() {
     ++lineCount;
     if (lineCount > maxLineCount) {
       QMessageBox::critical(NULL, tr("Bad project file"),
-                            tr("Sorry, ") + fileString +
+                            tr("Sorry, ") + projectFile +
                             tr(" appears to be corrupted ") +
                             tr("(diagnostic: bad separator)"));
-      return;
+      return false;
     }
   } while (thisString != endTag);
 
@@ -433,10 +470,10 @@ void windowManager::openProject() {
   const bool xmlLoadSuccess = doc.setContent(inString);
   if (!xmlLoadSuccess) {
     QMessageBox::critical(NULL, tr("Bad project file"),
-                          tr("Sorry, ") + fileString +
+                          tr("Sorry, ") + projectFile +
                           tr(" appears to be corrupted ") +
                           tr("(diagnostic: parse failed)"));
-    return;
+    return false;
   }
   // a blank line between the xml and the image
   inString += textInStream.readLine() + "\n";
@@ -555,9 +592,10 @@ void windowManager::openProject() {
   startOriginalImageColorCount();
   hideWindows_ = false;
   altMeter::setGroupMeter(NULL);
-  projectFilename_ = fileString;
+  projectFilename_ = projectFile;
   setWindowTitles(QFileInfo(projectFilename_).fileName());
   setNewWidgetGeometryAndRaise(colorChooser_.window());
+  return true;
 }
 
 void windowManager::reset(const QImage& image, const QByteArray& byteArray,
@@ -720,36 +758,46 @@ void windowManager::frameWidthAndHeight(int* w, int* h) const {
   }
 }
 
+bool windowManager::openNewImage(const QString& imageFile) {
+
+  const QImage newImage(imageFile);
+  if (newImage.isNull()) {
+    const QList<QByteArray> formats = QImageWriter::supportedImageFormats();
+    QString supportedTypes;
+    for (QList<QByteArray>::const_iterator it = formats.begin(),
+           end = formats.end(); it != end; ++it) {
+      supportedTypes += (*it).data() + QString(", ");
+    }
+    supportedTypes.chop(2);
+    const QString errorString = "Unable to load " + imageFile +
+      ";\nplease make sure " +
+      "your image is one of the supported types:\n" + supportedTypes;
+    QMessageBox::warning(NULL, "Image load failed", errorString);
+    return false;
+  }
+  QFile fileDevice(imageFile);
+  fileDevice.open(QIODevice::ReadOnly);
+  QByteArray byteArray(fileDevice.readAll());
+  const QString imageName = QFileInfo(imageFile).fileName();
+  
+  reset(newImage, byteArray, imageName);
+  setProjectVersion(programVersion_);
+  ::showAndRaise(colorChooser_.window());
+  colorChooser_.window()->setNewImage(newImage);
+  colorChooser_.window()->setWindowTitle(getWindowTitle());
+  startOriginalImageColorCount();
+  return true;
+}
+
 void windowManager::openNewImage() {
 
   const bool warnToSave = !originalImage_.isNull();
   const QString file = ::getNewImageFileName(activeWindow(), warnToSave);
   if (!file.isEmpty()) {
-    const QImage newImage(file);
-    if (newImage.isNull()) {
-      const QList<QByteArray> formats = QImageWriter::supportedImageFormats();
-      QString supportedTypes;
-      for (QList<QByteArray>::const_iterator it = formats.begin(),
-             end = formats.end(); it != end; ++it) {
-        supportedTypes += (*it).data() + QString(", ");
-      }
-      supportedTypes.chop(2);
-      const QString errorString = "Unable to load " + file + ";\nplease make sure " +
-        "your image is one of the supported types:\n" + supportedTypes;
-      QMessageBox::warning(NULL, "Image load failed", errorString);
-      return;
+    const bool success = openNewImage(file);
+    if (success) {
+      updateRecentFiles(file, recentImagesMenu_);
     }
-    QFile fileDevice(file);
-    fileDevice.open(QIODevice::ReadOnly);
-    QByteArray byteArray(fileDevice.readAll());
-    const QString imageName = QFileInfo(file).fileName();
-
-    reset(newImage, byteArray, imageName);
-    setProjectVersion(programVersion_);
-    ::showAndRaise(colorChooser_.window());
-    colorChooser_.window()->setNewImage(newImage);
-    colorChooser_.window()->setWindowTitle(getWindowTitle());
-    startOriginalImageColorCount();
   }
 }
 
@@ -935,12 +983,67 @@ int windowManager::getOriginalImageColorCount() {
 
 QString windowManager::getWindowTitle() const {
 
-  return (!projectFilename_.isNull()) ?
-    QFileInfo(projectFilename_).fileName() : originalImageName_;
+  if (!projectFilename_.isNull()) {
+    return QFileInfo(projectFilename_).fileName();
+  }
+  else {
+    return originalImageName_.isNull() ? "Cstitch" :
+      originalImageName_;
+  }
 }
 
 void windowManager::setProjectVersion(const QString& projectVersion) {
 
   projectVersion_ = projectVersion;
   versionProcessor::setProcessor(projectVersion_);
+}
+
+void windowManager::updateRecentFiles(const QString& file,
+                                      fileListMenu* menu) {
+
+  menu->prependFile(file);
+  menu->setEnabled(true);
+}
+
+void windowManager::quit() {
+
+  QSettings settings("cstitch", "cstitch");
+  settings.setValue("recent_images", recentImagesMenu_->files());
+  settings.setValue("recent_projects", recentProjectsMenu_->files());
+}
+
+void windowManager::openRecentImage(const QString& imageFile) {
+
+  const QFile fileCheck(imageFile);
+  if (fileCheck.exists()) {
+    openNewImage(imageFile);
+    updateRecentFiles(imageFile, recentImagesMenu_);
+  }
+  else { // remove <imageFile> from the recent images list
+    openRecentFailure(recentImagesMenu_, imageFile);
+  }
+}
+
+void windowManager::openRecentProject(const QString& projectFile) {
+
+  const QFile fileCheck(projectFile);
+  if (fileCheck.exists()) {
+    openProject(projectFile);
+    updateRecentFiles(projectFile, recentProjectsMenu_);
+  }
+  else { // remove <projectFile> from the recent images list
+    openRecentFailure(recentProjectsMenu_, projectFile);
+  }
+}
+
+void windowManager::openRecentFailure(fileListMenu* menu,
+                                      const QString& file) {
+
+  menu->remove(file);
+  if (menu->isEmpty()) {
+    menu->setEnabled(false);
+  }
+  const QString errorString = tr("The file ") + file +
+    tr(" no longer exists.");
+  QMessageBox::warning(NULL, tr("Load failed"), errorString);
 }

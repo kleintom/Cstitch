@@ -20,9 +20,9 @@
 #ifndef CONSTWIDTHDOCK_H
 #define CONSTWIDTHDOCK_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QStyle>
+#include <QtWidgets/QWidget>
+#include <QFontMetrics>
+#include <QtWidgets/QStyle>
 
 //
 // constWidthDock serves as the base for dock widgets.  It enforces a

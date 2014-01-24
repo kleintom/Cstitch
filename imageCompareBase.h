@@ -20,7 +20,7 @@
 #ifndef IMAGECOMPAREBASE_H
 #define IMAGECOMPAREBASE_H
 
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 #include "imageSaverWindow.h"
 #include "utility.h"
@@ -264,6 +264,8 @@ class imageCompareBase : public imageSaverWindow {
     return (curImage() == leftImage()) ? leftScroll_ : rightScroll_;
   }
   virtual bool eventFilter(QObject* watched, QEvent* event);
+  virtual bool horizontalWheelScrollEvent(QObject* watched,
+                                          QWheelEvent* event) const;
   virtual void keyPressEvent(QKeyEvent* event);
   virtual bool filterKeyEvent(QKeyEvent* event);
   // add the left and right toolbar image boxes and labels

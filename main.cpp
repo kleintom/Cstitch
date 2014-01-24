@@ -17,20 +17,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 #include "colorChooser.h"
 #include "windowManager.h"
 #include "imageUtility.h"
 #include "colorLists.h"
 
+ 
 int main(int argc, char *argv[]) {
 
 #ifdef Q_OS_LINUX
   QApplication::setStyle("plastique"); // motif is never the correct choice...
 #endif
   QApplication app(argc, argv);
-
   // seed the static scroll bar width value
   ::scrollbarWidth(app.style());
   colorMatcher::initializeIntensitySpreads();
@@ -46,5 +46,4 @@ int main(int argc, char *argv[]) {
   colorChooserWindow.show();
 
   return app.exec();
-
 }

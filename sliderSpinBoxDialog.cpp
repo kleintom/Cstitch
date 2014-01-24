@@ -19,11 +19,11 @@
 
 #include "sliderSpinBoxDialog.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QSlider>
-#include <QtGui/QSpinBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 
 sliderSpinBoxDialog::sliderSpinBoxDialog(const QString& text,
                                          const QString& windowTitle,

@@ -34,7 +34,8 @@ class symbolDialog : public cancelAcceptDialogBase {
   Q_OBJECT
 
  public:
-  symbolDialog(const QVector<patternSymbolIndex>& symbols,
+  symbolDialog(const QVector<patternSymbolIndex>& availableSymbols,
+               const QPixmap& originalSymbol,
                QWidget* parent = NULL);
   // return the last selected symbol
   patternSymbolIndex selectedSymbol() const {return selectedSymbol_;}

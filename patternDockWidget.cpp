@@ -19,13 +19,17 @@
 
 #include "patternDockWidget.h"
 
+#include <algorithm>
+
 #include <QtCore/QDebug>
 
-#include <QtGui/QListWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QMenu>
-#include <QtGui/QPainter>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QMenu>
+#include <QPainter>
+
+#include "imageUtility.h"
 
 patternDockWidget::patternDockWidget(int patternSymbolSize, QWidget* parent)
   : constWidthDock(parent), symbolSize_(patternSymbolSize) {
@@ -58,11 +62,13 @@ setSymbolList(const QHash<QRgb, QPixmap>& colorSymbols) {
   const QVector<symbolPair> sortedList = sortHashByIntensity(colorSymbols);
   for (QVector<symbolPair>::const_iterator it = sortedList.begin(),
           end = sortedList.end(); it != end; ++it) {
+    const QRgb thisColor = (*it).first;
+    const QPixmap thisSymbol = (*it).second;
     QListWidgetItem* listItem =
-      new QListWidgetItem(createIcon((*it).first, (*it).second), "",
+      new QListWidgetItem(createIcon(thisColor, thisSymbol), "",
                           symbolList_);
     // also store the color values for convenience
-    listItem->setData(Qt::UserRole, QVariant(QColor((*it).first)));
+    listItem->setData(Qt::UserRole, QVariant(QColor(thisColor)));
   }
   setSymbolCountLabel(symbolList_->count());
 }
@@ -70,7 +76,7 @@ setSymbolList(const QHash<QRgb, QPixmap>& colorSymbols) {
 class symbolPairIntensity {
  public:
   bool operator()(const symbolPair& p1, const symbolPair& p2) const {
-    return triC(p1.first).intensity() < triC(p2.first).intensity();
+    return ::definiteIntensityCompare(p1.first, p2.first);
   }
 };
 
@@ -83,7 +89,7 @@ sortHashByIntensity(const QHash<QRgb, QPixmap>& hash) const {
          end = hash.end(); it != end; ++it) {
     returnVector.push_back(symbolPair(it.key(), it.value()));
   }
-  qSort(returnVector.begin(), returnVector.end(), symbolPairIntensity());
+  std::sort(returnVector.begin(), returnVector.end(), symbolPairIntensity());
   return returnVector;
 }
 

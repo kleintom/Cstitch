@@ -20,7 +20,7 @@
 #ifndef QUICKHELP_H
 #define QUICKHELP_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "helpBrowser.h"
 

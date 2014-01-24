@@ -247,7 +247,7 @@ void colorMatcher::loadColorList(const orderComparator* comparator,
       newList->push_back(iColor(thisColor));
     }
   }
-  qSort(newList->begin(), newList->end());
+  std::sort(newList->begin(), newList->end());
 }
 
 triC colorMatcher::closestMatch() const {

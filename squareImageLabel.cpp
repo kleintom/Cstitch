@@ -18,6 +18,7 @@
 //
 
 #include "squareImageLabel.h"
+#include "utility.h"
 
 #include <QtCore/QDebug>
 

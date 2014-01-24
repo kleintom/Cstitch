@@ -20,7 +20,7 @@
 #ifndef STEPINDEX_H
 #define STEPINDEX_H
 
-#include <QtCore/QSet>
+#include <QtCore/QMap>
 
 //
 // stepIndex is used to keep track of which of a set of indices are
@@ -30,8 +30,7 @@
 // reserve() marks an index as in use, and free() marks an index as
 // available.
 //
-// Implementation note: QSet internally orders its elements, so getting
-// next is trivial (for us)
+// Implementation note: We're using QMap since it orders its keys
 //
 class stepIndex {
 
@@ -42,7 +41,7 @@ class stepIndex {
   stepIndex(int min, int max, int step);
   // return the next available index; return of max means none available
   int next();
-  QSet<int> availableIndices() const { return availableIndices_; }
+  QList<int> availableIndices() const { return availableIndices_.keys(); }
   bool indexIsAvailable(int index) const {
     return availableIndices_.contains(index);
   }
@@ -57,7 +56,8 @@ class stepIndex {
   int minIndex_;
   int maxIndex_;
   int indexStep_;
-  QSet<int> availableIndices_;
+  // keys are available indices, values are always 0
+  QMap<int, int> availableIndices_;
 };
 
 #endif

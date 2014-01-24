@@ -20,7 +20,7 @@
 #ifndef PATTERNDOCKWIDGET_H
 #define PATTERNDOCKWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 #include "triC.h"
 #include "constWidthDock.h"

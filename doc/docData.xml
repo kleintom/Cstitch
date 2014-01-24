@@ -114,17 +114,25 @@ satisfied with the symbols, save your pattern to a pdf.
 <h1>Zooming</h1>
 
 <p>
-The first three stages provide two sets of zooming operations.
+In all four stages, you can zoom in using the keyboard by holding down
+Ctrl and pressing the + key, or zoom out by holding down Ctrl and
+pressing the - key; you can also zoom at any time by holding down Ctrl and
+turning the mouse wheel.
+</p>
+
+<p>
+The first three stages also provide two sets of icons for zooming operations.
 The first set appears on the toolbar (and also from the <i>Image</i>
-menu) and consists of a "Zoom to fit" option <img
-src="zoomToImage.png" alt="zoom to image icon"/> that zooms the image to be as large as
-possible and still fit in the available space, a "Zoom to width"
-option <img src="zoomToWidth.png" alt="zoom to width icon" /> that zooms the image to fit the
-available width, a "Zoom to height" option <img src="zoomToHeight.png" alt="zoom to height icon"
-/> that zooms the image to fit the available height, and an "Original
-size" option <img src="zoomToOriginal.png" alt="zoom to original icon" /> that zooms the image to
-its original size.  (There's a caveat for square images - see <a
-href="square#zoom_caveat">this</a> for details.)
+menu) and consists of a "Zoom to fit" option
+<img src="zoomToImage.png" alt="zoom to image icon"/> that zooms the image to
+be as large as possible and still fit in the available space, a "Zoom to width"
+option <img src="zoomToWidth.png" alt="zoom to width icon" /> that zooms the
+image to fit the available width, a "Zoom to height" option
+<img src="zoomToHeight.png" alt="zoom to height icon"/> that zooms the image
+to fit the available height, and an "Original size" option
+<img src="zoomToOriginal.png" alt="zoom to original icon" /> that zooms the
+image to its original size.  (There's a caveat for square images - see
+<a href="square#zoom_caveat">this</a> for details.)
 </p>
 
 <p>
@@ -136,13 +144,9 @@ amount.
 </p>
 
 <p>
-In the last (pattern) stage, only the second set of options is
-available, either from the toolbar or from the <i>Image</i> menu.  At
-the pattern stage the zoom level of the image determines the size of
-the symbols in the pdf pattern output, i.e. the size of a square in
-the pdf pattern will be (approximately) the same size as a square
-on the screen.  In all other stages the zoom level has no effect on
-processing.
+In the last (pattern) stage, only the second set of icons is
+available, either from the toolbar or from the <i>Image</i> menu.  In
+all stages the zoom level has no effect on processing.
 </p>
 
 <h1>Saving images</h1>
@@ -190,6 +194,14 @@ for example), but you can use any filename you'd like, with or without
 an extension.
 </p>
 
+<p>
+To restore your work from a saved project file, just click on the open
+project icon <img src="openProject.png" alt="open project icon" /> on the
+toolbar, or choose <i>Open Project</i> from the <i>File</i> menu and open the
+project file you saved above, or look for your project under
+<i>Recent projects</i> in the <i>File</i> menu.
+</p>
+
 <p><b>Note: </b>The only image contained in a saved project file is the
 original image that started the project; all other images associated
 with the saved project are restored from the original when the project
@@ -199,25 +211,27 @@ you've created images that you know you aren't going to use, it's best
 to delete them before saving your project.)
 </p>
 
-<p>
-To restore your work from a saved project file, just click on the open
-project icon <img src="openProject.png" alt="open project icon" /> on the toolbar or
-choose <i>Open Project</i> from the <i>File</i> menu and open the
-project file you saved above.
+<p><b>Note: </b>The symbols used by this program come from fonts on
+your computer.  Cstitch attempts to choose fonts on different
+computers in a consistent manner, but it's still possible that symbols
+could change if you save a project on one computer and then restore it
+on a different computer.  In general this shouldn't be an issue if
+you're transferring projects between computers running some version of
+Windows, even if the versions of Windows are different.
 </p>
 
 <h1 id="overview_keyboard_shortcuts">Keyboard shortcuts</h1>
 <p>
 In addition to keyboard shortcuts listed in the menus, you can press
 "Ctrl+Enter" (i.e. hold down the control key and then press enter) at
-any time to process the current stage and move on to the next.  Other
-panel-specific keyboard shortcuts are
+any time to process the current stage and move on to the next; you can
+also scroll horizontally on any image by holding down the Ctrl key and
+turning the mouse wheel.  Other panel-specific keyboard shortcuts are
 listed <a href="colorCompare#color_compare_keyboard_shortcuts">here</a>
 for the color compare panel,
 <a href="square#square_keyboard_shortcuts">here</a> for the square edit
-panel, and
-<a href="pattern#pattern_keyboard_shortcuts">here</a> for the pattern
-edit panel.
+panel, and <a href="pattern#pattern_keyboard_shortcuts">here</a> for
+the pattern edit panel.
 </p>
 
 <h1>Panel specific help</h1>
@@ -273,8 +287,10 @@ happen to be two common suppliers of floss.
 
 <p>
 Start a new project by opening a saved image from your files, either
-by clicking the folder icon <img src="openImage.png" alt="open image icon" /> on the toolbar
-or choosing <i>Open</i> from the <i>File</i> menu.
+by clicking the folder icon
+<img src="openImage.png" alt="open image icon" /> on the toolbar, by
+choosing <i>Open</i> from the <i>File</i> menu, or by choosing an image
+from the <i>Recent images</i> section of the <i>File</i> menu.
 </p>
 
 <p>
@@ -333,9 +349,9 @@ floss.  The disadvantage is that the colors selected all come from the
 fixed pool of DMC colors (currently 428 colors).  One consequence is
 that there may be no way to choose close shades of color from your
 original image unless similar close shades already exist as DMC
-colors.  The next mode gets around that by allowing you to select
-exact colors from the original image (which may not be available as
-floss!).
+colors.  The <i>Num colors</i> mode below gets around that by allowing
+you to select exact colors from the original image (which may not be
+available as floss!).
 </p>
 </div>
 
@@ -812,8 +828,10 @@ the <a href="#change_a_color_tool"><i>Change a Color Tool</i></a>.
 <h2>Edit Undo/Redo</h2>
 <p>
 You can undo and redo your edits using the edit
-history buttons on the toolbar: undo <img src="leftArrow.png" alt="left arrow icon" /> and
-redo <img src="rightArrow.png" alt="right arrow icon" />.
+history buttons on the toolbar: undo
+<img src="leftArrow.png" alt="left arrow icon" /> and
+redo <img src="rightArrow.png" alt="right arrow icon" />.  Your edits
+are saved when you save your project.
 </p>
 </div>
 
@@ -999,6 +1017,15 @@ the symbol on the image or right click on the symbol in the symbol
 list and choose <i>Change symbol</i>.  In either case you can choose a
 new symbol from the symbol selection dialog, which allows you to
 select from all remaining available symbols.
+</p>
+
+<p><b>Note: </b>The symbols used by this program come from fonts on
+your computer.  Cstitch attempts to choose fonts on different
+computers in a consistent manner, but it's still possible that symbols
+could change if you save a project on one computer and then restore it
+on a different computer.  In general this shouldn't be an issue if
+you're transferring projects between computers running some version of
+Windows, even if the versions of Windows are different.
 </p>
 
 <!--<p>

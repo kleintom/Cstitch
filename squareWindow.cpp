@@ -19,13 +19,13 @@
 
 #include "squareWindow.h"
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QPushButton>
-#include <QtGui/QMenu>
-#include <QtGui/QDockWidget>
-#include <QtGui/QMessageBox>
-#include <QtGui/QMenuBar>
-#include <QtGui/QColorDialog>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QColorDialog>
 
 #include "symbolChooser.h"
 #include "colorDialog.h"
@@ -403,7 +403,7 @@ bool squareWindow::eventFilter(QObject* watched, QEvent* event) {
     QKeyEvent* e = static_cast<QKeyEvent*>(event);
     return filterKeyEvent(e);
   }
-  return false; // pass on to the original recipient
+  return imageCompareBase::eventFilter(watched, event);
 }
 
 bool squareWindow::filterKeyEvent(QKeyEvent* event) {

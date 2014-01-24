@@ -21,11 +21,11 @@
 
 #include <QtCore/QDebug>
 
-#include <QtGui/QLabel>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QCloseEvent>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QPushButton>
+#include <QCloseEvent>
 
 #include "imageUtility.h"
 #include "helpBrowser.h"

@@ -21,14 +21,14 @@
 #ifndef BUTTONGRID_H
 #define BUTTONGRID_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 #include "triC.h"
 
 //
 // buttonGrid is a widget that displays a grid of square "buttons" with
 // icons provided by the user; when the user clicks on a button in the
-// grid the widget emits the index of the button, where index is the
+// grid the widget emits the index of the button, where index is the 0-based
 // sequence number of the symbol from the original list of symbols
 //
 class buttonGrid : public QWidget {
@@ -57,7 +57,8 @@ class buttonGrid : public QWidget {
                          int rowWidth = 0);
   // the grid is painted on the widget during the paint event
   void paintEvent(QPaintEvent* event);
-  // emits the index of the button clicked (for a left click)
+  // emits the (0-based) index of the button clicked for a left click
+  // on an occupied grid space
   virtual void mousePressEvent(QMouseEvent* event);
 
  signals:
@@ -93,7 +94,7 @@ class colorButtonGrid : public buttonGrid {
 
  private:
   // emits the button x,y coordinates and the color of the button
-  // clicked (for a left click)
+  // clicked for a left click on an occupied grid space
   void mousePressEvent(QMouseEvent* event);
 
  signals:

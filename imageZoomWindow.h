@@ -20,7 +20,7 @@
 #ifndef IMAGEZOOMWINDOW_H
 #define IMAGEZOOMWINDOW_H
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 class windowManager;
 class helpMode;
@@ -57,6 +57,8 @@ class imageZoomWindow : public QMainWindow {
   // on/off (common to all windows), we just put it on our help menu and
   // forget about it (promise)
   void addQuickHelp(QAction* autoShowQuickHelp);
+  // windowManager manages these menus, we just display them (promise)
+  void addRecentlyOpenedMenus(QMenu* imagesMenu, QMenu* projectsMenu);
   // show <status> in the normal (left) part of the status bar for
   // <duration> milliseconds
   void showTemporaryStatusMessage(const QString& status,
@@ -122,6 +124,11 @@ class imageZoomWindow : public QMainWindow {
   QString imageNameFromIndex(int index) const;
   virtual void showEvent(QShowEvent* event);
   virtual void closeEvent(QCloseEvent* event);
+  virtual bool eventFilter(QObject* watched, QEvent* event);
+  // [must keep track of <watched> for derived classes with more than
+  // one scroll windows]
+  virtual bool horizontalWheelScrollEvent(QObject* watched,
+                                          QWheelEvent* event) const= 0;
   // the widget is being shown for the first time; this is used for
   // processing that requires geometry knowledge (which is unavailable
   // until the widget is literally visible on the screen)

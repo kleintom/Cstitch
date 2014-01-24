@@ -19,13 +19,13 @@
 
 #include "rareColorsDialog.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QSpinBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QScrollArea>
-#include <QtGui/QPainter>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QScrollArea>
+#include <QPainter>
 
 #include "colorLists.h"
 #include "imageUtility.h"
@@ -136,7 +136,7 @@ void rareColorsDialog::processNewMin(int min) {
     }
   }
   // sort the rare colors by intensity
-  qSort(rareColors.begin(), rareColors.end(), qRgbIntensity());
+  std::sort(rareColors.begin(), rareColors.end(), qRgbIntensity());
   if (!commonColors.isEmpty() && !rareColors.isEmpty()) {
     // each row consists of a checkbox saying whether or not to include
     // the row's color, followed by the rare color and its count and then

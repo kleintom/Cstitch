@@ -23,9 +23,9 @@
 #include <algorithm>
 
 #include <QtCore/QAbstractEventDispatcher>
-#include <QtGui/QAction>
-#include <QtGui/QProgressDialog>
-#include <QtGui/QCloseEvent>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QProgressDialog>
+#include <QCloseEvent>
 
 // special floss color codes
 const int DMC_COUNT = 427; // number of dmc colors
@@ -93,6 +93,9 @@ inline QString base(const QString& s) {
 inline QString extension(const QString& s) {
   return s.section('.', -1);
 }
+
+// Return the list of files on <fileList> that exist.
+QStringList existingFiles(const QStringList& fileList);
 
 // read the file <fileName> into a single string and return it (or the
 // empty string if the file can't be opened)

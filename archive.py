@@ -106,13 +106,14 @@ class linuxArchiver(archiver):
 
     def archive(self):
 
-        # change the loader from lsb to libc
-        print "  Patching the binary..."
-        elfStatus = subprocess.call(["patchelf", "--set-interpreter",
-                                     "/lib/ld-linux.so.2", self.binary])
-        if elfStatus != 0:
-            print "Patch error on " + self.binary + ", so quitting..."
-            sys.exit(-1)
+        ## we don't do lsb anymore
+#        # change the loader from lsb to libc
+#        print "  Patching the binary..."
+#        elfStatus = subprocess.call(["patchelf", "--set-interpreter",
+#                                     "/lib/ld-linux.so.2", self.binary])
+#        if elfStatus != 0:
+#            print "Patch error on " + self.binary + ", so quitting..."
+#            sys.exit(-1)
 
         # pack the binary
         print "  Packing the binary..."

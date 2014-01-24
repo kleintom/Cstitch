@@ -20,7 +20,7 @@
 #ifndef IMAGELABEL_H
 #define IMAGELABEL_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class imageLabelBase : public QWidget {
 

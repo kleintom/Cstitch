@@ -20,7 +20,7 @@
 #ifndef PATTERNMETADATA_H
 #define PATTERNMETADATA_H
 
-#include <QtGui/QPlainTextEdit>
+#include <QtWidgets/QPlainTextEdit>
 
 #include "cancelAcceptDialogBase.h"
 

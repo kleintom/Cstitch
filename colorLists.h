@@ -53,6 +53,7 @@ class iColor {
 
 class orderComparator {
 public:
+  virtual ~orderComparator() {}
   virtual bool operator()(const triC& ) const = 0;
 };
 

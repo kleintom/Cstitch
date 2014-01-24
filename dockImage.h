@@ -22,8 +22,8 @@
 
 #include <QtCore/QRect>
 
-#include <QtGui/QWidget>
-#include <QtGui/QPixmap>
+#include <QtWidgets/QWidget>
+#include <QPixmap>
 
 #include "constWidthDock.h"
 

@@ -21,13 +21,14 @@
 
 #include <QtCore/qmath.h>
 
-#include <QtGui/QSpinBox>
-#include <QtGui/QScrollArea>
-#include <QtGui/QDockWidget>
-#include <QtGui/QMenu>
-#include <QtGui/QComboBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
 
 #include "utility.h"
 #include "imageLabel.h"
@@ -52,6 +53,8 @@ colorChooser::colorChooser(windowManager* winMgr)
           this, SLOT(processColorAdd(QMouseEvent* )));
 
   imageScroll_ = new QScrollArea(this);
+  imageScroll_->installEventFilter(this);
+  imageScroll_->viewport()->installEventFilter(this);
   imageScroll_->setWidget(imageLabel_);
   setCentralWidget(imageScroll_);
 
@@ -415,4 +418,11 @@ void colorChooser::updateCurrentSettings(const QDomElement& xml) {
 helpMode colorChooser::getHelpMode() const {
 
   return helpMode(helpMode::H_COLOR_CHOOSER);
+}
+
+bool colorChooser::horizontalWheelScrollEvent(QObject* ,
+                                              QWheelEvent* event) const {
+
+  imageScroll_->horizontalScrollBar()->event(event);
+  return true;
 }

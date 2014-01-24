@@ -40,16 +40,6 @@ extern const int D_SUM_MAX = 16777216;
 extern const int PROGRESS_X_COORDINATE = 300;
 extern const int PROGRESS_Y_COORDINATE = 250;
 
-variableTransformer::~variableTransformer() {
-
-  qDebug() << "deleting";
-}
-
-dmcTransformer::~dmcTransformer() {
-
-  qDebug() << "deleting dmc";
-}
-
 colorTransformerPtr
 colorTransformer::createColorTransformer(flossType type) {
 
@@ -504,7 +494,7 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   }
   //  qDebug() << "cchoose colors recount:" << double(t.elapsed())/1000.;
   t.restart();
-  qSort(colorCounts.begin(), colorCounts.end(), qGreater<colorCount>());
+  std::sort(colorCounts.begin(), colorCounts.end(), qGreater<colorCount>());
   //qDebug() << "Sort time:" << double(t.elapsed())/1000.;
   t.restart();
   QVector<QRgb> returnColors = seedColors;

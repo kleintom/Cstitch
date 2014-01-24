@@ -19,12 +19,12 @@
 
 #include "colorCompare.h"
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QMenu>
-#include <QtGui/QSpinBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
 
 #include "colorLists.h"
 #include "dockListWidget.h"
@@ -56,7 +56,7 @@ colorCompare::colorCompare(const QImage& image, int index,
   rightLabel_->setMouseTracking(true);
   rightScroll()->setWidget(rightLabel());
 
-  listDock_ = new dockListSwatchWidget(QVector<triC>(), false);
+  listDock_ = new dockListSwatchWidget(QVector<triC>());
   listDock_->enableContextMenu(false);
   setListDockWidget(listDock_);
   connect(rightLabel_, SIGNAL(mouseMoved(QMouseEvent* )),

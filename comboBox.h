@@ -20,7 +20,7 @@
 #ifndef COMBOBOX_H
 #define COMBOBOX_H
 
-#include <QtGui/QComboBox>
+#include <QtWidgets/QComboBox>
 
 // History:
 // comboBox used to be a combination of a QComboBox and a QSpinDialog,

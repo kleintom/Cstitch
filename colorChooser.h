@@ -109,6 +109,7 @@ class colorChooser : public imageZoomWindow {
   void setModeBox(const QString& mode);
   // return the helpMode enum value for this mode
   helpMode getHelpMode() const;
+  bool horizontalWheelScrollEvent(QObject* watched, QWheelEvent* event) const;
 
  private slots:
   // process a "Process" button: create a new image based on the current

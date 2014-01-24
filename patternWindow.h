@@ -176,6 +176,7 @@ class patternWindow : public imageSaverWindow {
   void keyPressEvent(QKeyEvent* event);
   void processFirstShow();
   helpMode getHelpMode() const;
+  bool horizontalWheelScrollEvent(QObject* watched, QWheelEvent* event) const;
 
  private slots:
   // pop up a dialog for the user to select an unused new symbol for

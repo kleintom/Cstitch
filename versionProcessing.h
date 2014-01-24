@@ -45,6 +45,7 @@ class CVersion {
 class chooseColorsVersion {
 
  public:
+  virtual ~chooseColorsVersion() {}
   virtual QRgb transform(const colorTransformerPtr& transformer,
                          QRgb color) const = 0;
 };
@@ -70,6 +71,7 @@ class chooseColorsVersion_0_9_2_16 : public chooseColorsVersion {
 class addSquareColorVersion {
 
  public:
+  virtual ~addSquareColorVersion() {}
   virtual flossColor transform(const flossColor& color) const = 0;
 };
 typedef QSharedPointer<addSquareColorVersion> addSquareColorVersionPtr;
@@ -93,6 +95,7 @@ class addSquareColorVersion_0_9_2_16 : public addSquareColorVersion {
 class versionProcessor {
 
  public:
+  virtual ~versionProcessor() {}
   static void setProcessor(const QString& version);
   static const versionProcessor* processor() { return processor_; }
   virtual chooseColorsVersionPtr chooseColors() const = 0;

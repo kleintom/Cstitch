@@ -24,13 +24,13 @@
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
 
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QToolBar>
-#include <QtGui/QDockWidget>
-#include <QtGui/QMenuBar>
-#include <QtGui/QStatusBar>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QMessageBox>
 
 #include "windowManager.h"
 #include "utility.h"
@@ -178,6 +178,13 @@ void imageZoomWindow::addWindowActions(const QList<QAction*>& windowActions,
   menuBar()->insertMenu(helpMenu_->menuAction(), windowMenu);
 }
 
+void imageZoomWindow::addRecentlyOpenedMenus(QMenu* imagesMenu,
+                                             QMenu* projectsMenu) {
+
+  fileMenu_->insertMenu(saveAsAction_, imagesMenu);
+  fileMenu_->insertMenu(saveAsAction_, projectsMenu);
+}
+
 void imageZoomWindow::addZoomActionsToImageMenu() {
 
   imageMenu_->addAction(zoomToImageAction_);
@@ -214,6 +221,7 @@ bool imageZoomWindow::quit() {
                                 QMessageBox::Ok);
 
   if (returnCode == QMessageBox::Ok) {
+    windowManager_->quit();
     exit(0);
   }
   else {
@@ -306,6 +314,33 @@ void imageZoomWindow::showEvent(QShowEvent* ) {
     constructedAndShown_ = true;
     processFirstShow();
   }
+}
+
+bool imageZoomWindow::eventFilter(QObject* watched, QEvent* event) {
+
+  if (event->type() == QEvent::Wheel) {
+    QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
+    if (wheelEvent->modifiers() == Qt::ControlModifier) {
+      const int yDelta = wheelEvent->angleDelta().y();
+      bool zoomed = false;
+      if (yDelta > 0) {
+        zoomIn();
+        zoomed = true;
+      }
+      else if (yDelta < 0) {
+        zoomOut();
+        zoomed = true;
+      }
+      if (zoomed) {
+        wheelEvent->accept();
+        return true;
+      }
+    }
+    else if (wheelEvent->modifiers() == Qt::ShiftModifier) {
+      return horizontalWheelScrollEvent(watched, wheelEvent);
+    }
+  }
+  return QMainWindow::eventFilter(watched, event);
 }
 
 void imageZoomWindow::helpAbout() {

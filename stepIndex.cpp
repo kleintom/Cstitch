@@ -23,15 +23,15 @@ stepIndex::stepIndex(int min, int max, int step)
   : minIndex_(min), maxIndex_(max), indexStep_(step) {
 
   for (int i = minIndex_; i < maxIndex_; i += indexStep_) {
-    availableIndices_.insert(i);
+    availableIndices_.insert(i, 0);
   }
 }
 
 int stepIndex::next() {
 
   if (!availableIndices_.empty()) {
-    const int returnIndex = *(availableIndices_.begin());
-    availableIndices_.erase(availableIndices_.begin());
+    const int returnIndex = availableIndices_.firstKey();
+    availableIndices_.remove(returnIndex);
     return returnIndex;
   }
   else {
@@ -51,8 +51,8 @@ bool stepIndex::reserve(int i) {
 
 bool stepIndex::free(int i) {
 
-  if (i >= minIndex_ && i < maxIndex_ && (i-minIndex_)%indexStep_ == 0) {
-    availableIndices_.insert(i);
+  if (i >= minIndex_ && i < maxIndex_ && (i - minIndex_) % indexStep_ == 0) {
+    availableIndices_.insert(i, 0);
     return true;
   }
   else {

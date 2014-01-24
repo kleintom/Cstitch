@@ -21,7 +21,7 @@
 
 #include <QtCore/QDebug>
 
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 
 #include "squareDockTools.h" // for contextColorAction
 #include "triC.h"

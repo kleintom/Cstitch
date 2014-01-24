@@ -20,8 +20,8 @@
 #ifndef DOCKWIDGET_H
 #define DOCKWIDGET_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QListWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QListWidget>
 
 #include "constWidthDock.h"
 

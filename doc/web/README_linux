@@ -1,62 +1,7 @@
-The linux version of Cstitch was compiled against a static LSB build
-of QT using LSB tools (LSB stands for Linux Standard Base
-(http://www.linuxfoundation.org/collaborate/workgroups/lsb), a project
-aimed at increasing portability across LSB-compliant distributions).
-
-According to LSB's application checker
-(http://www.linuxfoundation.org/collaborate/workgroups/lsb/download),
-this version of Cstitch should load on the systems listed below (or,
-presumably, on more recent versions of those listed).  I obviously
-haven't tested on all of the listed systems, so if you're running one
-of the systems below and Cstitch fails to load, please let me know at
-tomklein@users.sourceforge.net.
-
-Asianux 3.0
-BOSS 2.0
-BOSS 3.0
-CentOS 5.2
-Debian 5.0
-Fedora 7
-Fedora 8
-Fedora 9
-Fedora 10
-Fedora 11
-Fedora 12
-Fedora 13
-Mandriva 2007.0
-Mandriva 2007.1
-Mandriva 2008.0
-Mandriva 2008.1
-Mandriva 2009.0
-Mandriva 2009.1
-Mandriva 2010.0
-Mandriva 2010.1
-Mandriva Corporate Server 5
-openSUSE 10.2
-openSUSE 10.3
-openSUSE 11.0
-openSUSE 11.1
-openSUSE 11.2
-openSUSE 11.3
-Oracle Enterprise Linux 5
-Oracle Enterprise Linux 5.3
-RHEL 5
-RHEL 5.1
-RHEL 5.2
-RHEL 5.3
-RHEL 5.4
-RHEL 5.5
-SLES 10
-SLES 10 SP1
-SLES 10 SP2
-SLES 10 SP3
-SLES 11
-SLES 11 SP1
-Ubuntu 10.04
-Ubuntu 10.10
-Ubuntu 7.04
-Ubuntu 7.10
-Ubuntu 8.04
-Ubuntu 8.10
-Ubuntu 9.04
-Ubuntu 9.10
+The binary linux version of Cstitch available here was compiled
+against a 32-bit static build of Qt 5.2.0 on Fedora 20 (so it
+shouldn't matter if your system is 32 or 64 bit).  I've run the binary
+on Fedora 20, Fedora 18, and Debian squeeze; Debian lenny is known to
+be too early; beyond that ...  If the binary doesn't run on your linux
+system, your best bet is to compile the source - see INSTALL_linux for
+instructions.

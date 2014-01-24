@@ -19,11 +19,11 @@
 
 #include "squareToolDock.h"
 
-#include <QtGui/QGridLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QStyle>
-#include <QtGui/QComboBox>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QStyle>
+#include <QtWidgets/QComboBox>
 
 #include "colorLists.h"
 #include "mousePressLabel.h"

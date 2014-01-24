@@ -20,7 +20,7 @@
 #ifndef DETAILTOOLDOCK_H
 #define DETAILTOOLDOCK_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QHBoxLayout;
 class QVBoxLayout;

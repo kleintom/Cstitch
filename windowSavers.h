@@ -65,6 +65,7 @@ class modeSaver : public parentChildren {
   modeSaver() {}
   modeSaver(int thisIndex, int parentIndex)
     : parentChildren(thisIndex, parentIndex) {}
+  virtual ~modeSaver() {}
   virtual QDomElement
     toXml(QDomDocument* doc) const = 0;
   int index() const { return thisIndex(); }

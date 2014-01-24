@@ -23,8 +23,8 @@
 #include <QtCore/QString>
 #include <QtCore/QFuture>
 
-#include <QtGui/QWidget>
-#include <QtGui/QAction>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QAction>
 
 #include "windowSavers.h"
 
@@ -36,6 +36,7 @@ class squareWindow;
 class patternWindow;
 class colorCompare;
 class imageZoomWindow;
+class fileListMenu;
 
 // a simple class for keeping track of a count that starts at 1 and
 // increments on each call of ()
@@ -189,6 +190,8 @@ class windowManager : public QObject {
   // all old data to prepare for new data
   void reset(const QImage& image, const QByteArray& byteArray,
              const QString& imageName);
+  // call only when the program is definitely quitting
+  void quit();
   // there is no non-const access to the original image
   const QImage& originalImage() const { return originalImage_; }
   int getOriginalImageColorCount();
@@ -258,6 +261,17 @@ class windowManager : public QObject {
   // common setup code for a new <stage> main window
   void configureNewWindow(imageZoomWindow* window, windowStage stage);
   void setProjectVersion(const QString& projectVersion);
+  // add <file> to the front of the recent files <menu>
+  void updateRecentFiles(const QString& file, fileListMenu* menu);
+  // Handle the case where we tried to open a recent <file> on <menu> that
+  // doesn't exist.
+  void openRecentFailure(fileListMenu* menu, const QString& file);
+  // <imageFile> must be a path that exists.  Return true if the image
+  // opens successfully, otherwise return false.
+  bool openNewImage(const QString& imageFile);
+  // <projectFile> must be a path that exists.  Return true if the project
+  // opens successfully, otherwise return false.
+  bool openProject(const QString& projectFile);
 
  private slots:
   void autoShowQuickHelp(bool show);
@@ -269,6 +283,10 @@ class windowManager : public QObject {
   // currently in a project restore, else just clear the current
   // computation
   void startOriginalImageColorCount();
+  // Open the image in the file <imageFile>.
+  void openRecentImage(const QString& imageFile);
+  // Open the project in the file <projectFile>.
+  void openRecentProject(const QString& projectFile);
 
  private:
   QByteArray originalImageData_; // the user's original image (as raw data)
@@ -315,6 +333,11 @@ class windowManager : public QObject {
 
   // the common window menu shared by the main windows, managed by us
   QMenu* windowMenu_;
+
+  // the common recently opened images and projects menus, shared by the
+  // main windows, managed by us
+  fileListMenu* recentImagesMenu_;
+  fileListMenu* recentProjectsMenu_;
 
   // the checkbox common to all windows that determines whether quick
   // help is auto shown or not

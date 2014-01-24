@@ -20,7 +20,7 @@
 #ifndef SYMBOLBUTTON_H
 #define SYMBOLBUTTON_H
 
-#include <QtGui/QToolButton>
+#include <QtWidgets/QToolButton>
 
 //
 // symbolButton is a QToolButton that emits a user-supplied index when

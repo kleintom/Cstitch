@@ -22,15 +22,15 @@
 #include <QtCore/QSettings>
 #include <QtCore/QDate>
 
-#include <QtGui/QApplication>
-#include <QtGui/QComboBox>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpinBox>
-#include <QtGui/QPainter>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpinBox>
+#include <QPainter>
 
 #include "imageUtility.h"
 #include "symbolChooser.h"
@@ -81,13 +81,6 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   // TODO this won't quite be right since the textEdit has mystery margins
   const int inputFieldWidth = pdfWidth + ::scrollbarWidth();
   const QFont applicationFont = QApplication::font();
-  
-#ifdef Q_OS_LINUX
-  // Qt-linux bug (4.6.3) for QFontMetrics.lineSpacing()?
-  const int linesFudge = 2;
-#else
-  const int linesFudge = 1;
-#endif
 
   // title
   metadataLayout_->addWidget(titleLabel_);
@@ -99,9 +92,9 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   // TODO these fudges are probably not portable or lasting (then again,
   // what are the correct QT magic incantations to compute all of the
   // paddings, margins, frames, etc, and how often will they change?)
-  const int lineHeightFudge = 8;
+  const int lineHeightFudge = 12;//8;
   const int comboBoxWidthFudge = 100;
-  titleEdit_->setFixedHeight(linesFudge*QFontMetrics(titleFont).lineSpacing() +
+  titleEdit_->setFixedHeight(QFontMetrics(titleFont).lineSpacing() +
                              lineHeightFudge);
   metadataLayout_->addWidget(titleEdit_);
   metadataLayout_->addSpacing(20);
@@ -113,7 +106,7 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   patternByEdit_->setFont(patternByFont);
   patternByEdit_->setFixedWidth(inputFieldWidth);
   patternByEdit_->
-    setFixedHeight(linesFudge*linesToKeep_*QFontMetrics(patternByFont).lineSpacing() +
+    setFixedHeight(linesToKeep_*QFontMetrics(patternByFont).lineSpacing() +
                    lineHeightFudge);
   connect(patternByLicenseButton_, SIGNAL(clicked()),
           this, SLOT(insertPatternByLicense()));
@@ -135,7 +128,7 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   photoByEdit_->setFont(photoByFont);
   photoByEdit_->setFixedWidth(inputFieldWidth);
   photoByEdit_->
-    setFixedHeight(linesFudge*linesToKeep_*QFontMetrics(photoByFont).lineSpacing() +
+    setFixedHeight(linesToKeep_*QFontMetrics(photoByFont).lineSpacing() +
                    lineHeightFudge);
   connect(photoByLicenseButton_, SIGNAL(clicked()),
           this, SLOT(insertPhotoByLicense()));

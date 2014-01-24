@@ -23,9 +23,9 @@
 #include <QtCore/QString>
 #include <QtCore/QVector>
 #include <QtCore/QHash>
-#include <QtGui/QColor>
-#include <QtGui/QPixmap>
-#include <QtGui/QStyle>
+#include <QColor>
+#include <QPixmap>
+#include <QtWidgets/QStyle>
 
 #include "triC.h"
 #include "floss.h"
@@ -160,6 +160,11 @@ inline QRgb colorFromScaledImageCoords(int scaledX, int scaledY,
   int imageY = (scaledY * image.height())/scaledHeight;
   return image.pixel(imageX, imageY);
 }
+
+// Return whether c1.intensity() < c2.intensity(), or if they have the same
+// intensity, compare them in some other definite way (for use in sort
+// procedures)
+bool definiteIntensityCompare(const triC& c1, const triC& c2);
 
 // return the number of distinct colors in the image
 int numberOfColors(const QImage& image);

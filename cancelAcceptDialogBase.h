@@ -20,7 +20,7 @@
 #ifndef CANCELACCEPTDIALOGBASE_H
 #define CANCELACCEPTDIALOGBASE_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class QDialogButtonBox;
 class QWidget;

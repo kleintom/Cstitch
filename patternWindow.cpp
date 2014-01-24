@@ -22,18 +22,18 @@
 #include <QtCore/QTimer>
 #include <QtCore/QSettings>
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QDockWidget>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QScrollBar>
-#include <QtGui/QColorDialog>
-#include <QtGui/QPushButton>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QColorDialog>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 
 #include "patternPrinter.h"
 #include "patternDockWidget.h"
@@ -64,6 +64,7 @@ patternWindow::patternWindow(windowManager* winMgr)
           this, SLOT(imageClickSlot(QMouseEvent* )));
   scroll_ = new QScrollArea(this);
   scroll_->installEventFilter(this);
+  scroll_->viewport()->installEventFilter(this);
   scroll_->setWidget(imageLabel_);
   setCentralWidget(scroll_);
 
@@ -420,7 +421,7 @@ void patternWindow::saveSlot() {
 
 bool patternWindow::eventFilter(QObject* watched, QEvent* event) {
 
-  if (event->type() == QEvent::QEvent::KeyPress) {
+  if (event->type() == QEvent::KeyPress) {
     QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
     if ((keyEvent->key() == Qt::Key_Up || keyEvent->key() == Qt::Key_Down)
         && (keyEvent->modifiers() & Qt::ShiftModifier)) {
@@ -603,36 +604,42 @@ void patternWindow::constructPdfViewerDialog() {
   else { // very first run on this machine
     // find a default viewer if we can
 #ifdef Q_OS_LINUX
-    if (QFile::exists("/usr/bin/evince")) {
-      pdfViewerPath_ = "/usr/bin/evince";
-    }
-    else if (QFile::exists("/usr/bin/kpdf")) {
-      pdfViewerPath_ = "/usr/bin/kpdf";
-    }
-    else if (QFile::exists("/usr/bin/okular")) {
-      pdfViewerPath_ = "/usr/bin/okular";
-    }
-    else if (QFile::exists("/usr/bin/xpdf")) {
-      pdfViewerPath_ = "/usr/bin/xpdf";
+    QStringList viewers;
+    viewers << "/usr/bin/evince" << "/usr/bin/kpdf" << "/usr/bin/okular" <<
+      "/usr/bin/xpdf" << "/usr/bin/acroread";
+    for (int i = 0, size = viewers.size(); i < size; ++i) {
+      const QString thisViewer = viewers[i];
+      if (QFile::exists(thisViewer)) {
+        pdfViewerPath_ = thisViewer;
+        break;
+      }
     }
 #endif
 #ifdef Q_OS_WIN
     // try to find acroread
-    QDir dir("C:/Program Files/Adobe/");
-    if (dir.exists()) {
-      // sort by time - if somebody has multiple versions of Reader
-      // installed (not officially supported by Adobe) and they
-      // install an older version after a newer version then this will
-      // choose the wrong version
-      QStringList readers = dir.entryList(QStringList("Reader *"), QDir::Dirs,
-                                          QDir::Time|QDir::Reversed);
-      if (!readers.empty() && dir.exists(readers[0] + "/Reader")) {
-        dir.cd(readers[0] + "/Reader");
-        if (dir.exists("AcroRd32.exe")) {
-          pdfViewerPath_ = dir.absoluteFilePath("AcroRd32.exe");
-        }
-        else if (dir.exists("AcroRd64.exe")) {
-          pdfViewerPath_ = dir.absoluteFilePath("AcroRd64.exe");
+    QStringList adobeDirectories;
+    adobeDirectories << "C:/Program Files/Adobe/" <<
+      "C:/Program Files (x86)/Adobe/";
+    for (int i = 0, size = adobeDirectories.size(); i < size; ++i) {
+      QDir thisDir = adobeDirectories[i];
+      if (thisDir.exists()) {
+        // sort by time - if somebody has multiple versions of Reader
+        // installed (not officially supported by Adobe) and they
+        // install an older version after a newer version then this will
+        // choose the wrong version
+        const QStringList readers =
+          thisDir.entryList(QStringList("Reader *"), QDir::Dirs,
+                            QDir::Time|QDir::Reversed);
+        if (!readers.empty() && thisDir.exists(readers[0] + "/Reader")) {
+          thisDir.cd(readers[0] + "/Reader");
+          if (thisDir.exists("AcroRd32.exe")) {
+            pdfViewerPath_ = thisDir.absoluteFilePath("AcroRd32.exe");
+            break;
+          }
+          else if (thisDir.exists("AcroRd64.exe")) {
+            pdfViewerPath_ = thisDir.absoluteFilePath("AcroRd64.exe");
+            break;
+          }
         }
       }
     }
@@ -654,6 +661,13 @@ void patternWindow::updatePdfViewerOptions() {
     pdfViewerPath_ = viewerDialog.viewerPath();
     settings.setValue("pdf_viewer_path", pdfViewerPath_);
   }
+}
+
+bool patternWindow::horizontalWheelScrollEvent(QObject* ,
+                                               QWheelEvent* event) const {
+
+  scroll_->horizontalScrollBar()->event(event);
+  return true;
 }
 
 pdfViewerDialog::pdfViewerDialog(bool useViewer, const QString& curViewerPath,
@@ -702,4 +716,3 @@ bool pdfViewerDialog::useViewer() const {
  
   return useViewer_->isChecked();
 }
-  

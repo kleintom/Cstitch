@@ -127,10 +127,11 @@ class imageDialogMode : public baseDialogMode {
 
 // class colorDialog
 //
-// The color dialog offers the user up to five ways to choose a new color,
-// from which the user chooses using a menu.
-// If the dmcOnly parameter is passed on construction then the dialog
-// will only allow the user to select a DMC color.
+// The color dialog offers the user up to five ways to choose a new
+// color, from which the user chooses using a menu.  The <type>
+// parameter passed on construction determines the types of colors
+// that can be chosen using the dialog (if DMC then only DMC colors
+// can be chosen, etc)
 //
 // Choose a Square Color mode:
 // Choose from "nearby" colors passed in on construction (<squareColors>).
@@ -140,27 +141,27 @@ class imageDialogMode : public baseDialogMode {
 // (should consist of the colors on the main window color list dock).
 //
 // Choose a DMC Color mode: Choose a DMC color.
+// Choose an Anchor Color mode: Choose an Anchor color.
 //
 // Choose From an Image mode: Choose a color by clicking on one of the
 // images on view in the main window.
 //
-// Choose a New Color mode: pop up the Qt colorDialog, allowing for the
-// choice of an arbitrary color (in DMC only mode this option is
-// unavailable).
+// Choose a New Color mode: pop up the Qt colorDialog, allowing for
+// the choice of an arbitrary color (may be unavailable if only
+// certain colors are allowed).
 //
 ////
 // Implementation notes
 // The user chooses the mode from a drop down list; when the mode changes
 // the old mode is hidden and the new mode is shown (except when New Color
 // is chosen, in which case the Qt color dialog is popped up).
-// There are three "scrolling" modes that show their color list inside
-// a scroll area: square, list, and dmc.  In those modes the user is
+// There are four "scrolling" modes that show their color list inside
+// a scroll area: square, list, dmc, and anchor.  In those modes the user is
 // presented with a grid of color buttons, below which are arrows for
 // browsing the colors and a comparison rectangle showing the original
 // color and the currently selected color.
-// We use maps to keep track of layouts, widgets, and other information
-// associated with each mode - the key of the map is the mode and the
-// value is the desired information.
+// Mode objects keep track of their own widgets, layouts, etc; baseDialogMode
+// provides the interface required for interacting with modes.
 // Image mode is its own thing and New mode hides this dialog and pops
 // up a QColorDialog.  Once the user chooses New mode they can't return
 // to the other modes (this dialog closes).

@@ -54,7 +54,7 @@ if help != []:
     print """ [--help | config1 config2 ...]
          where config1, config2, ... will be added to the pro file as
          CONFIG += config1 config2 ...
-"""
+         """
     sys.exit(0)
 configArgs = " ".join(sys.argv[1:])
 
@@ -68,8 +68,8 @@ try:
     projectFile = open(proFilename)
 except:
     print "  Recreating project file..."
-#    subprocess.Popen(["qmake", "-project"])
-# block until qmake returns
+    #    subprocess.Popen(["qmake", "-project"])
+    # block until qmake returns
     subprocess.call(["qmake", "-project"])
     projectFile = open(proFilename)
 
@@ -77,31 +77,36 @@ projectString = projectFile.read()
 projectFile.close()
 
 updateNeeded = False
+# insert new project configuration in front of here
+insertionPointRE = "\n# Input\nHEADERS"
+# note that it's okay to repeat config lines/options, so we do that freely
 if configArgs:
+    addString = "CONFIG += " + configArgs + "\n"
     (configWriteNeeded, projectString) = insertString(projectString,
-                                                      r'\n *CONFIG *\+= *' + configArgs,
-                                                      "\n# Input\nHEADERS",
-                                                      "CONFIG += " + configArgs + "\n")
+                                                      re.escape(addString),
+                                                      insertionPointRE,
+                                                      addString)
     updateNeeded = updateNeeded or configWriteNeeded
 
+qtIncludes = "QT += xml widgets printsupport\n"
 (xmlWriteNeeded, projectString) = insertString(projectString,
-                                               r'\n *QT *\+= *xml',
-                                               "\n# Input\nHEADERS",
-                                               "QT += xml\n")
+                                               re.escape(qtIncludes),
+                                               insertionPointRE,
+                                               qtIncludes)
 updateNeeded = updateNeeded or xmlWriteNeeded
 
 (iconWriteNeeded, projectString) = insertString(projectString,
                                                 r'win32:RC_FILE',
-                                                "\n# Input\nHEADERS",
-                                                'win32:RC_FILE += ' + projectName + '.rc\n',)
+                                                insertionPointRE,
+                                                'win32:RC_FILE += "' + projectName + '.rc"\n',)
 updateNeeded = updateNeeded or iconWriteNeeded
 
 
 if updateNeeded:
-    print "  Updating " + proFilename + " defines..."
     projectFile = open(proFilename, 'w')
     projectFile.write(projectString)
     projectFile.close()
+    print "  " + proFilename + " updated."
 else:
     print "  No updates required."
 

@@ -20,11 +20,11 @@
 #include "helpBrowser.h"
 
 #include <QtCore/QtDebug>
-#include <QtGui/QPrinter>
-#include <QtGui/QPrintDialog>
-#include <QtGui/QTextBrowser>
-#include <QtGui/QToolBar>
-#include <QtGui/QAction>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtWidgets/QTextBrowser>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QAction>
 
 #include "utility.h"
 

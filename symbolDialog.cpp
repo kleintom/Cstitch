@@ -19,14 +19,17 @@
 
 #include "symbolDialog.h"
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 
 #include "buttonGrid.h"
 
-symbolDialog::symbolDialog(const QVector<patternSymbolIndex>& symbols,
+symbolDialog::symbolDialog(const QVector<patternSymbolIndex>& availableSymbols,
+                           const QPixmap& originalSymbol,
                            QWidget* parent)
-  : cancelAcceptDialogBase(parent), symbols_(symbols) {
+  : cancelAcceptDialogBase(parent), symbols_(availableSymbols) {
 
   QScrollArea* scrollArea = new QScrollArea(this);
   scrollArea->setAlignment(Qt::AlignCenter);
@@ -40,10 +43,21 @@ symbolDialog::symbolDialog(const QVector<patternSymbolIndex>& symbols,
           this, SLOT(setSymbolSelected(int)));
   scrollArea->setWidget(grid);
   enableAcceptButton(false);
+
+  QHBoxLayout* labelsLayout = new QHBoxLayout;
+  QLabel* textLabel = new QLabel;
+  textLabel->setText(tr("Change symbol "));
+  QLabel* symbolLabel = new QLabel;
+  symbolLabel->setPixmap(originalSymbol);
+  labelsLayout->addWidget(textLabel, 0, Qt::AlignRight);
+  labelsLayout->addWidget(symbolLabel);
+
   QVBoxLayout* widgetLayout = new QVBoxLayout;
   widgetLayout->addWidget(scrollArea);
+  widgetLayout->addLayout(labelsLayout);
   widgetLayout->addWidget(cancelAcceptWidget());
   setLayout(widgetLayout);
+  setWindowTitle(tr("Change symbol"));
 }
 
 void symbolDialog::setSymbolSelected(int index) {

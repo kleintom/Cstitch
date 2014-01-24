@@ -19,9 +19,9 @@
 
 #include "cancelAcceptDialogBase.h"
 
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QWidget>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
 
 cancelAcceptDialogBase::cancelAcceptDialogBase(QWidget* parent)
   : QDialog(parent),

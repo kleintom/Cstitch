@@ -20,7 +20,7 @@
 #ifndef HELPBROWSER_H
 #define HELPBROWSER_H
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 class QTextBrowser;
 class QToolBar;

@@ -22,7 +22,7 @@
 
 #include <QtCore/QHash>
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 //
 // Display a square or a pattern image.  Since pattern images have to be

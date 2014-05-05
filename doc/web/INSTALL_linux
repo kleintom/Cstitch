@@ -48,7 +48,7 @@ From the cstitch directory run 'doc/createDocs.py'.
 5.  Generate the build files.
 From the cstitch directory run the following:
      qmake -project (generates a cstitch.pro file)
-     progen (adds some options to the cstitch.pro file)
+     ./progen (adds some options to the cstitch.pro file)
      qmake (generates a Makefile based on the cstitch.pro contents)
 
 6.  Compile.

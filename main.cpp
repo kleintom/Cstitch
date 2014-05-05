@@ -18,6 +18,7 @@
 //
 
 #include <QtWidgets/QApplication>
+#include <QTranslator>
 
 #include "colorChooser.h"
 #include "windowManager.h"
@@ -31,6 +32,12 @@ int main(int argc, char *argv[]) {
   QApplication::setStyle("plastique"); // motif is never the correct choice...
 #endif
   QApplication app(argc, argv);
+  const QString trDirectory = ":/translations";
+  QTranslator translator;
+  translator.load("cstitch_" + QLocale::system().name(), trDirectory);
+  //translator.load("cstitch_en", trDirectory);
+  app.installTranslator(&translator);
+
   // seed the static scroll bar width value
   ::scrollbarWidth(app.style());
   colorMatcher::initializeIntensitySpreads();
@@ -39,8 +46,8 @@ int main(int argc, char *argv[]) {
 
   // the version is updated by the git pre-commit script based on the
   // current git label and the current git revision count 
-  // (if you change @GIT-VERSION you'll need to change the script too)
-  winManager.setProgramVersion("0.9.4.20"); // @GIT-VERSION - don't touch this comment
+  // (if you change "@GIT-VERSION" you'll need to change the script too)
+  winManager.setProgramVersion("0.9.4.21"); // @GIT-VERSION - don't touch this comment
 
   colorChooser colorChooserWindow(&winManager);
   colorChooserWindow.show();

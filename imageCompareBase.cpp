@@ -57,6 +57,7 @@ imageCompareBase::imageCompareBase(windowManager* windowMgr)
   rightImageListBox_->setToolTip(tr("Select the right side image"));
 
   addZoomActionsToImageMenu();
+  //: Whether zooming zooms both images at once, or just one
   dualZoomingAction_ = new QAction(tr("Dual zooming"), this);
   dualZoomingAction_->setCheckable(true);
   dualZoomingAction_->setChecked(true);
@@ -102,6 +103,7 @@ void imageCompareBase::constructScrolling() {
   rightScroll_->viewport()->installEventFilter(this);
   rightScroll_->hide();
 
+  //: Whether scrolling scrolls both images at once, or just one
   dualScrollingAction_ = new QAction(tr("Dual scrolling"), this);
   dualScrollingAction_->setCheckable(true);
   dualScrollingAction_->setChecked(true);

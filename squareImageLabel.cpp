@@ -218,7 +218,7 @@ void squareImageLabel::setImageSize(const QSize& newSize) {
     scaledDimension_ = newSize.width()/xSquareCount_;
     Q_ASSERT_X(newSize.width() % scaledDimension_ == 0 &&
                newSize.height() % scaledDimension_ == 0, "setImageSize",
-               QString(tr("Bad scaled square image size: (") +
+               QString("Bad scaled square image size: (" +
                        ::itoqs(newSize.width()) +
                        ", " + ::itoqs(newSize.height()) + ") :: " +
                        ::itoqs(xSquareCount_) + "; " +
@@ -239,7 +239,7 @@ void squareImageLabel::setImageWidth(int newWidth) {
   }
   else {
     Q_ASSERT_X(newWidth % scaledDimension_ == 0, "setImageWidth",
-               QString(tr("Bad scaled square image width: ") +
+               QString("Bad scaled square image width: " +
                        ::itoqs(newWidth) + " " +
                        ::itoqs(scaledDimension_) + "; " +
                        ::itoqs(baseImage_.size().width()) + "x" +
@@ -259,7 +259,7 @@ void squareImageLabel::setImageHeight(int newHeight) {
   }
   else {
     Q_ASSERT_X(newHeight % scaledDimension_ == 0, "setImageHeight",
-               QString(tr("Bad scaled square image height: ") +
+               QString("Bad scaled square image height: " +
                        ::itoqs(newHeight) + " " +
                        ::itoqs(ySquareCount_) + "; " +
                        ::itoqs(baseImage_.size().width()) + "x" +

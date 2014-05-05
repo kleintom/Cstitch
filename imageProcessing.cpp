@@ -163,7 +163,7 @@ QVector<triC> mode(QImage* newImage, int dimension) {
   QSet<QRgb> colorsChosen; // colors to be returned
   QHash<QRgb, int> colorFrequencies; // color frequency counts
   altMeter progressMeter(QObject::tr("Creating new image..."),
-                                QObject::tr("Cancel"), 0, yMax/dimension);
+                         QObject::tr("Cancel"), 0, yMax/dimension);
   progressMeter.setMinimumDuration(2000);
   progressMeter.show();
   for (int j = 0; j <= yMax; j += dimension) {
@@ -240,7 +240,7 @@ QVector<triC> median(grid* newImage, const grid& originalImage,
   const int yMax = newImage->height() - dimension;
   QSet<triC> colorsChosen;
   altMeter progressMeter(QObject::tr("Creating new image..."),
-                                QObject::tr("Cancel"), 0, yMax/dimension);
+                         QObject::tr("Cancel"), 0, yMax/dimension);
   progressMeter.setMinimumDuration(1500);
   progressMeter.show();
   for (int yStart = 0; yStart <= yMax; yStart += dimension) {
@@ -379,7 +379,7 @@ QVector<triC> chooseColors(const QImage& image, int numColors,
   const int width = image.width();
   const int height = image.height();
   altMeter progressMeter(QObject::tr("Choosing colors Step 1/2..."),
-                                QObject::tr("Cancel"), 0, height/32);
+                         QObject::tr("Cancel"), 0, height/32);
   progressMeter.setMinimumDuration(1000);
   progressMeter.show();
   QHash<QRgb, int> colorCountMap;
@@ -451,8 +451,7 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   QTime t;
   t.start();
   altMeter progressMeter(QObject::tr("Choosing colors Step 2/2..."),
-                                QObject::tr("Cancel"), 0,
-                                colorCountMap.size()/64);
+                         QObject::tr("Cancel"), 0, colorCountMap.size()/64);
   progressMeter.setMinimumDuration(1000);
   progressMeter.show();
   int progressCount = 0;

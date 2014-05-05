@@ -70,9 +70,9 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
     symbolSizeBox_(new QGroupBox(tr("Pdf symbol size"))),
     symbolSizeLayout_(new QVBoxLayout),
     symbolSizeTitleLayout_(new QHBoxLayout),
-    symbolSizeTitle_(new QLabel("Set the pdf symbol size (from " +
-                                QString::number(MIN_SYMBOL_SIZE) + " to " +
-                                QString::number(MAX_SYMBOL_SIZE) + "): ")),
+    symbolSizeTitle_(new QLabel(tr("Set the pdf symbol size (from %1 to %2):").
+                                arg(QString::number(MIN_SYMBOL_SIZE)).
+                                arg(QString::number(MAX_SYMBOL_SIZE)))),
     symbolSizeSpinBox_(new QSpinBox),
     symbolSizeKey_("pdf_symbol_size"),
     symbolPreviewLayout_(new QHBoxLayout),
@@ -171,16 +171,19 @@ void patternMetadata::loadLicenses(QComboBox* box, const QFont& font,
   const QString year = QString::number(QDate::currentDate().year());
   const QString identifier = derived ?
     tr("The image on this page") : tr("This work");
-  box->addItem(identifier + " is " + copyrightCharacter + " " +
-               year + " " + tr("[insert your name]."));
-  box->addItem(identifier + tr(" is licensed under the Creative Commons Attribution-NonCommercial 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/3.0/"));
-  box->addItem(identifier + tr(" is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/"));
-  box->addItem(identifier + tr(" is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/"));
-  box->addItem(identifier + tr(" is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/"));
-  box->addItem(identifier + tr(" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/"));
-  box->addItem(identifier + tr(" is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/"));
-  box->addItem(tr("All copyright rights to ") + identifier.toLower() +
-               tr(" have been waived under the Creative Commons CC0 1.0 Universal dedication. To view a copy of the dedication, visit http://creativecommons.org/publicdomain/zero/1.0/"));
+  //: For example: "This work is (c) 2014 [insert your name]"
+  box->addItem(tr("%1 is %2 %3 [insert your name]")
+               .arg(identifier)
+               .arg(copyrightCharacter)
+               .arg(year));
+  //: %1 is either "The image on this page" or "This work"
+  box->addItem(tr("%1 is licensed under the Creative Commons Attribution-NonCommercial 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/3.0/").arg(identifier));
+  box->addItem(tr("%1 is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/").arg(identifier));
+  box->addItem(tr("%1 is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/").arg(identifier));
+  box->addItem(tr("%1 is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/").arg(identifier));
+  box->addItem(tr("%1 is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/").arg(identifier));
+  box->addItem(tr("%1 is licensed under the Creative Commons Attribution-NoDerivs 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/3.0/").arg(identifier));
+  box->addItem(tr("All copyright rights to %1 have been waived under the Creative Commons CC0 1.0 Universal dedication. To view a copy of the dedication, visit http://creativecommons.org/publicdomain/zero/1.0/").arg(identifier.toLower()));
   if (derived) {
     box->addItem(tr("This work is derived from the image on this page, \"[name of image]\", a photo by [name and http] with a [insert license]"));
     box->addItem(tr("Creative Commons Attribution-NonCommercial 3.0 Unported License"));

@@ -21,6 +21,7 @@
 #define COLORDIALOG_H
 
 #include <QtCore/QMetaType>
+#include <QCoreApplication>
 
 #include "triC.h"
 #include "imageUtility.h"

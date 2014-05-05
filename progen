@@ -39,7 +39,7 @@ def insertString(inputString, searchRE, insertionRE, stringToInsert):
                            inputString[insertLocation:])
             return (True, inputString)
         else:
-            print "\n\n     Couldn't find insert location!!\n\n"
+            print "\n\n!!     Couldn't find insert location: " + insertionRE + "\n\n"
             sys.exit(-1)
     else:
         #print "'" + insertString.replace("\n","") + "' already exists"
@@ -100,7 +100,6 @@ updateNeeded = updateNeeded or xmlWriteNeeded
                                                 insertionPointRE,
                                                 'win32:RC_FILE += "' + projectName + '.rc"\n',)
 updateNeeded = updateNeeded or iconWriteNeeded
-
 
 if updateNeeded:
     projectFile = open(proFilename, 'w')

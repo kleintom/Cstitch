@@ -309,23 +309,23 @@ void colorDialog::constructorHelper(bool useSquareColors, flossType type) {
   // choice box
   modeChoiceBox_ = new QComboBox;
   if (useSquareColors) {
-    modeChoiceBox_->addItem("Choose a square color",
+    modeChoiceBox_->addItem(tr("Choose a square color"),
                             QVariant::fromValue(CD_SQUARE));
   }
-  modeChoiceBox_->addItem("Choose a list color",
+  modeChoiceBox_->addItem(tr("Choose a list color"),
                           QVariant::fromValue(CD_LIST));
   if (type == flossDMC || type == flossVariable) {
-    modeChoiceBox_->addItem("Choose a DMC color",
+    modeChoiceBox_->addItem(tr("Choose a DMC color"),
                             QVariant::fromValue(CD_DMC));
   }
   if (type == flossAnchor || type == flossVariable) {
-    modeChoiceBox_->addItem("Choose an Anchor color",
+    modeChoiceBox_->addItem(tr("Choose an Anchor color"),
                             QVariant::fromValue(CD_ANCHOR));
   }
-  modeChoiceBox_->addItem("Choose from an image",
+  modeChoiceBox_->addItem(tr("Choose from an image"),
                           QVariant::fromValue(CD_IMAGE));
   if (type == flossVariable) {
-    modeChoiceBox_->addItem("Choose a new color",
+    modeChoiceBox_->addItem(tr("Choose a new color"),
                             QVariant::fromValue(CD_NEW));
   }
 

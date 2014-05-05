@@ -64,9 +64,8 @@ dockListWidget::dockListWidget(const QVector<triC>& colorList,
 
 void dockListWidget::setNumColors(int numColors) {
 
-  const QString plural = (numColors == 1) ? "" : "s";
-  const QString numColorsString =
-    QString::number(numColors) + " color" + plural;
+  //: singular/plural
+  const QString numColorsString = tr("%n color(s)", "", numColors);
   numColorsLabel_->setText(numColorsString);
 }
 

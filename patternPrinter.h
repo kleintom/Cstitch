@@ -22,6 +22,7 @@
 
 #include <QPainter>
 #include <QtPrintSupport/QPrinter>
+#include <QCoreApplication>
 
 #include "floss.h"
 #include "patternImageContainer.h"

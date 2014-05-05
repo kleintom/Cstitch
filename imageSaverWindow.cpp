@@ -148,19 +148,19 @@ void imageSaverWindow::processSaveImage() {
     static_cast<qint64>(curViewingSize.height() * 4);
   if (bytes > 36000000) {
     const int megabytes = (bytes/1048576) + 1;
-    QString size = ::itoqs(megabytes) + " megabytes";
-    const QString warning(tr("The image you are requesting to save is ") +
-                          ::itoqs(curViewingSize.width()) + tr(" by ") +
-                          ::itoqs(curViewingSize.height()) +
-                          tr(", which would require ") + size +
-                          tr(" of memory to process.") +
-                          tr("  Depending on your system resources, ") +
-                          tr("processing could take anywhere from a ") +
-                          tr("couple seconds to tens of minutes, and could ") +
-                          tr("bog down your computer for that time.\n") +
-                          tr("You may want to cancel and save your project ") +
-                          tr("before attempting this operation.\n\n") +
-                          tr("Do you want to continue?"));
+    const QString size = ::itoqs(megabytes);
+    const QString warning(tr("The image you are requesting to save is "
+                             "%1 by %2, which would require %3 megabytes "
+                             "of memory to process.  Depending on your system "
+                             "resources, processing could take anywhere from a "
+                             "couple seconds to tens of mintues and could "
+                             "bog down your computer for that time.\n"
+                             "You may want to click cancel and save your "
+                             "project before attempting this operation.\n\n"
+                             "Do you want to continue?")
+                          .arg(::itoqs(curViewingSize.width()))
+                          .arg(::itoqs(curViewingSize.height()))
+                          .arg(size));
     const int answer = QMessageBox::warning(this, tr("Memory usage warning"),
                                             warning,
                                             QMessageBox::Yes|QMessageBox::No);
@@ -171,11 +171,10 @@ void imageSaverWindow::processSaveImage() {
 
   const QImage saveImage = curImageForSaving();
   if (saveImage.isNull()) {
-    const QString error(tr("Sorry, there wasn't enough memory to save ") +
-                        tr("at the current image size.  Try reducing ") +
-                        tr("the image's size before saving again."));
     QMessageBox::warning(this, tr("Image is too large to save"),
-                         error);
+                         tr("Sorry, there wasn't enough memory to save "
+                            "at the current image size.  Try reducing "
+                            "the image's size before saving again."));
     return;
   }
   if (::extension(outputFile) == "pdf") {

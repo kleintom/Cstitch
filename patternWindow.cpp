@@ -167,7 +167,7 @@ void patternWindow::constructToolbar() {
 
   saveToPdfButton_ = new QPushButton(tr("To pdf (4/4)"), this);
   saveToPdfButton_->setShortcut(QKeySequence("Ctrl+return"));
-  saveToPdfButton_->setToolTip(tr("Save the pattern as a pdf file; the pdf symbol size will reflect the current zoom level on screen"));
+  saveToPdfButton_->setToolTip(tr("Save the pattern as a pdf file"));
   connect(saveToPdfButton_, SIGNAL(clicked()),
           this, SLOT(saveSlot()));
   imageListBox_ = new comboBox(this);
@@ -489,12 +489,15 @@ void patternWindow::displayImageInfo() {
     const int symbolDim = curImage_->symbolDimension();
     const int xBoxes = width/symbolDim;
     const int yBoxes = height/symbolDim;
-    QMessageBox::information(this, curImage_->name(), curImage_->name() +
-                             tr(" currently has dimensions ") +
-                             ::itoqs(width) + "x" + ::itoqs(height) +
-                             tr(", box dimension ") + ::itoqs(symbolDim) +
-                             tr(", and is ") + ::itoqs(xBoxes) +
-                             tr(" by ") + ::itoqs(yBoxes) + tr(" boxes."));
+    QMessageBox::information(this, curImage_->name(),
+                             tr("%1 currently has dimensions %2x%3, box "
+                                "dimension %4, and is %5 by %6 boxes.")
+                             .arg(curImage_->name())
+                             .arg(::itoqs(width))
+                             .arg(::itoqs(height))
+                             .arg(::itoqs(symbolDim))
+                             .arg(::itoqs(xBoxes))
+                             .arg(::itoqs(yBoxes)));
   }
 }
 
@@ -537,7 +540,7 @@ void patternWindow::updateHistory(const QDomElement& xml) {
     updateHistoryButtonStates();
   }
   else {
-    qWarning() << "Misplaced container on patternHistoryRestore" <<
+    qWarning() << "Misplaced container on patternHistoryRestore:" <<
       imageIndex;
   }
 }
@@ -558,7 +561,7 @@ void patternWindow::updateCurrentSettings(const QDomElement& xml) {
     setCur(container);
   }
   else {
-    qWarning() << "Misplaced container on patternUpdateSettings" <<
+    qWarning() << "Misplaced container on patternUpdateSettings:" <<
       currentIndex;
   }
 }

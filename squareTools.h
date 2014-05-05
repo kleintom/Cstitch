@@ -21,6 +21,7 @@
 #define SQUARETOOLS_H
 
 #include <QtCore/QSet>
+#include <QCoreApplication>
 
 #include "imageUtility.h"
 

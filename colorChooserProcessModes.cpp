@@ -82,7 +82,7 @@ void processModeGroup::setColorLists(const QDomElement& element) {
     const QVector<triC> thisList =
       ::loadColorListFromText(thisElement.text());
     for (int j = 0, jSize = activeModes_.size(); j < jSize; ++j) {
-      if (activeModes_[j]->modeText() == mode) {
+      if (activeModes_[j]->saveText() == mode) {
         activeModes_[j]->setClickedColorList(thisList);
         break;
       }
@@ -131,7 +131,7 @@ void numColorsBaseModes::appendColorList(QDomDocument* doc,
                                          QDomElement* appendee) {
 
   if (!clickedColorList().isEmpty()) {
-    ::appendColorList(doc, clickedColorList(), appendee, "mode", modeText());
+    ::appendColorList(doc, clickedColorList(), appendee, "mode", saveText());
   }
 }
 
@@ -239,4 +239,15 @@ triState numColorsBaseModes::performProcessing(QImage* image, int numColors,
   else {
     return triNoop;
   }
+}
+
+QString processModeGroup::savedModeTextToLocale(const QString& mode) const {
+
+  for (int i = 0, size = activeModes_.size(); i < size; ++i) {
+    const processModePtr thisMode = activeModes_[i];
+    if (thisMode->saveText() == mode) {
+      return thisMode->modeText();
+    }
+  }
+  return "";
 }

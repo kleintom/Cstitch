@@ -63,8 +63,8 @@ colorChooser::colorChooser(windowManager* winMgr)
   popDock();
   processProcessChange(0); // set processMode_ to the first box entry
 
-  setStatus(tr("Click the left folder icon to open a new image or ") +
-            tr("the right folder icon to open a saved project."));
+  setStatus(tr("Click the left folder icon to open a new image or "
+               "the right folder icon to open a saved project."));
   setPermanentStatus(tr("Click 'Choose colors' to continue."));
   setPermanentStatusEnabled(false);
 
@@ -313,9 +313,12 @@ void colorChooser::processProcessing() {
 
   if (numColorsBox_->value() == 0 && !processMode_.userColorsExist()) {
     QMessageBox::information(this, tr("No colors requested"),
-                        tr("There are currently no colors being requested - ") +
-                             tr("either set the number of colors box on the toolbar to something larger than 0 ") +
-                             tr("or click on at least one color on the image to add it to the \"Clicked colors\" list on the right."));
+                             tr("There are currently no colors being requested"
+                                " - either set the number of colors box on the"
+                                " toolbar to something larger than 0 or click"
+                                " on at least one color on the image to add it"
+                                " to the \"Clicked colors\" list on the"
+                                " right."));
     return;
   }
   QImage workingImage = winManager()->originalImage().copy();
@@ -329,7 +332,7 @@ void colorChooser::processProcessing() {
                                    winManager()->getOriginalImageColorCount());
   //qDebug() << "processing time: " << double(t.elapsed())/1000.;
   if (returnCode != triNoop) {
-    const colorCompareSaver saver(-1, 0, processMode_.modeText(),
+    const colorCompareSaver saver(-1, 0, processMode_.saveText(),
                                   processMode_.colorList());
     winManager()->addColorCompareImage(workingImage,
                                        processMode_.colorList(),
@@ -358,7 +361,7 @@ void colorChooser::displayImageInfo() {
 int colorChooser::recreateImage(const colorCompareSaver& saver) {
 
   // set the widget's current processing mode box
-  setModeBox(saver.creationMode());
+  setModeBox(processMode_.savedModeTextToLocale(saver.creationMode()));
 
   QImage workingImage = winManager()->originalImage().copy();
   if (workingImage.isNull()) {
@@ -393,7 +396,7 @@ void colorChooser::appendCurrentSettings(QDomDocument* doc,
   QDomElement settings(doc->createElement("color_chooser_settings"));
   appendee->appendChild(settings);
 
-  ::appendTextElement(doc, "mode", processMode_.modeText(), &settings);
+  ::appendTextElement(doc, "mode", processMode_.saveText(), &settings);
 
   QDomElement colorLists(doc->createElement("color_lists"));
   settings.appendChild(colorLists);
@@ -410,8 +413,8 @@ void colorChooser::updateCurrentSettings(const QDomElement& xml) {
   processMode_.setColorLists(colorLists);
 
   // set mode after color lists in order to pick up the new lists
-  const QString mode = ::getElementText(settings, "mode");
-  setModeBox(mode);
+  const QString savedMode = ::getElementText(settings, "mode");
+  setModeBox(processMode_.savedModeTextToLocale(savedMode));
   clickedDock_->setColorList(processMode_.clickedColorList());
 }
 

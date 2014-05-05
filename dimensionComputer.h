@@ -24,6 +24,7 @@
 
 class QSpinBox;
 class QLabel;
+class QComboBox;
 
 // a dialog for the user to be able to compute the final pattern size
 // (in inches and squares) based on the current image size and a
@@ -49,6 +50,8 @@ class dimensionComputer : public cancelAcceptDialogBase {
   const int height_;
   // let the user select the square size for their pattern
   QSpinBox* squareSizeBox_;
+  // imperial or metric?
+  QComboBox* unitsBox_;
   // the end of the square size text label (the beginning is fixed)
   QLabel* squareSizeLabelEnd_;
   QLabel* outputLabel_; // the output text

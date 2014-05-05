@@ -80,6 +80,20 @@ original image uses 68,439 colors, the one on the right uses 23.</div>
 <div class="heading">Release Notes</div>
 
 <p>
+<span class="rnd">5-5-14</span>
+Beta version 0.9.5 released:
+</p>
+<ul class="squareUL">
+  <li><span>
+      Updates for internationalization
+  </span></li>
+  <li><span>
+      Italian translation provided by Michele Marino - thanks Michele!  The
+      Italian translation will load automatically based on your computer's
+      locale settings.
+  </span></li>
+</ul>
+
 <span class="rnd">1-24-14</span>
 Beta version 0.9.4 released:
 </p>

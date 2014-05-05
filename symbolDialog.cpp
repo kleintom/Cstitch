@@ -46,6 +46,7 @@ symbolDialog::symbolDialog(const QVector<patternSymbolIndex>& availableSymbols,
 
   QHBoxLayout* labelsLayout = new QHBoxLayout;
   QLabel* textLabel = new QLabel;
+  //: note space at the end
   textLabel->setText(tr("Change symbol "));
   QLabel* symbolLabel = new QLabel;
   symbolLabel->setPixmap(originalSymbol);

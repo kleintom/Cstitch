@@ -43,7 +43,7 @@ extern const int ZOOM_INCREMENT = 100;
 
 imageZoomWindow::imageZoomWindow(const QString& dockName,
                                  windowManager* winMgr)
-  : Original_("Original"), constructedAndShown_(false),
+  : Original_(tr("Original")), constructedAndShown_(false),
     windowManager_(winMgr) {
 
   createDock(dockName);
@@ -215,7 +215,7 @@ void imageZoomWindow::setZoomActionsEnabled(bool b) {
 
 bool imageZoomWindow::quit() {
 
-  const int returnCode = QMessageBox::warning(this, tr("Cstitch"),
+  const int returnCode = QMessageBox::warning(this, "Cstitch",
     tr("All work will be lost if you continue; are you sure you want to quit?"),
                                 QMessageBox::Cancel | QMessageBox::Ok,
                                 QMessageBox::Ok);
@@ -245,14 +245,15 @@ void imageZoomWindow::displayOriginalImageInfo(int width, int height) {
     return;
   }
   const int colorCount = windowManager_->getOriginalImageColorCount();
-  const QString countString = 
-    (colorCount > 1) ? tr(" distinct colors.") : tr(" color.");
-  QMessageBox::information(this, 
-                           tr("Original Image"), tr("The original image") +
-                           tr(" currently has dimensions ") +
-                           ::itoqs(width) + tr("x") + ::itoqs(height) +
-                           tr(" and contains ") + ::itoqs(colorCount) + 
-                           countString);
+  QMessageBox::information(this,
+                           tr("Original Image"),
+                           //: In English the singular version would be "color"
+                           //: and the plural would be "unique colors" - add
+                           //: "unique" in the plural case when possible
+                           tr("The original image currently has dimensions "
+                              "%1x%2 and contains %n color(s).", "", colorCount)
+                           .arg(::itoqs(width))
+                           .arg(::itoqs(height)));
 }
 
 void imageZoomWindow::setStatus(const QString& status) {
@@ -348,8 +349,11 @@ void imageZoomWindow::helpAbout() {
   QMessageBox aboutBox(this);
   aboutBox.setWindowTitle(tr("About"));
   const QString version = winManager()->getProgramVersion();
-  aboutBox.setText(tr("<b>Cstitch</b><br />Version: ") + version +
-                      tr("<br />Tom Klein<br />email: tomklein@users.sourceforge.net<br />http://cstitch.sourceforge.net/"));
+  aboutBox.setText("<b>Cstitch</b><br />" + 
+                   tr("Version: %1<br />"
+                      "Tom Klein<br />email: "
+                      "tomklein@users.sourceforge.net<br />"
+                      "http://cstitch.sourceforge.net/").arg(version));
   aboutBox.setIconPixmap(QPixmap(":aboutIcon.png"));
   aboutBox.exec();
 }
@@ -429,7 +433,10 @@ QString imageZoomWindow::imageInfoFlossString(flossType type) const {
 
   const QString flossTypeText = type.shortText();
   if (flossTypeText != "") {
-    return tr("contains only ") + flossTypeText + tr(" colors");
+    //: %1 is "DMC" or "Anchor" or ...
+    //: this string will get added to the end of a sentence, as in:
+    //: "This image contains only DMC colors"
+    return tr("contains only %1 colors").arg(flossTypeText);
   }
   else {
     return "";

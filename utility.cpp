@@ -37,8 +37,9 @@ QString getNewImageFileName(QWidget* activeWindow, bool displayWarning) {
 
   int returnCode = QMessageBox::Ok;
   if (displayWarning) {
-    returnCode = QMessageBox::warning(activeWindow, QObject::tr("Cstitch"),
-                                      "All previous work will be lost if you continue.",
+    returnCode = QMessageBox::warning(activeWindow, "Cstitch",
+                                      QObject::tr("All previous work will be"
+                                                  " lost if you continue."),
                                       QMessageBox::Cancel | QMessageBox::Ok,
                                       QMessageBox::Ok);
   }
@@ -49,9 +50,10 @@ QString getNewImageFileName(QWidget* activeWindow, bool displayWarning) {
            end = formats.end(); it != end; ++it) {
       extensions += QString("*.") + (*it).data() + QString(" ");
     }
-    return QFileDialog::getOpenFileName(activeWindow, QObject::tr("Open image"), ".",
-                                        "Image files (" + extensions +
-                                        ")\nAll (*.*)");
+    return QFileDialog::getOpenFileName(activeWindow,
+                                        QObject::tr("Open image"), ".",
+                                        QObject::tr("Image files (%1)\n"
+                                                    "All (*.*)").arg(extensions));
   }
   return QString();
 }
@@ -78,7 +80,7 @@ groupProgressDialog::groupProgressDialog(int numDialogs)
   setAutoClose(false);
   setAutoReset(false);
   move(PROGRESS_X_COORDINATE, PROGRESS_Y_COORDINATE);
-  setWindowTitle("Progress");
+  setWindowTitle(QObject::tr("Progress"));
 }
 
 altMeter::altMeter(const QString& labelText, const QString& cancelButtonText,
@@ -90,7 +92,7 @@ altMeter::altMeter(const QString& labelText, const QString& cancelButtonText,
     dialog_->setCancelButtonText(cancelButtonText);
     dialog_->setRange(minimum, maximum);
     dialog_->move(PROGRESS_X_COORDINATE, PROGRESS_Y_COORDINATE);
-    dialog_->setWindowTitle("Progress");
+    dialog_->setWindowTitle(QObject::tr("Progress"));
     dialog_->setWindowModality(Qt::WindowModal);
   }
   else {

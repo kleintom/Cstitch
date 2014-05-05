@@ -158,8 +158,9 @@ class groupProgressDialog : public QProgressDialog {
   explicit groupProgressDialog(int numDialogs);
   void reset(int min, int max) {
     setRange(min, max);
-    setLabelText("Recreating image " + QString::number(count_) +
-                         "/" + QString::number(numDialogs_));
+    setLabelText(QObject::tr("Recreating image %1/%2")
+                 .arg(QString::number(count_))
+                 .arg(QString::number(numDialogs_)));
   }
   // ignore show requests from group members
   void show() { return; }

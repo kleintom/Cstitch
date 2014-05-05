@@ -55,7 +55,7 @@ helpBrowser::helpBrowser() {
   connect(forwardAction_, SIGNAL(triggered()),
           this, SLOT(processForward()));
 
-  toolBar_ = addToolBar(tr("Toolbar"));
+  toolBar_ = addToolBar("");
   toolBar_->addAction(printAction_);
   toolBar_->addAction(printAllAction_);
   toolBar_->addAction(backAction_);

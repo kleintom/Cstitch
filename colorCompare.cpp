@@ -231,23 +231,32 @@ void colorCompare::processSquareButton(imagePtr container,
   int squareMode = squareMode_;
   if (!container) { // user pushed the process button
     container = curImage_;
-    squareModeString = squareModeBox_->currentText();
     squareSize = squareSizeBox_->value();
   }
   else { // doing a restore
-    // set squareMode from squareModeString
-    for (int i = 0, size = squareModeBox_->count(); i < size; ++i) {
-      if (squareModeBox_->itemText(i).toLower() == squareModeString) {
-        squareMode = squareModeBox_->itemData(i).toInt();
-        break;
-      }
+    // The saved mode string should always have been the enumeration value
+    // instead of the UI string, but for backwards compatibility we'll deal with
+    // it as it is.
+    if (squareModeString == "median") {
+      squareMode = SQ_MEDIAN;
+    }
+    else if (squareModeString == "mode") {
+      squareMode = SQ_MODE;
+    }
+    else {
+      qWarning() << "Unrecognized squareModeString: \"" << squareModeString << 
+        "\", index: " << newIndex << "; things probably won't go well from here.";
+      return;
     }
   }
 
   if (container) {
     QImage newImage;
     QVector<triC> colorsUsed;
-    if (squareMode == SQ_MEDIAN) {
+    switch(squareMode) {
+    case SQ_MEDIAN:
+    {
+      squareModeString = "median";
       grid newGrid(container->image());
       if (newGrid.empty()) {
         qWarning() << "Empty grid in process square:" <<
@@ -270,15 +279,21 @@ void colorCompare::processSquareButton(imagePtr container,
       else { // processing was cancelled
         return;
       }
+      break;
     }
-    else if (squareMode == SQ_MODE) {
+    case SQ_MODE:
+    {
+      squareModeString = "mode";
       newImage = container->image();
       colorsUsed = ::mode(&newImage, squareSize);
       //qDebug() << "mode time: " << double(t.elapsed())/1000.;
+      break;
     }
-    else {
+    default:
+    {
       qWarning() << "Square mode error:" << squareMode_;
       return;
+    }
     }
 
     // only keep full squares on the new image; this may decrease the size
@@ -297,7 +312,7 @@ void colorCompare::processSquareButton(imagePtr container,
 
     const int parentIndex = imageNameToIndex(container->name());
     const squareWindowSaver saver(newIndex, parentIndex,
-                                  squareModeString.toLower(), squareSize);
+                                  squareModeString, squareSize);
     winManager()->addSquareWindow(newImage, squareSize, colorsUsed,
                                   container->flossMode(), saver,
                                   imageNameToIndex(container->name()),
@@ -332,10 +347,13 @@ void colorCompare::displayImageInfo() {
     const flossType colorsType = ::getFlossType(curImage_->flossColors());
     QString flossString = imageInfoFlossString(colorsType);
     flossString = (flossString == "") ? "" : tr(" and ") + flossString;
-    QMessageBox::information(this, curImage_->name(), curImage_->name() +
-                             tr(" currently has dimensions ") +
-                             ::itoqs(width) + "x" + ::itoqs(height) +
-                             flossString + tr("."));
+    //: %4 is either empty or contains text generated elsewhere
+    QMessageBox::information(this, curImage_->name(),
+                             tr("%1 currently has dimensions %2x%3%4.")
+                               .arg(curImage_->name())
+                               .arg(::itoqs(width))
+                               .arg(::itoqs(height))
+                               .arg(flossString));
   }
 }
 
@@ -352,7 +370,7 @@ int colorCompare::recreateImage(const squareWindowSaver& saver) {
                         saver.squareDimension(), saver.index());
   }
   else {
-    qWarning() << "Lost image in colorCompare::recreateImage" <<
+    qWarning() << "Lost image in colorCompare::recreateImage:" <<
       saver.parentIndex();
     return -1;
   }

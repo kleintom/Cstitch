@@ -20,9 +20,11 @@
 #include "dimensionComputer.h"
 
 #include <QtWidgets/QSpinBox>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QVBoxLayout>
+#include <QDebug>
 
 #include "utility.h"
 
@@ -35,12 +37,24 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   : cancelAcceptDialogBase(parent),
     width_(imageSize.width()), height_(imageSize.height()) {
 
+  //: note space at the end
+  QLabel* unitsLabel = new QLabel(tr("Units: "), this);
+  unitsBox_ = new QComboBox(this);
+  unitsBox_->addItem(tr("Inches"));
+  unitsBox_->addItem(tr("Centimeters"));
+  connect(unitsBox_, SIGNAL(currentTextChanged(const QString& )),
+          this, SLOT(updateDims()));
+
   QGroupBox* groupBox = 
-    new QGroupBox(tr("Click OK to set the main window square size"),
-                  this);
+    new QGroupBox(tr("Click OK to set the main window square size"), this);
 
   // the start of the square size line
-  QLabel* squareSizeLabel = 
+  QLabel* squareSizeLabel =
+    //: The full text will be:
+    //: "If you choose a square size of [box] your final pattern will be
+    //: [width by height] squares."
+    //: with box a box letting the user choose a square size.  The phrase
+    //: "If you choose a square size of" goes before the box.
     new QLabel(tr("If you choose a square size of"), this);
   // the end of the square size line (set in updateDims())
   squareSizeLabelEnd_ = new QLabel(this);
@@ -53,6 +67,11 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   // label for the fabric dimensions
   outputLabel_ = new QLabel(this);
 
+  QHBoxLayout* unitsLayout = new QHBoxLayout;
+  unitsLayout->addWidget(unitsLabel, 0, Qt::AlignRight);
+  unitsLayout->addWidget(unitsBox_, 0, Qt::AlignRight);
+  unitsLayout->insertStretch(0, 1);  
+
   QHBoxLayout* squareSizeLayout = new QHBoxLayout;
   squareSizeLayout->addWidget(squareSizeLabel);
   squareSizeLayout->addWidget(squareSizeBox_);
@@ -62,10 +81,14 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   QVBoxLayout* groupBoxLayout = new QVBoxLayout;
   groupBoxLayout->addLayout(squareSizeLayout);
   groupBoxLayout->addWidget(outputLabel_);
+groupBoxLayout->setSizeConstraint(QLayout::SetFixedSize);
   groupBox->setLayout(groupBoxLayout);
+
   QVBoxLayout* vLayout = new QVBoxLayout;
+  vLayout->addLayout(unitsLayout);
   vLayout->addWidget(groupBox);
   vLayout->addWidget(cancelAcceptWidget());
+vLayout->setSizeConstraint(QLayout::SetFixedSize);
 
   setLayout(vLayout);
   setWindowTitle(tr("Compute dimensions"));
@@ -77,25 +100,44 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
 
 void dimensionComputer::updateDims() {
 
+  QString newUnit, newUnitPlural;
+  QList<qreal> aidas;
+  if (unitsBox_->currentText() == tr("Inches")) {
+    //: singular
+    newUnit = tr("inch");
+    //: plural
+    newUnitPlural = tr("inches");
+    aidas << 7 << 10 << 11 << 12 << 14 << 16 << 18 << 22 << 25 << 28;
+  }
+  else {
+    //: singular
+    newUnit = tr("cm");
+    //: plural
+    newUnitPlural = tr("cm");
+    aidas << 2.4 << 4.4 << 5.5 << 7;
+  }
+
   const int newValue = squareSizeBox_->value();
   const int xBoxes = width_/newValue;
   const int yBoxes = height_/newValue;
-  squareSizeLabelEnd_->setText("your final pattern will be " +
-                               itoqs(xBoxes) + "x" + itoqs(yBoxes) +
-                               " squares.");
-  const int aidasSize = 8;
-  const int aidas[aidasSize] = {7, 10, 11, 12, 14, 18, 25, 28};
+  const QString endText = tr("your final pattern will be %1x%2 squares.")
+                            .arg(::itoqs(xBoxes)).arg(::itoqs(yBoxes));
+  squareSizeLabelEnd_->setText(endText);
+
   QString newText;
   const QString tab = "   ";
-  for (int i = 0; i < aidasSize; ++i) {
-    const qreal width = static_cast<qreal>(xBoxes)/aidas[i];
-    const qreal height = static_cast<qreal>(yBoxes)/aidas[i];
+  for (int i = 0, size = aidas.size(); i < size; ++i) {
+    const qreal width = xBoxes/aidas[i];
+    const qreal height = yBoxes/aidas[i];
     const QString count = QString("%1").arg(aidas[i], 2);
-    newText += tab + "Final fabric dimensions for " + 
-      "<span style='color: #474858'>" +
-      count +
-      "</span> squares per inch fabric: <span style='color: #474858'>" +
-      ::rtoqs(width) + "x" + ::rtoqs(height) + "</span> inches<br /><br />";
+    newText += tab + tr("Final fabric dimensions for "
+                        "<span style='color: #474858'>%1</span> squares per "
+                        "%2 fabric: "
+                        "<span style='color: #474858'>%3x%4</span> "
+                        "%5<br /><br />")
+                       .arg(count).arg(newUnit).arg(::rtoqs(width))
+                       .arg(::rtoqs(height)).arg(newUnitPlural);
+    
   }
   newText.chop(12); // remove the last 2 <br />
   outputLabel_->setText(newText);

@@ -30,13 +30,13 @@ QString flossType::text() const {
 
   switch (value_) {
   case flossVariable:
-    return "Any colors";
+    return QObject::tr("Any colors");
     break;
   case flossDMC:
-    return "DMC colors only";
+    return QObject::tr("DMC colors only");
     break;
   case flossAnchor:
-    return "Anchor colors only";
+    return QObject::tr("Anchor colors only");
     break;
   default:
     qWarning() << "Unhandled floss type text:" << value_;

@@ -228,11 +228,10 @@ void squareWindow::addImage(const QImage& image, int squareDimension,
   setCur(rightImage_);
   if ((!curImage_->isValid()) && curImage_->numColors()) {
     QMessageBox::information(this, tr("Info"),
-                             tr("This image has ") +
-                             ::itoqs(curImage_->numColors()) +
-                   tr(" colors, which is too many to produce a pattern, ") +
-                             tr("but you can still use this image for ") +
-                             tr("comparison with other squared images."));
+                             tr("This image has %1 colors, which is too many "
+                                "to produce a pattern, but you can still use "
+                                "this image for comparison with other squared "
+                                "images.").arg(::itoqs(curImage_->numColors())));
   }
 }
 
@@ -276,11 +275,11 @@ void squareWindow::updateSubWidgetStates() {
     colorListDock_->setNumColors(curImage_->numColors());
     toolDock_->setToolToNoop();
     if (curImage_->numColors()) {
-      setStatus(tr("This image has ") + ::itoqs(curImage_->numColors())
-                + " colors, "
-                + ::itoqs(curImage_->numColors() -
-                          symbolChooser::maxNumberOfSymbols())
-                + tr(" too many for further processing."));
+      setStatus(tr("This image has %1 colors, %2 too many for further "
+                   "processing.")
+                .arg(::itoqs(curImage_->numColors() -
+                             symbolChooser::maxNumberOfSymbols()))
+                .arg(::itoqs(curImage_->numColors())));
     }
     else {
       setStatus("");
@@ -515,9 +514,8 @@ void squareWindow::checkColorList() {
   const int numColorsRemoved = colorsToRemove.size();
   if (numColorsRemoved > 0) {
     colorListDock_->removeColors(colorsToRemove);
-    const QString plural = (numColorsRemoved == 1) ? tr("") : tr("s");
-    showTemporaryStatusMessage(tr("Removed ") + ::itoqs(numColorsRemoved) +
-                               tr(" color") + plural);
+    //: singular/plural
+    showTemporaryStatusMessage(tr("Removed %n color(s)", "", numColorsRemoved));
   }
   else {
     showTemporaryStatusMessage(tr("The color list is up to date"));
@@ -861,15 +859,32 @@ void squareWindow::displayImageInfo() {
     const int yBoxes = curImage_->originalHeight()/squareDim;
     const flossType colorsType = ::getFlossType(curImage_->flossColors());
     const QString flossString = imageInfoFlossString(colorsType);
-    const QString maybeAnd = (flossString == "") ? ", and" : ", ";
-    const QString maybeComma = (flossString == "") ? "" : ", and ";
-    QMessageBox::information(this, curImage_->name(), curImage_->name() +
-                             tr(" currently has dimensions ") +
-                             ::itoqs(width) + "x" + ::itoqs(height) +
-                             tr(", box dimension ") + ::itoqs(squareDim) +
-                             maybeAnd + tr(" is ") + ::itoqs(xBoxes) +
-                             tr(" by ") + ::itoqs(yBoxes) + tr(" boxes") +
-                             maybeComma + flossString + tr("."));
+    // for translation purposes, it seems best to not be clever about
+    // splitting the cases...
+    if (flossString == "") {
+      QMessageBox::information(this, curImage_->name(),
+                               tr("%1 currently has dimensions %2x%3, box "
+                                  "dimension %4, and is %5 by %6 boxes.")
+                               .arg(curImage_->name())
+                               .arg(::itoqs(width))
+                               .arg(::itoqs(height))
+                               .arg(::itoqs(squareDim))
+                               .arg(::itoqs(xBoxes))
+                               .arg(::itoqs(yBoxes)));
+    }
+    else {
+      QMessageBox::information(this, curImage_->name(),
+                               tr("%1 currently has dimensions %2x%3, box "
+                                  "dimension %4, is %5 by %6 boxes, and %7.")
+                               .arg(curImage_->name())
+                               .arg(::itoqs(width))
+                               .arg(::itoqs(height))
+                               .arg(::itoqs(squareDim))
+                               .arg(::itoqs(xBoxes))
+                               .arg(::itoqs(yBoxes))
+                               .arg(flossString));
+                                    
+    }
   }
 }
 

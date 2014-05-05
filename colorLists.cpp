@@ -258,13 +258,13 @@ triC colorMatcher::closestMatch() const {
   const int lastIndex = colorList_.size() - 1;
   Q_ASSERT_X(lowerIBound <= colorList_[lastIndex].intensity(),
              "closestMatch",
-             QString(QObject::tr("lowerIBound too large: ") +
+             QString("lowerIBound too large: " +
                      ::itoqs(lowerIBound) + QString(", ") +
                      ::itoqs(colorList_[lastIndex].intensity())).
              toStdString().c_str());
   Q_ASSERT_X(upperIBound >= colorList_[0].intensity(),
              "closestMatch",
-             QString(QObject::tr("upperIBound too small: ") +
+             QString("upperIBound too small: " +
                      ::itoqs(upperIBound) + ", " +
                      ::itoqs(colorList_[0].intensity())).toStdString().c_str());
   // find out where to start looking (modified binary search)

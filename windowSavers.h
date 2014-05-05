@@ -26,9 +26,9 @@
 
 #include "triC.h"
 
-// hold a record of an index, its parent index, and any children indices
-// hidden means this index has been deleted in some way, but we still need
-// to keep a record of it for its children
+// Hold a record of an index, its parent index, and any children indices.
+// Hidden means this index has been deleted in some way, but we still need
+// to keep a record of it for its children.
 class parentChildren {
 
  public:

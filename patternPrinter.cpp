@@ -405,10 +405,13 @@ void patternPrinter::drawColorList(int startHeight) {
   painter_.drawText(QRect(0, yused + fontHeight, printerWidth_,
                           4 * fontHeight),
                     Qt::TextWordWrap,
-                    "The pattern uses " + ::itoqs(colors_.size()) +
-                    " colors and is " + ::itoqs(xBoxes_) +
-                    " squares wide by " + ::itoqs(yBoxes_) +
-                    " squares high.", &textBoundingRect);
+                    QObject::tr("The pattern uses %1 colors and is %2 "
+                                "squares wide by %3 squares high.")
+                    .arg(::itoqs(colors_.size()))
+                    .arg(::itoqs(xBoxes_))
+                    .arg(::itoqs(yBoxes_)),
+                    &textBoundingRect);
+                    
   yused += textBoundingRect.height() + fontHeight;
   
   const bool useCodeAbbreviations = printListDescription(&yused, fontHeight);
@@ -425,7 +428,7 @@ void patternPrinter::drawColorList(int startHeight) {
   const int padding = 10;
   const int swatchTab = symbolDim + 5;
   const int countTab = 2 * swatchTab + padding;
-  const int codeTab = countTab + listFontMetric.width("999999") + padding;
+  const int codeTab = countTab + listFontMetric.width("99999999") + padding;
   const int nameTab = codeTab + listFontMetric.width("255 255 255") + padding;
   const int endTab = nameTab + boldFontMetric.width("~8888:Ultra V DK Turquoise");
 
@@ -546,8 +549,11 @@ QString patternPrinter::flossToCode(const typedFloss& f,
 void patternPrinter::drawListHeader(int margin, int y, int countTab,
                                     int codeTab, int nameTab) {
 
+  //: The number of times a color appears in the pattern (keep short)
   painter_.drawText(margin + countTab, y, QObject::tr("Count"));
+  //: The floss color code (keep short)
   painter_.drawText(margin + codeTab, y, QObject::tr("Code"));
+  //: The floss color description (keep short)
   painter_.drawText(margin + nameTab, y, QObject::tr("Name"));
 }
 
@@ -754,19 +760,20 @@ bool patternPrinter::printListDescription(int* yUsed, int fontHeight) {
   if (abbreviations.size() == 1) { // only one type of floss
     if (abbreviations[0].first == "") { // flossVariable only
       flossString =
-        QObject::tr("The Code column gives the RGB value of a color"
-                    " and the Name column gives the code and DMC name"
-                    " of the nearest DMC color.");
+        QObject::tr("The Code column gives the RGB value of a color and the Name "
+                    "column gives the code and DMC name of the nearest DMC color.");
     }
     else if (abbreviations[0].second != "d") { // not DMC
-      flossString = QObject::tr("All codes are for ") +
-        abbreviations[0].first +
-        QObject::tr(" floss.  The Name column gives the code and DMC name"
-                    " of the nearest DMC color.");
+      flossString =
+        //: %1 is "DMC" or "Anchor" or...
+        QObject::tr("All codes are for %1 floss.  The Name column gives the code "
+                    "and DMC name of the nearest DMC color.")
+                   .arg(abbreviations[0].first);
     }
     else { // DMC only
-      flossString = QObject::tr("All codes are for ") +
-        abbreviations[0].first + QObject::tr(" floss.");
+      flossString =
+        //: %1 is "DMC" or "Anchor" or...
+        QObject::tr("All codes are for %1 floss.").arg(abbreviations[0].first);
     }
   }
   else { // more than one type of floss
@@ -783,19 +790,18 @@ bool patternPrinter::printListDescription(int* yUsed, int fontHeight) {
     abbreviationsText.chop(2);
     if (numberOfAbbreviations > 1) {
       useCodeAbbreviations = true;
-      flossString = QObject::tr("For colors available as floss the Code"
-                                " column gives an abbreviation for the"
-                                " floss type (")
-        + abbreviationsText +
-        QObject::tr("), otherwise the RGB code of the color"
-                    " is given.  The Name column gives the"
-                    " code and DMC name of the nearest DMC color.");
+      flossString = QObject::tr("For colors available as floss the Code column "
+                                "gives an abbreviation for the floss type (%1), "
+                                "otherwise the RGB code of the color is given.  "
+                                "The Name column gives the code and DMC name of "
+                                "the nearest DMC color.").arg(abbreviationsText);
     }
     else { // variable plus one other type
-      flossString = QObject::tr("For non-") + abbreviations[0].first +
-        QObject::tr(" colors the Code column gives the RGB value of the"
-                    " color and the Name column gives the code and DMC"
-                    " name of the nearest DMC color.");
+        //: %1 is "DMC" or "Anchor" or...
+      flossString = QObject::tr("For non-%1 colors the Code column gives the RGB "
+                                "value of the color and the Name column gives the "
+                                "code and DMC name of the nearest DMC color.")
+                               .arg(abbreviations[0].first);
     }        
   }
   QRect textBoundingRect;

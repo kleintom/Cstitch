@@ -27,7 +27,7 @@ colorCompareSaver::colorCompareSaver(const QDomElement& xmlElement)
     colors_(::loadColorListFromText(::getElementText(xmlElement,
                                                      "color_list"))) {
 
-  bool hidden = ::stringToBool(::getElementText(xmlElement, "hidden"));
+  const bool hidden = ::stringToBool(::getElementText(xmlElement, "hidden"));
   setHidden(hidden);
 }
 
@@ -70,10 +70,9 @@ QDomElement squareWindowSaver::toXml(QDomDocument* doc) const {
 }
 
 patternWindowSaver::patternWindowSaver(const QDomElement& xmlElement)
-: modeSaver(::getElementText(xmlElement, "index").toInt(),
+  : modeSaver(::getElementText(xmlElement, "index").toInt(),
               ::getElementText(xmlElement, "parent_index").toInt()),
-  squareDimension_(::getElementText(xmlElement,
-                                    "square_dimension").toInt()) {
+    squareDimension_(::getElementText(xmlElement, "square_dimension").toInt()) {
 
   QDomNode historyNode =
     squareHistory_.importNode(xmlElement.

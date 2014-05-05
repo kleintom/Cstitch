@@ -45,6 +45,8 @@ class qRgbIntensity {
 rareColorsDialog::rareColorsDialog(const QHash<QRgb, int>& colorCounts)
   : cancelAcceptDialogBase(NULL), colorCounts_(colorCounts) {
 
+  //: Between this text and the next goes a box that lets the user choose
+  //: a number
   minCountLeftLabel_ = new QLabel(tr("Replace checked colors that occur "));
   minCountRightLabel_ = new QLabel(tr(" or fewer times."));
 
@@ -148,9 +150,8 @@ void rareColorsDialog::processNewMin(int min) {
       // find the new color
       QRgb thisNewColor = ::closestMatch(thisOldColor, commonColors);
       const int thisColorCount = colorCounts_[thisOldColor];
-      const QString squareString = (thisColorCount == 1) ?
-        " square " : " squares ";
-      const QString iconString(::itoqs(thisColorCount) + squareString +
+      const QString squareString = tr("%n square(s)", "", thisColorCount);
+      const QString iconString(squareString + " " +
                                ::colorToPrettyString(thisOldColor) + " --> " +
                                ::colorToPrettyString(thisNewColor));
       QCheckBox* checkBox = new QCheckBox(iconString);
@@ -164,8 +165,8 @@ void rareColorsDialog::processNewMin(int min) {
   }
   else if (rareColors.isEmpty()) {
     noRareColorsLabel_ =
-      new QLabel(tr("There aren't any colors that occur ") +
-                 ::itoqs(minCountBox_->value()) + " or fewer times!");
+      new QLabel(tr("There aren't any colors that occur %1 or fewer times!")
+                 .arg(::itoqs(minCountBox_->value())));
     colorsLayout_->addWidget(noRareColorsLabel_);
   }
   else if (commonColors.isEmpty()) {

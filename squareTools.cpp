@@ -341,17 +341,25 @@ void detailTool::processDetailEvent(int boxX, int boxY,
 void nullTool::setMouseHint() { parent()->setStatus(QString()); }
 
 void changeAllTool::setMouseHint() {
-  parent()->setStatus(QObject::tr("lb: change color under mouse; mb: change swatch color; rb: set swatch color"));
+  //: lb=left button, mb=middle button, rb=right button (keep these short)
+  parent()->setStatus(QObject::tr("lb: change color under mouse; mb: change swatch "
+                                  "color; rb: set swatch color"));
 }
 
 void changeOneTool::setMouseHint() {
-  parent()->setStatus(QObject::tr("lb: paint with swatch color; mb: change swatch color; rb: set swatch color"));
+  //: lb=left button, mb=middle button, rb=right button (keep these short)
+  parent()->setStatus(QObject::tr("lb: paint with swatch color; mb: change swatch "
+                                  "color; rb: set swatch color"));
 }
 
 void fillTool::setMouseHint() {
-  parent()->setStatus(QObject::tr("lb: fill with swatch color; mb: change swatch color; rb: set swatch color"));
+  //: lb=left button, mb=middle button, rb=right button (keep these short)
+  parent()->setStatus(QObject::tr("lb: fill with swatch color; mb: change swatch "
+                                  "color; rb: set swatch color"));
 }
 
 void detailTool::setMouseHint() {
-  parent()->setStatus(QObject::tr("lb: add for detailing; rb: remove from detailing"));
+  //: lb=left button, mb=middle button, rb=right button (keep these short)
+  parent()->setStatus(QObject::tr("lb: add for detailing; rb: remove from "
+                                  "detailing"));
 }

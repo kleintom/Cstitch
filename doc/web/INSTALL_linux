@@ -9,15 +9,7 @@ be very close to compiling).
 
 On Fedora-like systems the package you're after is probably called
 qt5-qtbase-devel - it provides the QT header files and pulls in the
-required librairies and build tools.  If your distribution does not
-yet support Qt5, you may need to download directly from Qt.
-
-From a terminal (as root):
-     yum install qt5-qtbase-devel
-(If you're not using a yum-based distribution you'll need to
-replace yum with your distribution's package installer, and the name of
-the qt development package may be different for your distribution.)
-     
+required librairies and build tools.  If your distributiop
 2.  Download the CStitch source files.
 
 It's possible to download the files as a tarball from the project
@@ -48,7 +40,7 @@ From the cstitch directory run 'doc/createDocs.py'.
 5.  Generate the build files.
 From the cstitch directory run the following:
      qmake -project (generates a cstitch.pro file)
-     ./progen (adds some options to the cstitch.pro file)
+     python progen (adds some options to the cstitch.pro file)
      qmake (generates a Makefile based on the cstitch.pro contents)
 
 6.  Compile.

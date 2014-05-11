@@ -48,7 +48,7 @@ and unzip it in the **cstitch/icons/** directory.
 
     From the cstitch directory run the following:
         qmake -project (generates a cstitch.pro file)
-        progen.py (adds some options to the cstitch.pro file)
+        ./progen.py (adds some options to the cstitch.pro file)
         qmake (generates a Makefile based on the cstitch.pro contents)
 
 6.  Compile.

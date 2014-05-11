@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Cstitch
+Comment=Convert images to cross stitch patterns
+Exec=cstitch
+Icon=cstitch.svg
+Categories=Graphics;2DGraphics;RasterGraphics
+Terminal=false
+Type=Application

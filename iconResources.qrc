@@ -6,6 +6,7 @@
     <file alias="colorChooser_active.png">icons/32x32_colorChooser_active.png</file>
     <file alias="colorCompare.png">icons/32x32_colorCompare.png</file>
     <file alias="colorCompare_active.png">icons/32x32_colorCompare_active.png</file>
+    <file alias="cstitch.png">icons/32x32_cstitch.png</file>
     <file alias="cursor.png">icons/32x32_cursor.png</file>
     <file alias="delete.png">icons/32x32_delete.png</file>
     <file alias="detail.png">icons/32x32_detail.png</file>

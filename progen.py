@@ -96,9 +96,9 @@ qtIncludes = "QT += xml widgets printsupport\n"
 updateNeeded = updateNeeded or xmlWriteNeeded
 
 (iconWriteNeeded, projectString) = insertString(projectString,
-                                                r'win32:RC_FILE',
+                                                r'RC_FILE',
                                                 insertionPointRE,
-                                                'win32:RC_FILE += "' + projectName + '.rc"\n',)
+                                                'RC_FILE += cstitch.rc\n',)
 updateNeeded = updateNeeded or iconWriteNeeded
 
 if updateNeeded:

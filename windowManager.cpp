@@ -147,6 +147,7 @@ void windowManager::configureNewWindow(imageZoomWindow* window,
   window->addWindowActions(actions, windowMenu_);
   window->addRecentlyOpenedMenus(recentImagesMenu_, recentProjectsMenu_);
   window->setWindowTitle(getWindowTitle());
+  window->setWindowIcon(QIcon(":cstitch.png"));
   window->addQuickHelp(autoShowQuickHelp_);
   window->showQuickHelp(false); // close any current quick help
   if (!hideWindows_) {

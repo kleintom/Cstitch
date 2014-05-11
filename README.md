@@ -1,3 +1,13 @@
+Cstitch
+-------
+**Cstitch** is a free and open source program for creating cross stitch
+patterns from images.
+
+http://cstitch.sourceforge.net/
+
+See **INSTALL_linux.md** for linux compile instructions.
+
+### Release Notes ###
 Beta version 0.9.5 released on May 5, 2014:
      Updates for internationalization
      Italian translation provided by Michele Marino - thanks Michele!  The

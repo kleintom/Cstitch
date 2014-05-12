@@ -53,7 +53,8 @@ void showAndRaise(QWidget* widget) {
 }
 
 void gridImage(QImage* image, int originalSquareDim,
-               int originalWidth, int originalHeight, QRgb gridColor) {
+               int originalWidth, int originalHeight,
+               QRgb gridColor, qreal gridLineWidth) {
 
   if (originalSquareDim < 2) {
     return;
@@ -65,7 +66,7 @@ void gridImage(QImage* image, int originalSquareDim,
   const qreal ydim = originalSquareDim*qreal(newHeight)/originalHeight;
 
   QPainter painter(image);
-  painter.setPen(QPen(QColor(gridColor), 1));
+  painter.setPen(QPen(QColor(gridColor), gridLineWidth));
   for (qreal i = 0; i < newWidth; i += xdim) {
     const int iInt = static_cast<int>(i);
     painter.drawLine(QPoint(iInt, 0), QPoint(iInt, newHeight));

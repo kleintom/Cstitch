@@ -50,7 +50,8 @@ class patternPrinter {
   void drawTitleMetadata(int fontSize, bool bold, const QString& text,
                          QRect* availableTextRect);
   QImage gridedImage(const QImage& image, int originalSquareDim,
-                     int originalWidth, int originalHeight) const;
+                     int originalWidth, int originalHeight,
+                     qreal gridLineWidth = 1) const;
   // Set portrait_ (bool) and xPages_, yPages (ints) based on whichever
   // orientation minimizes the total number of pages, where the pattern
   // image is broken up into xPages_ x yPages_ pages (after the image is

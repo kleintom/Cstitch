@@ -158,22 +158,17 @@ void patternPrinter::drawTitlePage(const patternMetadata& metadata) {
   const QSize squareImageSize = squareImage_.size();
   const int newSquareDim =
     ::computeGridForImageFit(squareImageSize, usableRect.size(), squareDim_);
+
   QImage squareImage;
-  if (newSquareDim > 4) { // okay to grid
-    const int newWidth = newSquareDim * squareImageSize.width()/squareDim_;
-    const int newHeight = newSquareDim * squareImageSize.height()/squareDim_;
-    squareImage = squareImage_.scaled(newWidth, newHeight,
-                                      Qt::KeepAspectRatio,
-                                      Qt::SmoothTransformation);
-    squareImage = gridedImage(squareImage, squareDim_,
-                              squareImageSize.width(),
-                              squareImageSize.height());
-  }
-  else { // don't grid
-    squareImage = squareImage_.scaled(usableRect.size(),
-                                      Qt::KeepAspectRatio,
-                                      Qt::SmoothTransformation);
-  }
+  const int newWidth = newSquareDim * squareImageSize.width()/squareDim_;
+  const int newHeight = newSquareDim * squareImageSize.height()/squareDim_;
+  squareImage = squareImage_.scaled(newWidth, newHeight,
+                                    Qt::KeepAspectRatio,
+                                    Qt::SmoothTransformation);
+  squareImage = gridedImage(squareImage, squareDim_,
+                            squareImageSize.width(),
+                            squareImageSize.height(), .2);
+
   const QPoint squareStart((usableRect.width() - squareImage.width())/2, 0);
   painter_.drawImage(squareStart, squareImage);
   painter_.drawRect(QRect(squareStart, squareImage.size()));
@@ -197,14 +192,13 @@ void patternPrinter::drawTitleMetadata(int fontSize, bool bold,
   painter_.restore();
 }
 
-QImage patternPrinter::gridedImage(const QImage& image,
-                                   int originalSquareDim,
-                                   int originalWidth,
-                                   int originalHeight) const {
+QImage patternPrinter::gridedImage(const QImage& image, int originalSquareDim,
+                                   int originalWidth, int originalHeight,
+                                   qreal gridLineWidth) const {
   
   QImage returnImage = image;
   ::gridImage(&returnImage, originalSquareDim,
-              originalWidth, originalHeight, Qt::black);
+              originalWidth, originalHeight, Qt::black, gridLineWidth);
   return returnImage;
 }
 

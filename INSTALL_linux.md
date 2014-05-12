@@ -63,10 +63,10 @@ application menus.
 
     #### To install in system folders: ####
 Copy your local cstitch executable to a system bin directory contained in your
-PATH (such as /bin/ or /usr/local/bin); either cp your executable to "cstitch"
-or change the "Exec" label in cstitch.desktop to the name of your executable.
-Copy **icons/cstitch.svg** to the system icons directory (at least for KDE and
-Gnome):
+PATH (such as /usr/bin/ or /usr/local/bin); either cp your executable to
+"cstitch" or change the "Exec" label in cstitch.desktop to the name of your
+executable.  Copy **icons/cstitch.svg** to the system icons directory (at least
+for KDE and Gnome):
         cp icons/cstitch.svg /usr/share/icons/hicolor/scalable/apps/
 Copy **cstitch.desktop** to the system desktop files folders (at least for KDE
 and Gnome):
@@ -80,7 +80,7 @@ executable to "cstitch" or change the "Exec" label in cstitch.desktop to the
 name of your executable.
 Copy **icons/cstitch.svg** to wherever you'd like to have it, and update the
 "Icon" label in cstitch.desktop to reflect that location using an *absolute*
-path.  Then
+path with file extension (e.g. /home/user/icon.svg).  Then
         cp cstitch.desktop ~/.local/share/applications
 
     You may need to log out and back in to update menus.

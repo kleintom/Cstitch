@@ -2,7 +2,7 @@
 Name=Cstitch
 Comment=Convert images to cross stitch patterns
 Exec=cstitch
-Icon=cstitch.svg
-Categories=Graphics;2DGraphics;RasterGraphics
+Icon=cstitch
+Categories=Graphics;2DGraphics;RasterGraphics;Qt;
 Terminal=false
 Type=Application

@@ -48,6 +48,8 @@ class baseDialogMode {
   bool isNull() const { return isNull_; }
   void constructGrid(QVBoxLayout* dialogLayout, int gridWidth,
                      const QVector<triC>& colors, QWidget* parent);
+  void constructList(QVBoxLayout* dialogLayout, const QVector<floss>& colors,
+                     QWidget* parent);
   void enable();
   void disable();
   virtual QSize sizeHint() const;
@@ -81,33 +83,52 @@ class squareDialogMode : public baseDialogMode {
                    flossType type, const triC& inputColor, QWidget* parent);
 };
 
-class listDialogMode : public baseDialogMode {
+class gridDialogMode : public baseDialogMode {
  public:
-  listDialogMode() { }
-  listDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
+  gridDialogMode() { }
+  gridDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
                  flossType type, const triC& inputColor, QWidget* parent);
+};
+
+class fixedGridBaseDialogMode : public baseDialogMode {
+ public:
+  fixedGridBaseDialogMode() { }
+  fixedGridBaseDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+                          flossType type, QVector<triC> colorList,
+                          QWidget* parent);
 };
 
 class fixedListBaseDialogMode : public baseDialogMode {
  public:
   fixedListBaseDialogMode() { }
-  fixedListBaseDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-                          flossType type, QVector<triC> colorList,
-                          QWidget* parent);
+  fixedListBaseDialogMode(QVBoxLayout* dialogLayout, flossType type,
+                          QVector<floss> colorList, QWidget* parent);
 };
 
-class dmcDialogMode : public fixedListBaseDialogMode {
+class dmcGridDialogMode : public fixedGridBaseDialogMode {
  public:
-  dmcDialogMode() { }
-  dmcDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+  dmcGridDialogMode() { }
+  dmcGridDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
                 QWidget* parent);
 };
 
-class anchorDialogMode : public fixedListBaseDialogMode {
+class dmcListDialogMode : public fixedListBaseDialogMode {
  public:
-  anchorDialogMode() { }
-  anchorDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+  dmcListDialogMode() { }
+  dmcListDialogMode(QVBoxLayout* dialogLayout, QWidget* parent);
+};
+
+class anchorGridDialogMode : public fixedGridBaseDialogMode {
+ public:
+  anchorGridDialogMode() { }
+  anchorGridDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
                    QWidget* parent);
+};
+
+class anchorListDialogMode : public fixedListBaseDialogMode {
+ public:
+  anchorListDialogMode() { }
+  anchorListDialogMode(QVBoxLayout* dialogLayout, QWidget* parent);
 };
 
 class imageDialogMode : public baseDialogMode {
@@ -171,7 +192,8 @@ class imageDialogMode : public baseDialogMode {
 class colorDialog : public cancelAcceptDialogBase {
 
  public:
-  enum dialogMode {CD_SQUARE, CD_LIST, CD_DMC, CD_ANCHOR, CD_IMAGE, CD_NEW};
+  enum dialogMode {CD_SQUARE, CD_LIST, CD_DMC_GRID, CD_ANCHOR_GRID,
+                   CD_IMAGE, CD_NEW, CD_DMC_LIST, CD_ANCHOR_LIST};
  private:
   // sizes for the left/right color comparison box
   enum {LR_BOX = 30, LR_BORDER = 5};
@@ -263,9 +285,11 @@ Q_OBJECT
   QVector<triC> squareColors_;
 
   squareDialogMode squareMode_;
-  listDialogMode listMode_;
-  dmcDialogMode dmcMode_;
-  anchorDialogMode anchorMode_;
+  gridDialogMode listMode_;
+  dmcGridDialogMode dmcGridMode_;
+  dmcListDialogMode dmcListMode_;
+  anchorGridDialogMode anchorMode_;
+  anchorListDialogMode anchorListMode_;
   imageDialogMode imageMode_;
   baseDialogMode* curMode_;
 

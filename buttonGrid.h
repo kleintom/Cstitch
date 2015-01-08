@@ -24,6 +24,8 @@
 #include <QtWidgets/QWidget>
 
 #include "triC.h"
+#include "floss.h"
+
 
 //
 // buttonGrid is a widget that displays a grid of square "buttons" with
@@ -41,20 +43,23 @@ class buttonGrid : public QWidget {
              QWidget* parent);
   buttonGrid(const QVector<triC>& colors, int iconSize, int rowWidth,
              const QString& windowTitle, QWidget* parent);
+  buttonGrid(const QVector<floss> &floss, int iconSize, int rowWidth,
+             const QString &windowTitle, QWidget *parent);
   virtual QSize sizeHint() const;
 
- protected:
+protected:
   void setButtonClickedX(int x) { gridX_ = x; }
   void setButtonClickedY(int y) { gridY_ = y; }
   int buttonsPerRow() const { return buttonsPerRow_; }
-  int buttonDim() const { return buttonDim_; }
+  int buttonWidht() const { return buttonWidht_; }
+  int buttonHeight() const { return buttonHeight_; }
 
  private:
-  // called by all constructors; <rowWidth> is the number of buttons
-  // per row
-  void constructorHelper(const QVector<QPixmap>& icons,
+  void createQPixmapGrid(const QVector<QPixmap>& icons,
                          const QString& windowTitle,
                          int rowWidth = 0);
+  void createFlossGrid(const QVector<floss> &icons, const QString &windowTitle,
+                       int iconSize, int rowWidth);
   // the grid is painted on the widget during the paint event
   void paintEvent(QPaintEvent* event);
   // emits the (0-based) index of the button clicked for a left click
@@ -67,7 +72,8 @@ class buttonGrid : public QWidget {
 
  private:
   QVector<QPixmap> icons_;
-  int buttonDim_; // square size of the buttons in the grid
+  int buttonHeight_; // height of buttons in the grid
+  int buttonWidht_; // widht of buttons in the grid
   int buttonsPerRow_; // number of button per row in the grid
   int gridX_; // x button coordinate of the last button clicked
   int gridY_; // y button coordinate of the last button clicked
@@ -88,11 +94,17 @@ class colorButtonGrid : public buttonGrid {
   colorButtonGrid(const QVector<triC>& colors, int iconSize,
                   const QString& windowTitle, int rowWidth,
                   QWidget* parent);
+  colorButtonGrid(const QVector<floss> &floss,
+                  const QVector<triC> &colors,
+                  int iconSize, const QString &windowTitle,
+                  int rowWidth, QWidget *parent);
+
+
   // "click" the button at coordinates (<x>, <y>)
   void focusButton(int x, int y);
   QSize sizeHint() const;
 
- private:
+private:
   // emits the button x,y coordinates and the color of the button
   // clicked for a left click on an occupied grid space
   void mousePressEvent(QMouseEvent* event);

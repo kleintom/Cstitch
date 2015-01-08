@@ -33,7 +33,7 @@ buttonGrid::buttonGrid(const QVector<QPixmap>& icons,
                        QWidget* parent)
   : QWidget(parent), gridX_(-1), gridY_(-1) {
 
-  constructorHelper(icons, windowTitle);
+  createQPixmapGrid(icons, windowTitle);
 }
 
 buttonGrid::buttonGrid(const QVector<triC>& colors, int iconSize,
@@ -48,26 +48,35 @@ buttonGrid::buttonGrid(const QVector<triC>& colors, int iconSize,
     pixmap.fill(colors[i].qc());
     colorPixmaps.push_back(pixmap);
   }
-  constructorHelper(colorPixmaps, windowTitle, rowWidth);
+  createQPixmapGrid(colorPixmaps, windowTitle, rowWidth);
 }
 
-void buttonGrid::constructorHelper(const QVector<QPixmap>& icons,
+buttonGrid::buttonGrid(const QVector<floss>& floss, int iconSize,
+                       int rowWidth, const QString& windowTitle,
+                       QWidget* parent)
+  : QWidget(parent), gridX_(-1), gridY_(-1) {
+  createFlossGrid(floss, windowTitle, iconSize,rowWidth);
+}
+
+void buttonGrid::createQPixmapGrid(const QVector<QPixmap>& icons,
                                    const QString& windowTitle,
                                    int rowWidth) {
 
-  buttonDim_ = icons.empty() ? 12 : icons[0].width() + 12;
+  buttonWidht_ = icons.empty() ? 12 : icons[0].width() + 12;
+  buttonHeight_ = buttonWidht_;
   const QPalette palette(QApplication::palette());
   const QColor windowColor(palette.color(QPalette::Window));
   const QColor darkColor(palette.color(QPalette::Dark));
   for (int i = 0, size = icons.size(); i < size; ++i) {
-    QPixmap pixmap(buttonDim_, buttonDim_);
+    QPixmap pixmap(buttonWidht_, buttonHeight_);
     pixmap.fill(windowColor);
     QPainter painter(&pixmap);
     painter.setPen(QPen(darkColor, 2));
     painter.setRenderHint(QPainter::Antialiasing);
     painter.drawPixmap(QPoint(6, 6), icons[i]);
-    painter.drawRoundedRect(QRect(1, 1, buttonDim_-2, buttonDim_-2),
+    painter.drawRoundedRect(QRect(1, 1, buttonWidht_-2, buttonHeight_-2),
                             3.5, 3.5);
+
     icons_.push_back(pixmap);
   }
   const int numIcons = icons_.size();
@@ -79,8 +88,48 @@ void buttonGrid::constructorHelper(const QVector<QPixmap>& icons,
   if (numIcons % buttonsPerRow_ != 0) {
     ++gridRows;
   }
-  setFixedSize(buttonsPerRow_ * buttonDim_, gridRows * buttonDim_);
+  setFixedSize(buttonsPerRow_ * buttonWidht_, gridRows * buttonHeight_);
   setWindowTitle(windowTitle);
+}
+
+void buttonGrid::createFlossGrid(const QVector<floss>& floss,
+                                   const QString& windowTitle,
+                                   int iconSize, int rowWidth) {
+  int descriptionLength = 180;
+  buttonWidht_ = iconSize + 12 + descriptionLength;
+  buttonHeight_ = iconSize + 12;
+  const QPalette palette(QApplication::palette());
+  const QColor windowColor(palette.color(QPalette::Window));
+  const QColor darkColor(palette.color(QPalette::Dark));
+  for (int i = 0, size = floss.size(); i < size; ++i) {
+    QPixmap pixmap(buttonWidht_, buttonHeight_);
+    pixmap.fill(windowColor);
+    QPainter painter(&pixmap);
+    painter.setPen(QPen(darkColor, 2));
+    painter.setRenderHint(QPainter::Antialiasing);
+    QPixmap color(iconSize, iconSize);
+    color.fill(floss[i].color().qc());
+    painter.drawPixmap(QPoint(6, 6), color);
+    painter.drawRoundedRect(QRect(1, 1, buttonWidht_-2, buttonHeight_-2),
+                            3.5, 3.5);
+    painter.setPen(QPen(Qt::black, 4));
+    painter.drawText(QPoint(iconSize + 12, iconSize),
+                     QString::number(floss[i].code()) + " - " + floss[i].name());
+
+    icons_.push_back(pixmap);
+  }
+  const int numIcons = floss.size();
+  buttonsPerRow_ = rowWidth ? rowWidth : ceil(sqrt(numIcons));
+  if (!rowWidth) {
+    buttonsPerRow_ += buttonsPerRow_/4;
+  }
+  int gridRows = numIcons/buttonsPerRow_;
+  if (numIcons % buttonsPerRow_ != 0) {
+    ++gridRows;
+  }
+  setFixedSize(buttonsPerRow_ * buttonWidht_, gridRows * buttonHeight_);
+  setWindowTitle(windowTitle);
+
 }
 
 QSize buttonGrid::sizeHint() const {
@@ -89,15 +138,17 @@ QSize buttonGrid::sizeHint() const {
   if (icons_.size()%buttonsPerRow_ != 0) {
     ++numRows;
   }
-  return QSize(buttonsPerRow_*buttonDim_, numRows*buttonDim_);
+  int parrentHeight = this->parentWidget()->height();
+  int height = (numRows*buttonHeight_ > parrentHeight/2) ? parrentHeight/4 : numRows*buttonHeight_;
+
+  return QSize(buttonsPerRow_*buttonWidht_, height);
 }
 
 void buttonGrid::paintEvent(QPaintEvent* ) {
-
   int i = 0, j = 0;
   QPainter painter(this);
   for (int k = 0, size = icons_.size(); k < size; ++k) {
-    painter.drawPixmap(QPoint(i*buttonDim_, j*buttonDim_),
+    painter.drawPixmap(QPoint(i*buttonWidht_, j*buttonHeight_),
                        icons_[k]);
     ++i;
     if (i == buttonsPerRow_) {
@@ -109,8 +160,8 @@ void buttonGrid::paintEvent(QPaintEvent* ) {
     painter.save();
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(Qt::black, 1.2, Qt::DotLine));
-    painter.drawRoundedRect(QRect(gridX_ * buttonDim_ + 4, gridY_ * buttonDim_ + 4,
-                                  buttonDim_ - 8, buttonDim_ - 8), 0., 0.);
+    painter.drawRoundedRect(QRect(gridX_ * buttonWidht_ + 4, gridY_ * buttonHeight_ + 4,
+                                  buttonWidht_ - 8, buttonHeight_ - 8), 0., 0.);
     painter.restore();
   }
 }
@@ -118,8 +169,8 @@ void buttonGrid::paintEvent(QPaintEvent* ) {
 void buttonGrid::mousePressEvent(QMouseEvent* event) {
 
   if (event->button() == Qt::LeftButton) {
-    gridX_ = event->x()/buttonDim_;
-    gridY_ = event->y()/buttonDim_;
+    gridX_ = event->x()/buttonWidht_;
+    gridY_ = event->y()/buttonHeight_;
     const int index = gridY_ * buttonsPerRow() + gridX_;
     if (index >= icons_.size() || index < 0) {
       return;
@@ -138,12 +189,21 @@ colorButtonGrid::colorButtonGrid(const QVector<triC>& colors, int iconSize,
 
 }
 
+colorButtonGrid::colorButtonGrid(const QVector<floss>& floss,
+                                 const QVector<triC>& colors, int iconSize,
+                                 const QString& windowTitle, int rowWidth,
+                                 QWidget* parent)
+  : buttonGrid(floss, iconSize, rowWidth, windowTitle, parent),
+    colors_(colors) {
+}
+
 void colorButtonGrid::mousePressEvent(QMouseEvent* event) {
 
   if (event->button() == Qt::LeftButton) {
-    int gridX = event->x()/buttonDim();
-    int gridY = event->y()/buttonDim();
+    int gridX = event->x()/buttonWidht();
+    int gridY = event->y()/buttonHeight();
     const int index = gridY * buttonsPerRow() + gridX;
+
     // click on an empty grid tile does nothing
     if (index >= colors_.size() || index < 0) {
       return;

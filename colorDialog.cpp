@@ -71,6 +71,31 @@ void baseDialogMode::constructGrid(QVBoxLayout* dialogLayout, int gridWidth,
   isNull_ = false;
 }
 
+void baseDialogMode::constructList(QVBoxLayout* dialogLayout,
+                                   const QVector<floss>& floss,
+                                   QWidget* parent) {
+
+  scrollArea_ = new QScrollArea(parent);
+  scrollArea_->setAlignment(Qt::AlignCenter);
+  dialogLayout->insertWidget(0, scrollArea_);
+
+  QVector<triC> colors;
+  if (colors.isEmpty()) {
+    colors.reserve(floss.size());
+    for (int i = 0; i < floss.size(); i++) {
+      colors.push_back(floss[i].color());
+    }
+  }
+  // second parameter is button icon size
+  grid_ = new colorButtonGrid(floss, colors, 22, QObject::tr("Choose a floss"),
+                              3, parent);
+  QObject::connect(grid_, SIGNAL(buttonSelected(QRgb, int , int )),
+                   parent, SLOT(setColorSelected(QRgb, int, int )));
+  scrollArea_->setWidget(grid_);
+  widget_ = grid_;
+  isNull_ = false;
+}
+
 void baseDialogMode::enable() {
 
   if (scrollArea_) {
@@ -129,8 +154,8 @@ squareDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
   disable();
 }
 
-listDialogMode::
-listDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
+gridDialogMode::
+gridDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
                flossType type, const triC& inputColor, QWidget* parent)
   : baseDialogMode(type) {
 
@@ -145,7 +170,7 @@ listDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
   disable();
 }
 
-fixedListBaseDialogMode::fixedListBaseDialogMode(QVBoxLayout* dialogLayout,
+fixedGridBaseDialogMode::fixedGridBaseDialogMode(QVBoxLayout* dialogLayout,
                                                  const triC& inputColor,
                                                  flossType type,
                                                  QVector<triC> colorList,
@@ -160,17 +185,37 @@ fixedListBaseDialogMode::fixedListBaseDialogMode(QVBoxLayout* dialogLayout,
   disable();
 }
 
-dmcDialogMode::dmcDialogMode(QVBoxLayout* dialogLayout,
+fixedListBaseDialogMode::fixedListBaseDialogMode(QVBoxLayout* dialogLayout,
+                                                 flossType type,
+                                                 QVector<floss> flossList,
+                                                 QWidget* parent)
+  : baseDialogMode(type) {
+  setGridWidth(3);
+  constructList(dialogLayout, flossList, parent);
+  disable();
+}
+
+dmcGridDialogMode::dmcGridDialogMode(QVBoxLayout* dialogLayout,
                              const triC& inputColor,
                              QWidget* parent)
-  : fixedListBaseDialogMode(dialogLayout, inputColor, flossDMC, ::loadDMC(),
+  : fixedGridBaseDialogMode(dialogLayout, inputColor, flossDMC, ::loadDMC(),
                             parent) {}
 
-anchorDialogMode::anchorDialogMode(QVBoxLayout* dialogLayout,
+dmcListDialogMode::dmcListDialogMode(QVBoxLayout* dialogLayout,
+                             QWidget* parent)
+  : fixedListBaseDialogMode(dialogLayout, flossDMC, ::initializeDMC(),
+                            parent) {}
+
+anchorGridDialogMode::anchorGridDialogMode(QVBoxLayout* dialogLayout,
                              const triC& inputColor,
                              QWidget* parent)
-  : fixedListBaseDialogMode(dialogLayout, inputColor, flossAnchor,
+  : fixedGridBaseDialogMode(dialogLayout, inputColor, flossAnchor,
                             ::loadAnchor(), parent) {}
+
+anchorListDialogMode::anchorListDialogMode(QVBoxLayout* dialogLayout,
+                             QWidget* parent)
+  : fixedListBaseDialogMode(dialogLayout, flossAnchor, ::initializeAnchor(),
+                            parent) {}
 
 imageDialogMode::
 imageDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
@@ -315,12 +360,20 @@ void colorDialog::constructorHelper(bool useSquareColors, flossType type) {
   modeChoiceBox_->addItem(tr("Choose a list color"),
                           QVariant::fromValue(CD_LIST));
   if (type == flossDMC || type == flossVariable) {
-    modeChoiceBox_->addItem(tr("Choose a DMC color"),
-                            QVariant::fromValue(CD_DMC));
+    modeChoiceBox_->addItem(tr("Choose a DMC color (Grid)"),
+                            QVariant::fromValue(CD_DMC_GRID));
+  }
+  if (type == flossDMC || type == flossVariable) {
+    modeChoiceBox_->addItem(tr("Choose a DMC color (List)"),
+                            QVariant::fromValue(CD_DMC_LIST));
   }
   if (type == flossAnchor || type == flossVariable) {
-    modeChoiceBox_->addItem(tr("Choose an Anchor color"),
-                            QVariant::fromValue(CD_ANCHOR));
+    modeChoiceBox_->addItem(tr("Choose an Anchor color(Grid)"),
+                            QVariant::fromValue(CD_ANCHOR_GRID));
+  }
+  if (type == flossAnchor || type == flossVariable) {
+    modeChoiceBox_->addItem(tr("Choose an Anchor color(List)"),
+                            QVariant::fromValue(CD_ANCHOR_LIST));
   }
   modeChoiceBox_->addItem(tr("Choose from an image"),
                           QVariant::fromValue(CD_IMAGE));
@@ -406,7 +459,10 @@ QSize colorDialog::sizeHint() const {
   // worked...]
   w += 2;
   h += 2;
-  return QSize(w, h);
+  QRect screenGeometry = QApplication::desktop()->screenGeometry();
+  int maxW = screenGeometry.width();
+  int maxH = screenGeometry.height() - 200;
+  return QSize(w, h).boundedTo(QSize(maxW, maxH));
 }
 
 void colorDialog::fitDialog() {
@@ -593,24 +649,38 @@ void colorDialog::setCurMode(dialogMode mode) {
     break;
   case CD_LIST:
     if (listMode_.isNull()) {
-      listMode_ = listDialogMode(dialogLayout_, listColors_, flossType_,
+      listMode_ = gridDialogMode(dialogLayout_, listColors_, flossType_,
                                  inputColor_, this);
     }
     curMode_ = &listMode_;
     leftRightHolder_->show();
     break;
-  case CD_DMC:
-    if (dmcMode_.isNull()) {
-      dmcMode_ = dmcDialogMode(dialogLayout_, inputColor_, this);
+  case CD_DMC_GRID:
+    if (dmcGridMode_.isNull()) {
+      dmcGridMode_ = dmcGridDialogMode(dialogLayout_, inputColor_, this);
     }
-    curMode_ = &dmcMode_;
+    curMode_ = &dmcGridMode_;
     leftRightHolder_->show();
     break;
-  case CD_ANCHOR:
+  case CD_DMC_LIST:
+    if (dmcListMode_.isNull()) {
+      dmcListMode_ = dmcListDialogMode(dialogLayout_, this);
+    }
+    curMode_ = &dmcListMode_;
+    leftRightHolder_->show();
+    break;
+  case CD_ANCHOR_GRID:
     if (anchorMode_.isNull()) {
-      anchorMode_ = anchorDialogMode(dialogLayout_, inputColor_, this);
+      anchorMode_ = anchorGridDialogMode(dialogLayout_, inputColor_, this);
     }
     curMode_ = &anchorMode_;
+    leftRightHolder_->show();
+    break;
+  case CD_ANCHOR_LIST:
+    if (anchorListMode_.isNull()) {
+      anchorListMode_ = anchorListDialogMode(dialogLayout_, this);
+    }
+    curMode_ = &anchorListMode_;
     leftRightHolder_->show();
     break;
   case CD_IMAGE:

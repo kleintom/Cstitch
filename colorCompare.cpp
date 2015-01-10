@@ -40,7 +40,7 @@
 #include "xmlUtility.h"
 
 // min/max user-selectable square sizes
-extern const int SQUARE_SIZE_MIN = 2;
+extern const int SQUARE_SIZE_MIN = 1;
 extern const int SQUARE_SIZE_MAX = 50;
 
 colorCompare::colorCompare(const QImage& image, int index,

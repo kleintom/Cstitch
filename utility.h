@@ -28,7 +28,7 @@
 #include <QCloseEvent>
 
 // special floss color codes
-const int DMC_COUNT = 427; // number of dmc colors
+const int DMC_COUNT = 453; // number of dmc colors
 const int ANCHOR_COUNT = 444; // number of anchor colors
 // DMC doesn't assign codes for white or ecru
 const int WHITE_CODE = -10;

@@ -671,7 +671,7 @@ selected image to change it to the swatch color.
 <h2>The Color Dialog</h2>
 
 <p>
-The color dialog offers up to five ways to choose a new color; you can
+The color dialog offers multiple ways to choose a new color; you can
 alternate between the options using the menu in the lower left corner
 (depending on settings and situation some options may not be available).
 </p>
@@ -693,7 +693,7 @@ colors from the original image in the clicked square.
 </div>
 
 <div class="h3">
-<h3>Choose a List Color</h3>
+<h3>Choose a color list color</h3>
 <p>
 Choose a color from those already present in the image.  The original
 color clicked on is in the upper left hand corner and the rest of the
@@ -703,20 +703,24 @@ color.
 </div>
 
 <div class="h3">
-<h3>Choose a DMC Color</h3> 
+<h3>Choose a DMC floss by color</h3>
+<h3>Choose a DMC floss by color/number</h3>
 <p>
-With this option you can choose any DMC
-color; colors are arranged in the same manner as for the <i>Choose a
-List Color</i> option.
+With these options you can choose any DMC color, either by color alone, or by
+color and the DMC floss number/description.  For the colors only option, colors
+are arranged in the same manner as for the <i>Choose a Color List Color</i>
+option, while for the color/number option colors are arranged by floss number.
 </p>
 </div>
 
 <div class="h3">
-<h3>Choose n Anchor Color</h3> 
+<h3>Choose an Anchor floss by color</h3> 
+<h3>Choose an Anchor floss by color/number</h3> 
 <p>
-With this option you can choose any Anchor
-color; colors are arranged in the same manner as for the <i>Choose a
-List Color</i> option.
+With these options you can choose any Anchor color, either by color alone, or by
+color and the Anchor floss number.  For the colors only option, colors are
+arranged in the same manner as for the <i>Choose a Color List Color</i> option,
+while for the color/number option colors are arranged by floss number.
 </p>
 </div>
 
@@ -733,8 +737,8 @@ your choice - if you misclick simply click on a different color before
 hitting the Accept button.
 </p>
 <p>
-If you're in DMC only or Anchor only mode then the upper right square will always be
-translated to a DMC or Anchor color, respectively.
+If you're in DMC only or Anchor only mode then the upper right square will
+always be translated to a DMC or Anchor color, respectively.
 </p>
 </div>
 

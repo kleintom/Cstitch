@@ -27,6 +27,7 @@
 #include "imageUtility.h"
 #include "cancelAcceptDialogBase.h"
 #include "floss.h"
+#include "buttonGrid.h"
 
 class imageLabel;
 class colorButtonGrid;
@@ -46,91 +47,93 @@ class baseDialogMode {
                                    isNull_(true) { }
   flossType flossMode() const { return flossType_; }
   bool isNull() const { return isNull_; }
-  void constructGrid(QVBoxLayout* dialogLayout, int gridWidth,
-                     const QVector<triC>& colors, QWidget* parent);
-  void constructList(QVBoxLayout* dialogLayout, const QVector<floss>& colors,
-                     QWidget* parent);
   void enable();
   void disable();
   virtual QSize sizeHint() const;
   QSize scrollFrameSize() const;
-  void setGridWidth(int width) { gridWidth_ = width; }
-  int getGridWidth() const { return gridWidth_; }
+  int colorsPerRow() const { return grid_->buttonsPerRow(); }
   void setCurrentGridSelection(const pairOfInts& coords) {
     currentGridSelection_ = coords;
   }
   void setGridFocus(const pairOfInts& coordinates);
   pairOfInts getCurrentGridSelection() const { return currentGridSelection_; }
-  pairOfInts getMaxGridCoordinates() const { return maxCoordinates_; }
+  pairOfInts getMaxGridCoordinates() const { return grid_->getMaxGridCoordinates(); }
   // used by imageDialogMode only
   virtual void updateImageColorLabel(QRgb , bool ) {}
   void setWidget(QWidget* widget) { isNull_ = false; widget_ = widget; }
+ protected:
+  void constructGrid(QVBoxLayout* dialogLayout, int colorsPerRow,
+                     const QVector<triC>& colors, QWidget* parent);
+  void constructGrid(QVBoxLayout* dialogLayout, int colorsPerRow,
+                     const QVector<floss>& flosses, flossType type, QWidget* parent);
  private:
+  // grid_ must be instantiated before calling
+  void constructGridHelper(QVBoxLayout* dialogLayout, QWidget* parent);
+ private:
+  static const int colorSwatchSize_ = 22;
   flossType flossType_;
   QScrollArea* scrollArea_;
   colorButtonGrid* grid_;
   QWidget* widget_;
   pairOfInts currentGridSelection_;
-  pairOfInts maxCoordinates_;
-  int gridWidth_;
   bool isNull_;
 };
 
-class squareDialogMode : public baseDialogMode {
+// mode for choosing a color from those in "nearby" squares
+class nearbySquaresDialogMode : public baseDialogMode {
  public:
-  squareDialogMode() { }
-  squareDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
-                   flossType type, const triC& inputColor, QWidget* parent);
+  nearbySquaresDialogMode() { }
+  nearbySquaresDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
+                          flossType type, const triC& inputColor, QWidget* parent);
 };
 
-class gridDialogMode : public baseDialogMode {
+// mode for choosing a color from the project's current color list
+class colorListDialogMode : public baseDialogMode {
  public:
-  gridDialogMode() { }
-  gridDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
-                 flossType type, const triC& inputColor, QWidget* parent);
+  colorListDialogMode() { }
+  colorListDialogMode(QVBoxLayout* dialogLayout, QVector<triC> colors,
+                      flossType type, const triC& inputColor, QWidget* parent);
 };
 
-class fixedGridBaseDialogMode : public baseDialogMode {
+// base class for modes displaying a grid of color swatches
+class colorsBaseDialogMode : public baseDialogMode {
  public:
-  fixedGridBaseDialogMode() { }
-  fixedGridBaseDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-                          flossType type, QVector<triC> colorList,
-                          QWidget* parent);
+  colorsBaseDialogMode() { }
+  colorsBaseDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+                       flossType type, QVector<triC> colorList, QWidget* parent);
 };
 
-class fixedListBaseDialogMode : public baseDialogMode {
+// mode for choosing a dmc color from a grid of color swatches
+class dmcColorsDialogMode : public colorsBaseDialogMode {
  public:
-  fixedListBaseDialogMode() { }
-  fixedListBaseDialogMode(QVBoxLayout* dialogLayout, flossType type,
-                          QVector<floss> colorList, QWidget* parent);
+  dmcColorsDialogMode() { }
+  dmcColorsDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+                      QWidget* parent);
 };
 
-class dmcGridDialogMode : public fixedGridBaseDialogMode {
+// mode for choosing an anchor color from a grid of color swatches
+class anchorColorsDialogMode : public colorsBaseDialogMode {
  public:
-  dmcGridDialogMode() { }
-  dmcGridDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-                QWidget* parent);
+  anchorColorsDialogMode() { }
+  anchorColorsDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
+                         QWidget* parent);
 };
 
-class dmcListDialogMode : public fixedListBaseDialogMode {
+// mode for choosing a dmc color from a grid of color/floss description buttons
+class dmcFlossesDialogMode : public baseDialogMode {
  public:
-  dmcListDialogMode() { }
-  dmcListDialogMode(QVBoxLayout* dialogLayout, QWidget* parent);
+  dmcFlossesDialogMode() { }
+  dmcFlossesDialogMode(QVBoxLayout* dialogLayout, QWidget* parent);
 };
 
-class anchorGridDialogMode : public fixedGridBaseDialogMode {
+// mode for choosing an anchor color from a grid of color/floss description buttons
+class anchorFlossesDialogMode : public baseDialogMode {
  public:
-  anchorGridDialogMode() { }
-  anchorGridDialogMode(QVBoxLayout* dialogLayout, const triC& inputColor,
-                   QWidget* parent);
+  anchorFlossesDialogMode() { }
+  anchorFlossesDialogMode(QVBoxLayout* dialogLayout, QWidget* parent);
 };
 
-class anchorListDialogMode : public fixedListBaseDialogMode {
- public:
-  anchorListDialogMode() { }
-  anchorListDialogMode(QVBoxLayout* dialogLayout, QWidget* parent);
-};
-
+// mode for choosing a color from a currently displayed image
 class imageDialogMode : public baseDialogMode {
  private:
   // sizes for the "Choose From Image" dialog
@@ -149,21 +152,28 @@ class imageDialogMode : public baseDialogMode {
 
 // class colorDialog
 //
-// The color dialog offers the user up to five ways to choose a new
-// color, from which the user chooses using a menu.  The <type>
-// parameter passed on construction determines the types of colors
-// that can be chosen using the dialog (if DMC then only DMC colors
-// can be chosen, etc)
+// The color dialog offers the user a menu of ways in which the user can choose
+// a new color.  The <type> parameter passed on construction determines the
+// types of colors that can be chosen using the dialog (if DMC then only DMC
+// colors can be chosen, etc)
 //
-// Choose a Square Color mode:
-// Choose from "nearby" colors passed in on construction (<squareColors>).
+// Choose a square color mode:
+// This mode option only appears if the user initiated the dialog by clicking on
+// a square in the squared image, and then this mode allows the user to choose
+// from other colors in the original image for that square; colors are passed in
+// on construction (<squareColors>).
 //
-// Choose a List Color mode:
-// Choose a color from the <listColors> passed in on construction
-// (should consist of the colors on the main window color list dock).
+// Choose a color list color mode:
+// Choose a color from the list passed in on construction (should consist of the
+// colors on the main window color list dock).
 //
-// Choose a DMC Color mode: Choose a DMC color.
-// Choose an Anchor Color mode: Choose an Anchor color.
+// Choose a DMC floss by color mode: Choose a DMC color from color swatches.
+// Choose a DMC floss by color/number mode: Choose a DMC color from color
+// swatches with accompanying number/name.
+//
+// Choose an Anchor floss by color mode: Choose an Anchor color from color swatches.
+// Choose an Anchor floss by color/number mode: Choose a DMC color from color
+// swatches with accompanying number.
 //
 // Choose From an Image mode: Choose a color by clicking on one of the
 // images on view in the main window.
@@ -177,14 +187,14 @@ class imageDialogMode : public baseDialogMode {
 // The user chooses the mode from a drop down list; when the mode changes
 // the old mode is hidden and the new mode is shown (except when New Color
 // is chosen, in which case the Qt color dialog is popped up).
-// There are four "scrolling" modes that show their color list inside
+// Some modes are "scrolling" modes that show their color list inside
 // a scroll area: square, list, dmc, and anchor.  In those modes the user is
 // presented with a grid of color buttons, below which are arrows for
 // browsing the colors and a comparison rectangle showing the original
 // color and the currently selected color.
 // Mode objects keep track of their own widgets, layouts, etc; baseDialogMode
 // provides the interface required for interacting with modes.
-// Image mode is its own thing and New mode hides this dialog and pops
+// Image mode is its own thing.  New mode hides this dialog and pops
 // up a QColorDialog.  Once the user chooses New mode they can't return
 // to the other modes (this dialog closes).
 //
@@ -192,8 +202,8 @@ class imageDialogMode : public baseDialogMode {
 class colorDialog : public cancelAcceptDialogBase {
 
  public:
-  enum dialogMode {CD_SQUARE, CD_LIST, CD_DMC_GRID, CD_ANCHOR_GRID,
-                   CD_IMAGE, CD_NEW, CD_DMC_LIST, CD_ANCHOR_LIST};
+  enum dialogMode {CD_SQUARE, CD_LIST, CD_DMC_COLOR, CD_DMC_FLOSS, 
+                   CD_ANCHOR_COLOR, CD_ANCHOR_FLOSS, CD_IMAGE, CD_NEW};
  private:
   // sizes for the left/right color comparison box
   enum {LR_BOX = 30, LR_BORDER = 5};
@@ -207,7 +217,7 @@ Q_OBJECT
   // specified type
   colorDialog(const QVector<triC>& listColors, const triC& inputColor,
               flossType type, int frameWidth, int frameHeight);
-  // As for the other constructor, with squareColors for
+  // As for the other constructor, with <squareColors> for
   // Square Color mode (intended to be colors from squares close to the
   // <inputColor> square).
   colorDialog(const QVector<triC>& squareColors,
@@ -216,7 +226,7 @@ Q_OBJECT
   // in image mode only, used to notify the dialog that the mouse has
   // moved over the image to <color>
   void updateMouseMove(QRgb color);
-  // inb image mode only, used to notify the dialog that the mouse has
+  // in image mode only, used to notify the dialog that the mouse has
   // been clicked on <color>
   void updateMouseClick(QRgb color);
   bool modeIsImageMode() const { return curMode_ == &imageMode_; }
@@ -284,12 +294,12 @@ Q_OBJECT
   QVector<triC> listColors_;
   QVector<triC> squareColors_;
 
-  squareDialogMode squareMode_;
-  gridDialogMode listMode_;
-  dmcGridDialogMode dmcGridMode_;
-  dmcListDialogMode dmcListMode_;
-  anchorGridDialogMode anchorMode_;
-  anchorListDialogMode anchorListMode_;
+  nearbySquaresDialogMode nearbySquaresMode_;
+  colorListDialogMode colorListMode_;
+  dmcColorsDialogMode dmcColorsMode_;
+  dmcFlossesDialogMode dmcFlossesMode_;
+  anchorColorsDialogMode anchorColorsMode_;
+  anchorFlossesDialogMode anchorFlossesMode_;
   imageDialogMode imageMode_;
   baseDialogMode* curMode_;
 

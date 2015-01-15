@@ -20,24 +20,27 @@
 #include "buttonGrid.h"
 
 #include <QtCore/qmath.h>
+#include <QtCore/QDebug>
 
 #include <QtWidgets/QApplication>
 #include <QPainter>
 #include <QPen>
 #include <QMouseEvent>
+#include <QDesktopWidget> 
 
 #include "triC.h"
+#include "imageUtility.h"
 
 buttonGrid::buttonGrid(const QVector<QPixmap>& icons,
                        const QString& windowTitle,
                        QWidget* parent)
   : QWidget(parent), gridX_(-1), gridY_(-1) {
 
-  createQPixmapGrid(icons, windowTitle);
+  createSwatchGrid(icons, windowTitle);
 }
 
 buttonGrid::buttonGrid(const QVector<triC>& colors, int iconSize,
-                       int rowWidth, const QString& windowTitle,
+                       int buttonsPerRow, const QString& windowTitle,
                        QWidget* parent)
   : QWidget(parent), gridX_(-1), gridY_(-1) {
 
@@ -48,107 +51,139 @@ buttonGrid::buttonGrid(const QVector<triC>& colors, int iconSize,
     pixmap.fill(colors[i].qc());
     colorPixmaps.push_back(pixmap);
   }
-  createQPixmapGrid(colorPixmaps, windowTitle, rowWidth);
+  createSwatchGrid(colorPixmaps, windowTitle, buttonsPerRow);
 }
 
-buttonGrid::buttonGrid(const QVector<floss>& floss, int iconSize,
-                       int rowWidth, const QString& windowTitle,
+buttonGrid::buttonGrid(const QVector<floss>& flosses, flossType type, int iconSize,
+                       int buttonsPerRow, const QString& windowTitle,
                        QWidget* parent)
   : QWidget(parent), gridX_(-1), gridY_(-1) {
-  createFlossGrid(floss, windowTitle, iconSize,rowWidth);
+
+  createFlossGrid(flosses, type, windowTitle, iconSize, buttonsPerRow);
 }
 
-void buttonGrid::createQPixmapGrid(const QVector<QPixmap>& icons,
-                                   const QString& windowTitle,
-                                   int rowWidth) {
+int buttonGrid::getDescriptionWidth(const QString& text) {
 
-  buttonWidht_ = icons.empty() ? 12 : icons[0].width() + 12;
-  buttonHeight_ = buttonWidht_;
+  QPixmap testImage(10,10);
+  QPainter painter(&testImage);
+  painter.setPen(descriptionsPen());
+  const QFontMetrics metrics(painter.font());
+  return metrics.width(text);
+}
+
+void buttonGrid::createIconsDrawSwatches(const QVector<QPixmap>& swatches) {
+
   const QPalette palette(QApplication::palette());
   const QColor windowColor(palette.color(QPalette::Window));
   const QColor darkColor(palette.color(QPalette::Dark));
-  for (int i = 0, size = icons.size(); i < size; ++i) {
-    QPixmap pixmap(buttonWidht_, buttonHeight_);
+  for (int i = 0, size = swatches.size(); i < size; ++i) {
+    QPixmap pixmap(buttonWidth_, buttonHeight_);
     pixmap.fill(windowColor);
     QPainter painter(&pixmap);
     painter.setPen(QPen(darkColor, 2));
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.drawPixmap(QPoint(6, 6), icons[i]);
-    painter.drawRoundedRect(QRect(1, 1, buttonWidht_-2, buttonHeight_-2),
+    painter.drawPixmap(QPoint(6, 6), swatches[i]);
+    painter.drawRoundedRect(QRect(1, 1, buttonWidth_ - 2, buttonHeight_ - 2),
                             3.5, 3.5);
 
     icons_.push_back(pixmap);
   }
+}
+
+void buttonGrid::addDescriptionsToIcons(const QVector<floss>& flosses,
+                                        int iconSize) {
+
+  for (int i = 0, size = icons_.size(); i < size; ++i) {
+    const floss thisFloss = flosses[i];
+    QPainter painter(&icons_[i]);
+    painter.setPen(descriptionsPen());
+    QString flossDescription;
+    if (thisFloss.code() > 0) {
+      flossDescription = QString::number(thisFloss.code());
+    }
+    if (thisFloss.name() != "") {
+      if (flossDescription != "") {
+        flossDescription += " - ";
+      }
+      flossDescription += thisFloss.name();
+    }
+    painter.drawText(QPoint(iconSize + 12, iconSize), flossDescription);
+  }
+}
+
+void buttonGrid::setGridDimensionsAndTitle(int buttonsPerRow,
+                                           const QString& windowTitle) {
+  
   const int numIcons = icons_.size();
-  buttonsPerRow_ = rowWidth ? rowWidth : ceil(sqrt(numIcons));
-  if (!rowWidth) {
+  buttonsPerRow_ = buttonsPerRow ? buttonsPerRow : ceil(sqrt(numIcons));
+  if (buttonsPerRow == 0) {
     buttonsPerRow_ += buttonsPerRow_/4;
   }
   int gridRows = numIcons/buttonsPerRow_;
   if (numIcons % buttonsPerRow_ != 0) {
     ++gridRows;
   }
-  setFixedSize(buttonsPerRow_ * buttonWidht_, gridRows * buttonHeight_);
+  setFixedSize(buttonsPerRow_ * buttonWidth_, gridRows * buttonHeight_);
   setWindowTitle(windowTitle);
 }
 
-void buttonGrid::createFlossGrid(const QVector<floss>& floss,
-                                   const QString& windowTitle,
-                                   int iconSize, int rowWidth) {
-  int descriptionLength = 180;
-  buttonWidht_ = iconSize + 12 + descriptionLength;
+void buttonGrid::createSwatchGrid(const QVector<QPixmap>& swatches,
+                                  const QString& windowTitle, int buttonsPerRow) {
+
+  buttonWidth_ = swatches.empty() ? 12 : swatches[0].width() + 12;
+  buttonHeight_ = buttonWidth_;
+  createIconsDrawSwatches(swatches);
+  setGridDimensionsAndTitle(buttonsPerRow, windowTitle);
+}
+
+void buttonGrid::createFlossGrid(const QVector<floss>& flosses, flossType type,
+                                 const QString& windowTitle,
+                                 int iconSize, int buttonsPerRow) {
+
+  int descriptionLength;
+  
+  if (type == flossDMC) {
+    descriptionLength = 180;
+    descriptionLength = getDescriptionWidth("8888 - Ultra V DK Emerald Greene ");
+  }
+  else if (type == flossAnchor) {
+    descriptionLength = 50;
+    descriptionLength = getDescriptionWidth("8888 ");
+  }
+  else {
+    descriptionLength = 0;
+    qWarning() << "Bad floss type in createFlossGrid: " << type.text();
+  }
+  buttonWidth_ = 6 + iconSize + 6 + descriptionLength + 6;
   buttonHeight_ = iconSize + 12;
-  const QPalette palette(QApplication::palette());
-  const QColor windowColor(palette.color(QPalette::Window));
-  const QColor darkColor(palette.color(QPalette::Dark));
-  for (int i = 0, size = floss.size(); i < size; ++i) {
-    QPixmap pixmap(buttonWidht_, buttonHeight_);
-    pixmap.fill(windowColor);
-    QPainter painter(&pixmap);
-    painter.setPen(QPen(darkColor, 2));
-    painter.setRenderHint(QPainter::Antialiasing);
-    QPixmap color(iconSize, iconSize);
-    color.fill(floss[i].color().qc());
-    painter.drawPixmap(QPoint(6, 6), color);
-    painter.drawRoundedRect(QRect(1, 1, buttonWidht_-2, buttonHeight_-2),
-                            3.5, 3.5);
-    painter.setPen(QPen(Qt::black, 4));
-    painter.drawText(QPoint(iconSize + 12, iconSize),
-                     QString::number(floss[i].code()) + " - " + floss[i].name());
 
-    icons_.push_back(pixmap);
+  QVector<QPixmap> icons;
+  icons.reserve(flosses.size());
+  for (int i = 0, size = flosses.size(); i < size; ++i) {
+    QPixmap pixmap(iconSize, iconSize);
+    pixmap.fill(flosses[i].color().qc());
+    icons.push_back(pixmap);
   }
-  const int numIcons = floss.size();
-  buttonsPerRow_ = rowWidth ? rowWidth : ceil(sqrt(numIcons));
-  if (!rowWidth) {
-    buttonsPerRow_ += buttonsPerRow_/4;
-  }
-  int gridRows = numIcons/buttonsPerRow_;
-  if (numIcons % buttonsPerRow_ != 0) {
-    ++gridRows;
-  }
-  setFixedSize(buttonsPerRow_ * buttonWidht_, gridRows * buttonHeight_);
-  setWindowTitle(windowTitle);
-
+  createIconsDrawSwatches(icons);
+  addDescriptionsToIcons(flosses, iconSize);
+  setGridDimensionsAndTitle(buttonsPerRow, windowTitle);
 }
 
 QSize buttonGrid::sizeHint() const {
 
   int numRows = icons_.size()/buttonsPerRow_;
-  if (icons_.size()%buttonsPerRow_ != 0) {
+  if (icons_.size() % buttonsPerRow_ != 0) {
     ++numRows;
   }
-  int parrentHeight = this->parentWidget()->height();
-  int height = (numRows*buttonHeight_ > parrentHeight/2) ? parrentHeight/4 : numRows*buttonHeight_;
-
-  return QSize(buttonsPerRow_*buttonWidht_, height);
+  return QSize(buttonsPerRow_ * buttonWidth_,  numRows * buttonHeight_);
 }
 
 void buttonGrid::paintEvent(QPaintEvent* ) {
+
   int i = 0, j = 0;
   QPainter painter(this);
   for (int k = 0, size = icons_.size(); k < size; ++k) {
-    painter.drawPixmap(QPoint(i*buttonWidht_, j*buttonHeight_),
+    painter.drawPixmap(QPoint(i*buttonWidth_, j*buttonHeight_),
                        icons_[k]);
     ++i;
     if (i == buttonsPerRow_) {
@@ -160,8 +195,9 @@ void buttonGrid::paintEvent(QPaintEvent* ) {
     painter.save();
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(Qt::black, 1.2, Qt::DotLine));
-    painter.drawRoundedRect(QRect(gridX_ * buttonWidht_ + 4, gridY_ * buttonHeight_ + 4,
-                                  buttonWidht_ - 8, buttonHeight_ - 8), 0., 0.);
+    painter.drawRoundedRect(QRect(gridX_ * buttonWidth_ + 4,
+                                  gridY_ * buttonHeight_ + 4,
+                                  buttonWidth_ - 8, buttonHeight_ - 8), 0., 0.);
     painter.restore();
   }
 }
@@ -169,7 +205,7 @@ void buttonGrid::paintEvent(QPaintEvent* ) {
 void buttonGrid::mousePressEvent(QMouseEvent* event) {
 
   if (event->button() == Qt::LeftButton) {
-    gridX_ = event->x()/buttonWidht_;
+    gridX_ = event->x()/buttonWidth_;
     gridY_ = event->y()/buttonHeight_;
     const int index = gridY_ * buttonsPerRow() + gridX_;
     if (index >= icons_.size() || index < 0) {
@@ -180,28 +216,35 @@ void buttonGrid::mousePressEvent(QMouseEvent* event) {
   }
 }
 
-colorButtonGrid::colorButtonGrid(const QVector<triC>& colors, int iconSize,
-                                 const QString& windowTitle, int rowWidth,
-                                 QWidget* parent)
-  : buttonGrid(colors, iconSize, rowWidth, windowTitle, parent),
-    colors_(colors) {
+pairOfInts buttonGrid::getMaxGridCoordinates() const {
 
-
+  const int computationLength = icons_.size() - 1;
+  return pairOfInts(computationLength % buttonsPerRow_,
+                    computationLength / buttonsPerRow_);
 }
 
-colorButtonGrid::colorButtonGrid(const QVector<floss>& floss,
-                                 const QVector<triC>& colors, int iconSize,
-                                 const QString& windowTitle, int rowWidth,
+colorButtonGrid::colorButtonGrid(const QVector<triC>& colors, int iconSize,
+                                 const QString& windowTitle, int buttonsPerRow,
                                  QWidget* parent)
-  : buttonGrid(floss, iconSize, rowWidth, windowTitle, parent),
-    colors_(colors) {
+  : buttonGrid(colors, iconSize, buttonsPerRow, windowTitle, parent),
+    colors_(colors) { }
+
+colorButtonGrid::colorButtonGrid(const QVector<floss>& flosses, flossType type,
+                                 int iconSize, const QString& windowTitle,
+                                 int buttonsPerRow, QWidget* parent)
+  : buttonGrid(flosses, type, iconSize, buttonsPerRow, windowTitle, parent) {
+
+  colors_.reserve(flosses.size());
+  for (int i = 0; i < flosses.size(); ++i) {
+    colors_.push_back(flosses[i].color());
+  }
 }
 
 void colorButtonGrid::mousePressEvent(QMouseEvent* event) {
 
   if (event->button() == Qt::LeftButton) {
-    int gridX = event->x()/buttonWidht();
-    int gridY = event->y()/buttonHeight();
+    const int gridX = event->x()/buttonWidth();
+    const int gridY = event->y()/buttonHeight();
     const int index = gridY * buttonsPerRow() + gridX;
 
     // click on an empty grid tile does nothing

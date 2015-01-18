@@ -172,9 +172,11 @@ int numberOfColors(const QImage& image);
 // display <widget> at the top level
 void showAndRaise(QWidget* widget);
 
-// grid <image> using <gridColor> and <gridLineWidth>; <image> may be
+// Grid <image> using <gridColor> and <gridLineWidth>; <image> may be
 // scaled, so use <original> parameters to determine the proper grid
-// spacing for the scaled gridding
+// spacing for the scaled gridding.
+// If the scaled square size is too small compared to <gridLineWidth>, no gridding
+// will occur.
 void gridImage(QImage* image, int originalSquareDim,
                int originalWidth, int originalHeight, QRgb gridColor,
                qreal gridLineWidth = 1);

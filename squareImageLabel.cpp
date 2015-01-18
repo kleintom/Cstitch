@@ -138,7 +138,7 @@ void squareImageLabel::paintEvent(QPaintEvent* event) {
     lastHashDrawn_ = hashSquares_.size() - 1;
   }
 
-  if (gridOn_) {
+  if (gridOn_ && scaledDimension_ > 1) {
     painter.setPen(QPen(QColor(gridColor_), 1));
     const QRect eventRectangle(event->rect());
     const int xStart = eventRectangle.x();
@@ -215,7 +215,7 @@ void squareImageLabel::setImageSize(const QSize& newSize) {
     scaledImage_ = QPixmap::fromImage(baseImage_).scaled(newSize);
   }
   else {
-    scaledDimension_ = newSize.width()/xSquareCount_;
+    scaledDimension_ = qMax(newSize.width()/xSquareCount_, 1);
     Q_ASSERT_X(newSize.width() % scaledDimension_ == 0 &&
                newSize.height() % scaledDimension_ == 0, "setImageSize",
                QString("Bad scaled square image size: (" +
@@ -233,7 +233,7 @@ void squareImageLabel::setImageSize(const QSize& newSize) {
 
 void squareImageLabel::setImageWidth(int newWidth) {
 
-  scaledDimension_ = newWidth/xSquareCount_;
+  scaledDimension_ = qMax(newWidth/xSquareCount_, 1);
   if (imageIsFlat()) {
     scaledImage_ = QPixmap::fromImage(baseImage_).scaledToWidth(newWidth);
   }
@@ -253,7 +253,7 @@ void squareImageLabel::setImageWidth(int newWidth) {
 
 void squareImageLabel::setImageHeight(int newHeight) {
 
-  scaledDimension_ = newHeight/ySquareCount_;
+  scaledDimension_ = qMax(newHeight/ySquareCount_, 1);
   if (imageIsFlat()) {
     scaledImage_ = QPixmap::fromImage(baseImage_).scaledToHeight(newHeight);
   }

@@ -379,7 +379,7 @@ QSize mutableSquareImageContainer::zoom(bool zoomIn) {
 
   const int curSquareSize = scaledWidth()/widthSquareCount_;
   const int delta = zoomIn ? 1 : -1;
-  const int newSquareSize = qMax(curSquareSize + delta, 2);
+  const int newSquareSize = qMax(curSquareSize + delta, 1);
   const int newWidth = newSquareSize * widthSquareCount_;
   const int newHeight = newSquareSize * heightSquareCount_;
   const QSize newSize(newWidth, newHeight);
@@ -408,7 +408,7 @@ QSize mutableSquareImageContainer::setScaledSize(const QSize& sizeHint) {
 QSize mutableSquareImageContainer::setScaledWidth(int widthHint) {
 
   if (scaledSize().isEmpty()) {
-    const int newSquareSize = qMax(widthHint/widthSquareCount_, 2);
+    const int newSquareSize = qMax(widthHint/widthSquareCount_, 1);
     const int newWidth = newSquareSize * widthSquareCount_;
     const int newHeight = newSquareSize * heightSquareCount_;
     const QSize newSize(newWidth, newHeight);
@@ -423,7 +423,7 @@ QSize mutableSquareImageContainer::setScaledWidth(int widthHint) {
 QSize mutableSquareImageContainer::setScaledHeight(int heightHint) {
 
   if (scaledSize().isEmpty()) {
-    const int newSquareSize = qMax(heightHint/heightSquareCount_, 2);
+    const int newSquareSize = qMax(heightHint/heightSquareCount_, 1);
     const int newWidth = newSquareSize * widthSquareCount_;
     const int newHeight = newSquareSize * heightSquareCount_;
     const QSize newSize(newWidth, newHeight);
@@ -440,7 +440,6 @@ QImage mutableSquareImageContainer::scaledImage() const {
   QHash<triC, QImage> colorSquares;
   const QVector<triC>& squareColors = colors();
   const int curDimension = scaledDimension();
-  const grid baseImage(image(), originalDimension_);
   QImage squareImage(curDimension, curDimension, QImage::Format_RGB32);
   for (int i = 0, size = squareColors.size(); i < size; ++i) {
     const triC& thisImageColor = squareColors[i];
@@ -448,6 +447,7 @@ QImage mutableSquareImageContainer::scaledImage() const {
     colorSquares[thisImageColor] = squareImage;
   }
 
+  const grid baseImage(image(), originalDimension_);
   QImage returnImage(scaledSize(), QImage::Format_RGB32);
   QPainter painter(&returnImage);
   for (int yBox = 0; yBox < heightSquareCount_; ++yBox) {

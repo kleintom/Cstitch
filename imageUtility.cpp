@@ -56,14 +56,15 @@ void gridImage(QImage* image, int originalSquareDim,
                int originalWidth, int originalHeight,
                QRgb gridColor, qreal gridLineWidth) {
 
-  if (originalSquareDim < 2) {
-    return;
-  }
   const int newWidth = image->width();
   const int newHeight = image->height();
   // scaled grid dims
-  const qreal xdim = originalSquareDim*qreal(newWidth)/originalWidth;
-  const qreal ydim = originalSquareDim*qreal(newHeight)/originalHeight;
+  const qreal xdim = originalSquareDim*newWidth/static_cast<qreal>(originalWidth);
+  const qreal ydim = originalSquareDim*newHeight/static_cast<qreal>(originalHeight);
+  if (xdim < 1.25 * gridLineWidth || ydim < 1.25 * gridLineWidth) {
+    // grid lines will take up nearly all of each square, so refuse to grid
+    return;
+  }
 
   QPainter painter(image);
   painter.setPen(QPen(QColor(gridColor), gridLineWidth));
@@ -90,13 +91,12 @@ int computeGridForImageFit(const QSize& imageSize,
   qreal newHeight = imageSize.height() * newWidth/imageSize.width();
   if (newHeight <= availableSize.height()) { // scale to width
     const qreal newSquareDim =
-      originalSquareSize * newWidth / imageSize.width();
+      originalSquareSize * newWidth / static_cast<qreal>(imageSize.width());
     return qFloor(newSquareDim);
   }
   else { // scale to height
-    const qreal newSquareDim =
-      static_cast<qreal>(originalSquareSize) *
-      availableSize.height() / imageSize.height();
+    const qreal newSquareDim = originalSquareSize *
+      availableSize.height() / static_cast<qreal>(imageSize.height());
     return qFloor(newSquareDim);
   }
 }

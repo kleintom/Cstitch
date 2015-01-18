@@ -139,7 +139,7 @@ void patternPrinter::drawTitlePage(const patternMetadata& metadata) {
   QPen pen(painter_.pen());
   pen.setWidth(2);
   painter_.setPen(pen);
-  // draw the original image on this page
+  //// draw the original image on this page
   const QImage original =
     originalImage_.scaled(availableTextRect.size(), Qt::KeepAspectRatio,
                           Qt::SmoothTransformation);
@@ -150,7 +150,7 @@ void patternPrinter::drawTitlePage(const patternMetadata& metadata) {
   painter_.drawRect(QRect(originalStart, original.size()));
   printer_.newPage();
 
-  // draw the squared image
+  //// draw the squared image
   QRect usableRect = printer_.pageRect();
   usableRect.moveTopLeft(QPoint(0, 0));
   // figure out if gridding will be reasonable at the zoom level needed
@@ -158,17 +158,24 @@ void patternPrinter::drawTitlePage(const patternMetadata& metadata) {
   const QSize squareImageSize = squareImage_.size();
   const int newSquareDim =
     ::computeGridForImageFit(squareImageSize, usableRect.size(), squareDim_);
-
   QImage squareImage;
-  const int newWidth = newSquareDim * squareImageSize.width()/squareDim_;
-  const int newHeight = newSquareDim * squareImageSize.height()/squareDim_;
-  squareImage = squareImage_.scaled(newWidth, newHeight,
-                                    Qt::KeepAspectRatio,
-                                    Qt::SmoothTransformation);
-  squareImage = gridedImage(squareImage, squareDim_,
-                            squareImageSize.width(),
-                            squareImageSize.height(), .2);
-
+  if (newSquareDim > 0) {
+    const int newWidth = newSquareDim * squareImageSize.width()/squareDim_;
+    const int newHeight = newSquareDim * squareImageSize.height()/squareDim_;
+    squareImage = squareImage_.scaled(newWidth, newHeight,
+                                      Qt::KeepAspectRatio,
+                                      Qt::SmoothTransformation);
+    squareImage = gridedImage(squareImage, squareDim_,
+                              squareImageSize.width(),
+                              squareImageSize.height(), .2);
+  }
+  else {
+    // oops, we can't commit one (or more) pixels to each square of the pattern
+    // and still draw it to fit inside our page bounds, so just scale to fit the
+    // bounds - we definitely can't grid
+    squareImage = squareImage_.scaled(usableRect.size(), Qt::KeepAspectRatio,
+                                      Qt::SmoothTransformation);
+  }
   const QPoint squareStart((usableRect.width() - squareImage.width())/2, 0);
   painter_.drawImage(squareStart, squareImage);
   painter_.drawRect(QRect(squareStart, squareImage.size()));

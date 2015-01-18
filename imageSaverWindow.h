@@ -38,7 +38,6 @@ class imageSaverWindow : public imageZoomWindow {
   Q_OBJECT
 
  public:
-  // dockName and winMgr are passed on to imageZoomWindow
   imageSaverWindow(const QString& dockName, windowManager* winMgr);
 
  protected:

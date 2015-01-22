@@ -532,6 +532,9 @@ QString patternPrinter::flossToCode(const typedFloss& f,
       else if (code == ECRU_CODE) {
         codeString = "Ecru";
       }
+      else if (code == SNOW_WHITE_CODE) {
+        codeString = "Snow White";
+      }
       else {
         qWarning() << "String code error.";
         codeString = "N/A";

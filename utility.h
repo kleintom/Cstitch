@@ -28,11 +28,13 @@
 #include <QCloseEvent>
 
 // special floss color codes
-const int DMC_COUNT = 427; // number of dmc colors
+const int DMC_PRE_0_9_5_30_COUNT = 427;
+const int DMC_POST_0_9_5_29_COUNT = 454;
 const int ANCHOR_COUNT = 444; // number of anchor colors
-// DMC doesn't assign codes for white or ecru
+// DMC doesn't assign numeric codes for these
 const int WHITE_CODE = -10;
 const int ECRU_CODE = -11;
+const int SNOW_WHITE_CODE = -12;
 
 // a "bool with three states"
 enum triStateValue {triFalse = 0, triTrue = 1, triNoop = 2};

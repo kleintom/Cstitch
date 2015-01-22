@@ -447,7 +447,7 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   QHash<QRgb, QRgb> toDmc; // key is rgb, value is the closest dmc color
   toDmc.reserve(colorCountMap.size());
   QHash<QRgb, int> dmcCountMap; // counts of dmc colors
-  dmcCountMap.reserve(428);
+  dmcCountMap.reserve(DMC_POST_0_9_5_29_COUNT);
   QTime t;
   t.start();
   altMeter progressMeter(QObject::tr("Choosing colors Step 2/2..."),

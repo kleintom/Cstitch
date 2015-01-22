@@ -36,6 +36,9 @@ class CVersion {
  public:
   CVersion(const QString& versionString) : version_(versionString) {}
   bool operator>(const CVersion& otherVersion) const;
+  bool operator>(const QString& otherVersion) const {
+    return operator>(CVersion(otherVersion));
+  }
 
  private:
   const QString version_;

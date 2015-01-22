@@ -167,7 +167,7 @@ void colorChooser::setNewImage(const QImage& newImage) {
   setLabelImage(newImage);
   zoomToImage();
   processMode_.clearColorLists();
-  clickedDock_->setColorList(processMode_.colorList());
+  clickedDock_->setColorList(processMode_.clickedColorList());
   generatedDock_->clearList();
   generatedDockHolder_->setEnabled(false);
   setStatus(processMode_.statusHint());

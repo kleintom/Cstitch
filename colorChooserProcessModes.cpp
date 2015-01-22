@@ -135,7 +135,16 @@ void numColorsBaseModes::appendColorList(QDomDocument* doc,
   }
 }
 
-dmcMode::dmcMode() : fixedListBaseMode(loadDMC()) {}
+// we don't know which version of the DMC colors we'll be using yet, so just load
+// an empty color list for now, and call resetColorList() once we know our version
+dmcMode::dmcMode() : fixedListBaseMode(QVector<triC>()) {}
+
+bool dmcMode::resetColorList() {
+
+  // the project version may have changed, so reload the dmc colors
+  setClickedColorList(loadDMC());
+  return true;
+}
 
 anchorMode::anchorMode() : fixedListBaseMode(loadAnchor()) {}
 

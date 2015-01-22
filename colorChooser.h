@@ -51,9 +51,9 @@ class QSpinBox;
 //
 // DMC mode will create a new image by replacing each color in
 // the original image with the closest matching DMC color.  This
-// program is aware of 428 dmc color names, so depending on
-// the variety of colors in theoriginal image, this mode will create a
-// new image with anywhere from 1 to 428 colors.
+// program is aware of x dmc color names, so depending on
+// the variety of colors in the original image, this mode will create a
+// new image with anywhere from 1 to x colors.
 //
 // Num colors mode lets the user choose the number of colors they would
 // like the final pattern to have (note: later processing may reduce

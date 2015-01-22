@@ -346,7 +346,7 @@ the <i>Generated colors</i> list to the right of the image.
 <b>Note: </b>The major advantage of using the <i>Num colors to DMC</i>
 mode is that it is guaranteed to produce colors that are available as
 floss.  The disadvantage is that the colors selected all come from the
-fixed pool of DMC colors (currently 428 colors).  One consequence is
+fixed pool of DMC colors (currently 454 colors).  One consequence is
 that there may be no way to choose close shades of color from your
 original image unless similar close shades already exist as DMC
 colors.  The <i>Num colors</i> mode below gets around that by allowing
@@ -387,9 +387,9 @@ results of a DMC-mode image.
 <p>
 <i>DMC</i> mode will create a new image by replacing each color in
 your original image with the closest matching DMC color.  This
-program is aware of 428 DMC color names, so depending on
+program is aware of 454 DMC color names, so depending on
 the variety of colors in your original image, this mode can create a
-new image with anywhere from 1 to 428 colors.
+new image with anywhere from 1 to 454 colors.
 </p>
 </div>
 

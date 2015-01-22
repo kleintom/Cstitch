@@ -140,6 +140,10 @@ class windowManager : public QObject {
 
  public:
   windowManager();
+  static void setStatic(windowManager* winManager) {
+    if (!winManager_) { winManager_ = winManager; }
+  }
+  static windowManager const * getWindowManager() { return winManager_; }
   // add a new colorChooser
   void addColorChooserWindow(colorChooser* window);
   // add <image> with <colors> (of floss type <type>) and image number
@@ -203,6 +207,7 @@ class windowManager : public QObject {
     programVersion_ = version;
   }
   QString getProgramVersion() const { return programVersion_; }
+  QString getProjectVersion() const { return projectVersion_; }
 
  public slots:
   // save all current data to file
@@ -361,6 +366,8 @@ class windowManager : public QObject {
   // projectVersion is the same as programVersion_ until we load a project,
   // at which point it becomes the project version(!).
   QString projectVersion_;
+  // there's only ever one windowManager object, and this is it
+  static windowManager* winManager_;
 };
 
 #endif

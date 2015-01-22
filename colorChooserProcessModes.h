@@ -261,7 +261,7 @@ class fixedListBaseMode : public colorChooserProcessMode {
  public:
   fixedListBaseMode(const QVector<triC>& colors);
   QVector<triC> colorList() const { return generatedColorList(); }
-  bool resetColorList() { return false; }
+  virtual bool resetColorList() { return false; }
   bool removeColor(const triC& ) { return true; }
   void appendColorList(QDomDocument* , QDomElement* ) { return; }
   triState performProcessing(QImage* image, int numColors,
@@ -276,6 +276,7 @@ class dmcMode : public fixedListBaseMode {
                          clickedColorList(), generatedColorList());
   }
   flossType flossMode() const;
+  bool resetColorList();
   QString modeText() const { return QObject::tr("DMC"); }
   QString saveText() const { return "DMC"; }
   QString statusHint() const {

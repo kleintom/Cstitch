@@ -25,7 +25,8 @@ bool CVersion::operator>(const CVersion& otherVersion) const {
 
   const QStringList thisList = version_.split('.');
   const QStringList otherList = otherVersion.version_.split('.');
-  for (int i = 0, size = thisList.size(); i < size; ++i) {
+  const int compareLength = qMin(thisList.size(), otherList.size());
+  for (int i = 0; i < compareLength; ++i) {
     const int thisVersion = thisList[i].toInt();
     const int otherVersion = otherList[i].toInt();
     if (thisVersion > otherVersion) {
@@ -38,7 +39,7 @@ bool CVersion::operator>(const CVersion& otherVersion) const {
       return false;
     }
   }
-  return false; // they're equal
+  return false; // they're "equal"
 }
 
 flossColor

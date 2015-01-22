@@ -168,7 +168,8 @@ inline colorOrder getColorOrder(const triC& color) {
   }
 }
 
-// return floss data for the DMC colors
+QVector<floss> initializePre0_9_5_30DMC();
+QVector<floss> initializePost0_9_5_29DMC();
 QVector<floss> initializeDMC();
 QVector<floss> initializeAnchor();
 
@@ -176,7 +177,7 @@ QVector<floss> initializeAnchor();
 QVector<triC> loadDMC();
 QVector<triC> loadAnchor();
 // load DMC colors with intensities; assign to <intensitySpread> the
-// (smallest) distance that guarantess that an arbitrary color will be
+// (smallest) distance that guarantees that an arbitrary color will be
 // within that distance of a color on the list in intensity
 QVector<iColor> loadIDMC(int* intensitySpread);
 // return the "gray" dmc colors
@@ -225,5 +226,7 @@ QVector<triC> rgbToColorList(const QVector<triC>& rgbColors,
 
 // Return the floss code for each flossColor in <colors> in the same order.
 QVector<int> rgbToCode(const QVector<flossColor>& colors);
+
+bool useNewDmcColorList();
 
 #endif

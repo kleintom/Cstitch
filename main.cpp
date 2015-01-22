@@ -39,13 +39,13 @@ int main(int argc, char *argv[]) {
 
   // seed the static scroll bar width value
   ::scrollbarWidth(app.style());
-  colorMatcher::initializeIntensitySpreads();
 
   windowManager winManager;
+  windowManager::setStatic(&winManager);
   // the version is updated by the git pre-commit script based on the
   // current git label and the current git revision count 
   // (if you change "@GIT-VERSION" you'll need to change the script too)
-  winManager.setProgramVersion("0.9.5.28"); // @GIT-VERSION - don't touch this comment
+  winManager.setProgramVersion("0.9.5.29"); // @GIT-VERSION - don't touch this comment
   colorChooser colorChooserWindow(&winManager);
   colorChooserWindow.show();
 

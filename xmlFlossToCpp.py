@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Turns a dmc.xml file in kxstitch format a turn it into cpp code ready to insert into colorList.cpp
+# Turns a dmc.xml file in kxstitch format into cpp code ready to insert into
+# colorLists.cpp
 
 import xml.etree.ElementTree as ET
 
@@ -29,7 +30,8 @@ class Floss():
         self.blue = None
 
     def toCpp(self):
-        return "dmc.push_back(floss(%s, \"%s\", triC(%d,%d,%d)));" % (self.code, self.name, self.red, self.green, self.blue)
+        return ("  dmc.push_back(floss(%s, \"%s\", triC(%d,%d,%d)));" %
+                (self.code, self.name, self.red, self.green, self.blue))
 
 floss_list = list()
 

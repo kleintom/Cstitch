@@ -38,6 +38,8 @@
 #include "versionProcessing.h"
 #include "xmlUtility.h"
 
+windowManager* windowManager::winManager_ = NULL;
+
 windowManager::windowManager() : originalImageColorCount_(0),
                                  projectFilename_(QString()),
                                  hideWindows_(false) {
@@ -1003,6 +1005,7 @@ void windowManager::setProjectVersion(const QString& projectVersion) {
 
   projectVersion_ = projectVersion;
   versionProcessor::setProcessor(projectVersion_);
+  colorMatcher::initializeIntensitySpreads();
 }
 
 void windowManager::updateRecentFiles(const QString& file,

@@ -70,7 +70,7 @@ class processChange {
 // colorChooserProcessMode represents a colorChooser processing mode
 // and provides that mode's processing capabilities.  It is an abstract
 // class derived by the actual process modes.
-// This class maintains the color list for the mode.
+// This class maintains the color lists for the mode.
 class colorChooserProcessMode : public QSharedData {
 
  public:
@@ -194,10 +194,10 @@ class processModeGroup {
   }
 
  private:
-  // the current processing mode; non-null after construction, points to
-  // one of the modes below (all derived from colorChooserProcessMode)
-  // all of the processing and color list behavior is encoded in this
-  // mode, so widget behavior is largely determined by its current value
+  // The current processing mode; non-null after construction, points to
+  // one of the activeModes_ modes (all derived from colorChooserProcessMode).
+  // All of the processing and color list behavior is encoded in this
+  // mode, so widget behavior is largely determined by its current value.
   processModePtr curMode_;
   QList<processModePtr> activeModes_;
 };

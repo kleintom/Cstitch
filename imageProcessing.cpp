@@ -416,9 +416,9 @@ QVector<triC> chooseColors(const QImage& image, int numColors,
 }
 
 QVector<triC> chooseColors(const QImage& image,
-                                       const QList<pixel>& squaresList,
-                                       int dimension, int numColors,
-                                       const colorTransformerPtr& transformer) {
+                           const QList<pixel>& squaresList,
+                           int dimension, int numColors,
+                           const colorTransformerPtr& transformer) {
 
   QHash<QRgb, int> colorCount;
   // fill in colorCountMap, with colors for keys and color counts for

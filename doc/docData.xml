@@ -538,7 +538,7 @@ the <i>squaring mode</i> and the <i>square size</i> setting.
 The <i>square size</i> setting determines how
 large (in pixels) the squares to be created will be.  The size is set
 using the number box on the toolbar, and is allowed to have any value
-from 2 to 50.  The choice of square size, along with your choice of
+from 1 to 50.  The choice of square size, along with your choice of
 cross stitch fabric, will determine how large your final cross
 stitched piece will be - click on the <i>Dimension Computer</i> icon
 <img src="dims.png" alt="dimension computer icon" /> on the toolbar to

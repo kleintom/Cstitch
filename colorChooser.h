@@ -47,13 +47,14 @@ class QSpinBox;
 // The user can load an image at any time, but a new image will delete
 // all work on the previous image application-wide.
 //
-// There are five color selection modes for the user to choose from.
+// The user can choose from the following color selection modes:
 //
 // DMC mode will create a new image by replacing each color in
 // the original image with the closest matching DMC color.  This
 // program is aware of x dmc color names, so depending on
 // the variety of colors in the original image, this mode will create a
 // new image with anywhere from 1 to x colors.
+// Anchor mode is the same as DMC mode with DMC replaced by Anchor.
 //
 // Num colors mode lets the user choose the number of colors they would
 // like the final pattern to have (note: later processing may reduce
@@ -63,13 +64,8 @@ class QSpinBox;
 // Num colors to DMC mode is similar to Num colors mode, except that the
 // colors chosen are DMC colors and so may not actually be colors in the
 // original image.
-//
-// Color List mode allows the user to choose colors by clicking on colors
-// in the image.
-//
-// Color List to DMC mode works the same as the Color List mode,
-// except that each clicked color from the original image is transformed
-// to the closest matching DMC color.
+// Num colors to Anchor mode is the same as Num colors to DMC mode with
+// DMC replaced by Anchor.
 //
 // Once the user is satisfied with their color mode and selection they
 // click a button to move to the next stage, the colorCompareWindow.

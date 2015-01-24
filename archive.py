@@ -33,7 +33,7 @@ class archiver:
 
     def __init__(self, binary, readmes):
 
-        self.readmeDir = "doc/web/"
+        self.readmeDir = "."
         self.versionsDir = "versions/"
         # figure out the version of our binary (or quit)
         self.version = ""
@@ -143,6 +143,6 @@ class linuxArchiver(archiver):
 if binary.endswith("exe"):
     binaryArchive = windowsArchiver(binary, [])
 else:
-    binaryArchive = linuxArchiver(binary, ["README_linux"])
+    binaryArchive = linuxArchiver(binary, ["README_linux.md"])
 
 binaryArchive.archive()

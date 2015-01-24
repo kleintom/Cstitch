@@ -3,7 +3,7 @@
 1.  Install the QT (gui toolkit) headers and libraries.
 
     Starting with version 0.9.4, cstitch is built using Qt 5 (I've tested on
-5.2.0).  Qt include locations were changed in going from Qt4 to Qt5, so >= 0,9.4
+5.2.1).  Qt include locations were changed in going from Qt4 to Qt5, so >= 0,9.4
 cstitch versions will not compile under Qt4 (though I suspect that if
 you simply change the includes back to their Qt4 locations, you would
 be very close to compiling).
@@ -16,18 +16,18 @@ yet support Qt5, you may need to download directly from Qt.
 2.  Download the Cstitch source files.
 
     It's possible to download the files as a tarball from the project
-page (the "snapshot" link at
-http://cstitch.git.sourceforge.net/git/gitweb.cgi?p=cstitch/cstitch;a=summary ),
+page (https://github.com/kleintom/Cstitch/archive/master.zip),
 but I recommend you download them instead as a git repository.
 Downloading in repository form will make it simple to update to the
 latest version at any time.
 
     To populate the initial git repository (run one time only):
-        git clone git://cstitch.git.sourceforge.net/gitroot/cstitch/cstitch
+
+          git clone https://github.com/kleintom/Cstitch.git
 
     The git command will create a directory named cstitch (or something
-similar) and download the latest version of the Cstitch files into that
-directory.
+similar; you can rename it to whatever you like) and download the latest
+version of the Cstitch files into that directory.
 
     If you decide you want to download a new version of the Cstitch files
 at some later point, just run **git pull** from the cstitch directory
@@ -42,14 +42,16 @@ and unzip it in the **cstitch/icons/** directory.
 4.  Generate the documentation.
 
     From the cstitch directory run
+
         doc/createDocs.py
 
 5.  Generate the build files.
 
     From the cstitch directory run the following:
-        qmake -project (generates a cstitch.pro file)
-        ./progen.py (adds some options to the cstitch.pro file)
-        qmake (generates a Makefile based on the cstitch.pro contents)
+
+        qmake -project   # generates a cstitch.pro file
+        ./progen.py   # adds some options to the cstitch.pro file
+        qmake   # generates a Makefile based on the cstitch.pro contents
 
 6.  Compile.
 
@@ -67,9 +69,12 @@ PATH (such as /usr/bin/ or /usr/local/bin); either cp your executable to
 "cstitch" or change the "Exec" label in cstitch.desktop to the name of your
 executable.  Copy **icons/cstitch.svg** to the system icons directory (at least
 for KDE and Gnome):
+
         cp icons/cstitch.svg /usr/share/icons/hicolor/scalable/apps/
-Copy **cstitch.desktop** to the system desktop files folders (at least for KDE
-and Gnome):
+
+    Copy **cstitch.desktop** to the system desktop files folders (at least for KDE
+    and Gnome):
+
         cp cstitch.desktop /usr/share/applications
 
     You may need to log out and back in to update menus.
@@ -81,6 +86,7 @@ name of your executable.
 Copy **icons/cstitch.svg** to wherever you'd like to have it, and update the
 "Icon" label in cstitch.desktop to reflect that location using an *absolute*
 path with file extension (e.g. /home/user/icon.svg).  Then
+
         cp cstitch.desktop ~/.local/share/applications
 
     You may need to log out and back in to update menus.

@@ -70,16 +70,7 @@ class squareImageLabel : public imageLabelBase {
                    int xSquareCount, int ySquareCount,
                    bool imageIsOriginal);
   void updateImage(const QImage& image, const QList<QRgb>& colors,
-                   const QRect& updateRectangle) {
-    baseImage_ = image;
-    generateColorSquares(colors);
-    if (updateRectangle.isNull()) {
-      update();
-    }
-    else {
-      update(updateRectangle);
-    }
-  }
+                   const QRect& updateRectangle);
   // Set the color that squares added via addSquare will be drawn in.
   // Once called, only squares added with addSquare will be drawn on this
   // label, until clearSquares is called.

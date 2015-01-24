@@ -194,6 +194,7 @@ void squareImageLabel::setNewImage(const QImage& image,
 
   baseImage_ = image;
   imageIsOriginal_ = imageIsOriginal;
+  setAttribute(Qt::WA_OpaquePaintEvent, !image.hasAlphaChannel());
   resize(image.size());
   xSquareCount_ = xSquareCount;
   ySquareCount_ = ySquareCount;
@@ -204,6 +205,19 @@ void squareImageLabel::setNewImage(const QImage& image,
   }
   else {
     scaledImage_ = QPixmap();
+  }
+}
+
+void squareImageLabel::updateImage(const QImage& image, const QList<QRgb>& colors,
+                                   const QRect& updateRectangle) {
+
+  baseImage_ = image;
+  generateColorSquares(colors);
+  if (updateRectangle.isNull()) {
+    update();
+  }
+  else {
+    update(updateRectangle);
   }
 }
 

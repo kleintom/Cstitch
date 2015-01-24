@@ -63,8 +63,8 @@ imageLabel::imageLabel(QWidget* parent)
 imageLabel::imageLabel(const QPixmap& image, QWidget* parent)
   : imageLabelBase(parent), originalImage_(image), scaledImage_(image) {
 
-  // don't clear window before painting
-  setAttribute(Qt::WA_OpaquePaintEvent);
+  // don't clear window before painting if there's no transparency
+  setAttribute(Qt::WA_OpaquePaintEvent, !originalImage_.hasAlpha());
   resize(image.width(), image.height());
 }
 
@@ -81,6 +81,7 @@ void imageLabel::paintEvent(QPaintEvent* event) {
 void imageLabel::setImageAndSize(const QPixmap& image) {
 
   originalImage_ = image;
+  setAttribute(Qt::WA_OpaquePaintEvent, !originalImage_.hasAlpha());
   scaledImage_ = image;
   resize(scaledImage_.width(), scaledImage_.height());
   update();
@@ -89,6 +90,7 @@ void imageLabel::setImageAndSize(const QPixmap& image) {
 void imageLabel::updateImage(const QPixmap& image, const QRect& rectangle) {
 
   originalImage_ = image;
+  setAttribute(Qt::WA_OpaquePaintEvent, !originalImage_.hasAlpha());
   scaledImage_ = originalImage_.scaled(scaledImage_.size());
   rectangle.isNull() ? update() : update(rectangle);
 }

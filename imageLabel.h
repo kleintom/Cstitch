@@ -73,7 +73,6 @@ class imageLabel : public imageLabelBase {
   explicit imageLabel(QWidget* parent);
   imageLabel(const QPixmap& image, QWidget* parent);
   bool imageIsNull() const { return originalImage_.isNull(); }
-  //const QPixmap& image() const { return originalImage_; }
   // the current scaled width
   int width() const { return scaledImage_.width(); }
   // the current scaled height

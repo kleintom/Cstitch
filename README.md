@@ -17,7 +17,8 @@ Beta version 0.9.6 released on January 24, 2015:
     * Added support for choosing colors by DMC or Anchor floss name/number
       when editing your pattern
     * Enabled 1-1 squaring; in other words, each pixel of your original
-      image becomes a square in your final pattern
+    image becomes a square in your final pattern
+* April 28, 2015 update: bug fix (only affects Linux users)
 
 Beta version 0.9.5 released on May 5, 2014:
 * Updates for internationalization

@@ -53,7 +53,7 @@ QString getNewImageFileName(QWidget* activeWindow, bool displayWarning) {
     return QFileDialog::getOpenFileName(activeWindow,
                                         QObject::tr("Open image"), ".",
                                         QObject::tr("Image files (%1)\n"
-                                                    "All (*.*)").arg(extensions));
+                                                    "All (*)").arg(extensions));
   }
   return QString();
 }

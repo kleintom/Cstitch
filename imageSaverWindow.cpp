@@ -55,7 +55,7 @@ QString imageSaverWindow::getValidSaveFile(const QList<QByteArray>& formats) {
     warningExtensions += (*it).data() + QString(", ");
   }
   extensions.chop(1); // remove the last space
-  extensions += "\nAll (*.*)";
+  extensions += "\nAll (*)";
   warningExtensions.chop(2);
 
   QString returnString;

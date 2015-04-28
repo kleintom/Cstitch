@@ -304,7 +304,7 @@ void windowManager::saveAs(const QString projectFilename) {
     const QString fileString =
       QFileDialog::getSaveFileName(activeWindow(), tr("Save project"), ".",
                                    tr("Cstitch files (*.xst)\n"
-                                      "All files (*.*)"));
+                                      "All files (*)"));
     if (!fileString.isNull()) {
       projectFilename_ = fileString;
     }
@@ -427,7 +427,7 @@ void windowManager::openProject() {
   const QString fileString =
     QFileDialog::getOpenFileName(activeWindow(), tr("Open project"), ".",
                                  tr("Cstitch files (*.xst)"
-                                    "\nAll files (*.*)"));
+                                    "\nAll files (*)"));
 
   if (!fileString.isEmpty()) {
     const bool success = openProject(fileString);
@@ -440,7 +440,13 @@ void windowManager::openProject() {
 bool windowManager::openProject(const QString& projectFile) {
 
   QFile inFile(projectFile);
-  inFile.open(QIODevice::ReadOnly);
+  if (!inFile.open(QIODevice::ReadOnly)) {
+    QMessageBox::critical(NULL, tr("Bad project file"),
+                          tr("Sorry, %1 is not a valid project file "
+                             "(diagnostic: unable to open file)")
+                          .arg(projectFile));
+    return false;
+  }
   // the save file starts with xml text, so read that first
   QTextStream textInStream(&inFile);
   QString inString;
@@ -487,6 +493,25 @@ bool windowManager::openProject(const QString& projectFile) {
   // a blank line between the xml and the image
   inString += textInStream.readLine() + "\n";
 
+  // read the image file name
+  const QString fileName = ::getElementText(doc, "image_name");
+  // now read the binary data image
+  inFile.seek(inString.length());
+  QDataStream imageStream(&inFile);
+  QImage newImage;
+  imageStream >> newImage;
+  if (newImage.isNull()) {
+    QMessageBox::critical(NULL, tr("Bad project file"),
+                          tr("Sorry, %1 appears to be corrupted "
+                             "(diagnostic: empty image)")
+                          .arg(projectFile));
+    return false;
+  }
+  inFile.seek(inString.length());
+  QDataStream imageData(&inFile);
+  QByteArray imageByteArray;
+  imageData >> imageByteArray;
+
   // hide everything except progress meters while we regenerate this project
   hideWindows_ = true;
   hideWindows();
@@ -502,20 +527,9 @@ bool windowManager::openProject(const QString& projectFile) {
   progressMeter.show();
   progressMeter.bumpCount();
   altMeter::setGroupMeter(&progressMeter);
-
-  // read the image file name
-  const QString fileName = ::getElementText(doc, "image_name");
+  
   // read the project version number
   setProjectVersion(::getElementAttribute(doc, "cstitch", "version"));
-  // now read the binary data image
-  inFile.seek(inString.length());
-  QDataStream imageStream(&inFile);
-  QImage newImage;
-  imageStream >> newImage;
-  inFile.seek(inString.length());
-  QDataStream imageData(&inFile);
-  QByteArray imageByteArray;
-  imageData >> imageByteArray;
   reset(newImage, imageByteArray, fileName);
 
   //// colorChooser

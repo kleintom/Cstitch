@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="it_IT">
+<TS version="2.0" language="it_IT">
 <context>
     <name>QObject</name>
     <message>
@@ -49,44 +49,49 @@
         <translation>Colori DMC</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="279"/>
+        <location filename="../colorChooserProcessModes.h" line="280"/>
         <source>DMC</source>
         <translation>DMC</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="282"/>
+        <location filename="../colorChooserProcessModes.h" line="283"/>
         <source>Colors will be chosen from the displayed list of DMC colors</source>
         <translation>I colori verranno scelti dalla lista visualizzata di colori DMC</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="286"/>
+        <location filename="../colorChooserProcessModes.h" line="287"/>
         <source>Let the program choose colors from the DMC color list</source>
         <translation>Lascia che il programma scelga i colori dalla lista colori DMC</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="294"/>
+        <location filename="../colorChooserProcessModes.h" line="295"/>
         <source>Anchor colors</source>
         <translation>Colori Anchor</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="298"/>
+        <location filename="../colorChooserProcessModes.h" line="299"/>
         <source>Anchor</source>
         <translation>Anchor</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="301"/>
+        <location filename="../colorChooserProcessModes.h" line="302"/>
         <source>Colors will be chosen from the displayed list of Anchor colors</source>
         <translation>I colori verranno scelti dalla lista visualizzata di colori Anchor</translation>
     </message>
     <message>
-        <location filename="../colorChooserProcessModes.h" line="305"/>
+        <location filename="../colorChooserProcessModes.h" line="306"/>
         <source>Let the program choose colors from the Anchor color list</source>
         <translation>Lascia che il programma scelga i colori dalla lista colori Anchor</translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="65"/>
+        <location filename="../colorDialog.cpp" line="59"/>
         <source>Choose a color</source>
         <translation>Scegli un colore</translation>
+    </message>
+    <message>
+        <location filename="../colorDialog.cpp" line="68"/>
+        <source>Choose a floss</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../imageProcessing.cpp" line="110"/>
@@ -101,7 +106,7 @@
         <location filename="../imageProcessing.cpp" line="243"/>
         <location filename="../imageProcessing.cpp" line="382"/>
         <location filename="../imageProcessing.cpp" line="454"/>
-        <location filename="../patternPrinter.cpp" line="580"/>
+        <location filename="../patternPrinter.cpp" line="584"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
@@ -123,62 +128,62 @@
     <message>
         <location filename="../patternPrinter.cpp" line="63"/>
         <source>Pdf files (*.pdf)
-All (*.*)</source>
+All (*)</source>
         <translation>Files pdf (*.pdf)
-Tutti (*.*)</translation>
+Tutti (*)</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="408"/>
+        <location filename="../patternPrinter.cpp" line="409"/>
         <source>The pattern uses %1 colors and is %2 squares wide by %3 squares high.</source>
         <translation>Lo schema usa %1 colori ed è %2 quadretti in larghezza per %3 in altezza.</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="553"/>
+        <location filename="../patternPrinter.cpp" line="557"/>
         <source>Count</source>
         <extracomment>The number of times a color appears in the pattern (keep short)</extracomment>
         <translation>Conteggio</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="555"/>
+        <location filename="../patternPrinter.cpp" line="559"/>
         <source>Code</source>
         <extracomment>The floss color code (keep short)</extracomment>
         <translation>Codice</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="557"/>
+        <location filename="../patternPrinter.cpp" line="561"/>
         <source>Name</source>
         <extracomment>The floss color description (keep short)</extracomment>
         <translation>Nome</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="579"/>
+        <location filename="../patternPrinter.cpp" line="583"/>
         <source>Creating pdf...</source>
         <translation>Creando il pdf...</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="763"/>
+        <location filename="../patternPrinter.cpp" line="767"/>
         <source>The Code column gives the RGB value of a color and the Name column gives the code and DMC name of the nearest DMC color.</source>
         <translation>La colonna Codice da il valore RGB di un colore e la colonna Nome da il codice e il nome DMC del colore DMC più vicino.</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="769"/>
+        <location filename="../patternPrinter.cpp" line="773"/>
         <source>All codes are for %1 floss.  The Name column gives the code and DMC name of the nearest DMC color.</source>
         <extracomment>%1 is &quot;DMC&quot; or &quot;Anchor&quot; or...</extracomment>
         <translation>Tutti i codici sono di marca %1.  La colonna Nomi da il codice e il nome DMC del colore DMC più vicino.</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="776"/>
+        <location filename="../patternPrinter.cpp" line="780"/>
         <source>All codes are for %1 floss.</source>
         <extracomment>%1 is &quot;DMC&quot; or &quot;Anchor&quot; or...</extracomment>
         <translation>Tutti i codici sono di marca %1.</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="793"/>
+        <location filename="../patternPrinter.cpp" line="797"/>
         <source>For colors available as floss the Code column gives an abbreviation for the floss type (%1), otherwise the RGB code of the color is given.  The Name column gives the code and DMC name of the nearest DMC color.</source>
         <translation>Per i colori disponibili come matassine la colonna Codice da una abbreviazione per il tipo di matassina (%1), altrimenti da il codice RGB del colore.  La colonna Nome da il codice e il nome DMC del colore più vicino.</translation>
     </message>
     <message>
-        <location filename="../patternPrinter.cpp" line="801"/>
+        <location filename="../patternPrinter.cpp" line="805"/>
         <source>For non-%1 colors the Code column gives the RGB value of the color and the Name column gives the code and DMC name of the nearest DMC color.</source>
         <extracomment>%1 is &quot;DMC&quot; or &quot;Anchor&quot; or...</extracomment>
         <translation>Per le matassine non-%1 la colonna Codice da il valore RGB del colore e la colonna Nome da il codice e il nome DMC del colore DMC più vicino.</translation>
@@ -220,9 +225,9 @@ Tutti (*.*)</translation>
     <message>
         <location filename="../utility.cpp" line="55"/>
         <source>Image files (%1)
-All (*.*)</source>
+All (*)</source>
         <translation>Files immagine (%1)
-Tutti (*.*)</translation>
+Tutti (*)</translation>
     </message>
     <message>
         <location filename="../utility.cpp" line="83"/>
@@ -246,7 +251,7 @@ Tutti (*.*)</translation>
         <translation>Solo colori Anchor</translation>
     </message>
     <message>
-        <location filename="../utility.h" line="161"/>
+        <location filename="../utility.h" line="163"/>
         <source>Recreating image %1/%2</source>
         <translation>Ricreazione immagine %1/%2</translation>
     </message>
@@ -387,38 +392,48 @@ Tutti (*.*)</translation>
 <context>
     <name>colorDialog</name>
     <message>
-        <location filename="../colorDialog.cpp" line="240"/>
-        <location filename="../colorDialog.cpp" line="267"/>
+        <location filename="../colorDialog.cpp" line="260"/>
+        <location filename="../colorDialog.cpp" line="287"/>
         <source>Select color</source>
         <translation>Seleziona colore</translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="312"/>
+        <location filename="../colorDialog.cpp" line="332"/>
         <source>Choose a square color</source>
         <translation>Scegli un colore dal quadretto</translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="315"/>
-        <source>Choose a list color</source>
-        <translation>Scegli un colore dalla lista</translation>
+        <location filename="../colorDialog.cpp" line="335"/>
+        <source>Choose a color list color</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="318"/>
-        <source>Choose a DMC color</source>
-        <translation>Scegli un colore DMC</translation>
+        <location filename="../colorDialog.cpp" line="338"/>
+        <source>Choose a DMC floss by color</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="322"/>
-        <source>Choose an Anchor color</source>
-        <translation>Scegli un colore Anchor</translation>
+        <location filename="../colorDialog.cpp" line="340"/>
+        <source>Choose a DMC floss by color/number</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="325"/>
-        <source>Choose from an image</source>
-        <translation>Scegli da un&apos;immagine</translation>
+        <location filename="../colorDialog.cpp" line="344"/>
+        <source>Choose an Anchor floss by color</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../colorDialog.cpp" line="328"/>
+        <location filename="../colorDialog.cpp" line="346"/>
+        <source>Choose an Anchor floss by color/number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../colorDialog.cpp" line="349"/>
+        <source>Choose a color from an image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../colorDialog.cpp" line="352"/>
         <source>Choose a new color</source>
         <translation>Scegli un nuovo colore</translation>
     </message>
@@ -1330,127 +1345,139 @@ Vuoi continuare?</translation>
 <context>
     <name>windowManager</name>
     <message>
-        <location filename="../windowManager.cpp" line="45"/>
+        <location filename="../windowManager.cpp" line="47"/>
         <source>Color Chooser (1/4)</source>
         <translation>Scelta colori (1/4)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="46"/>
+        <location filename="../windowManager.cpp" line="48"/>
         <source>Color compare (2/4)</source>
         <translation>Comparazione colori (2/4)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="47"/>
+        <location filename="../windowManager.cpp" line="49"/>
         <source>Square compare (3/4)</source>
         <translation>Comparazione quadretti (3/4)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="48"/>
+        <location filename="../windowManager.cpp" line="50"/>
         <source>Pattern (4/4)</source>
         <translation>Schema (4/4)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="66"/>
+        <location filename="../windowManager.cpp" line="68"/>
         <source>Ctrl+1</source>
         <translation>Ctrl+1</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="68"/>
+        <location filename="../windowManager.cpp" line="70"/>
         <source>Ctrl+2</source>
         <translation>Ctrl+2</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="70"/>
+        <location filename="../windowManager.cpp" line="72"/>
         <source>Ctrl+3</source>
         <translation>Ctrl+3</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="72"/>
+        <location filename="../windowManager.cpp" line="74"/>
         <source>Ctrl+4</source>
         <translation>Ctrl+4</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="74"/>
+        <location filename="../windowManager.cpp" line="76"/>
         <source>&amp;Windows</source>
         <translation>&amp;Windows</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="92"/>
+        <location filename="../windowManager.cpp" line="94"/>
         <source>Recent images</source>
         <translation>Immagini recenti</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="106"/>
+        <location filename="../windowManager.cpp" line="108"/>
         <source>Recent projects</source>
         <translation>Progetti recenti</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="115"/>
+        <location filename="../windowManager.cpp" line="117"/>
         <source>Auto display Quick Help windows</source>
         <translation>Mostra automaticamente le finestre di Aiuto Veloce</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="191"/>
+        <location filename="../windowManager.cpp" line="194"/>
         <source>Color compare</source>
         <translation>Comparazione colori</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="302"/>
+        <location filename="../windowManager.cpp" line="305"/>
         <source>Save project</source>
         <translation>Salva progetto</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="303"/>
-        <location filename="../windowManager.cpp" line="426"/>
+        <location filename="../windowManager.cpp" line="306"/>
+        <location filename="../windowManager.cpp" line="429"/>
         <source>Cstitch files (*.xst)
-All files (*.*)</source>
+All files (*)</source>
         <translation>Files cstitch (*.xst)
-Tutti i files(*.*)</translation>
+Tutti i files(*)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="319"/>
+        <location filename="../windowManager.cpp" line="322"/>
         <source>DIRE WARNING: DO NOT EDIT THIS FILE BY HAND! ! ! ! ! ! ! ! ! ! ! ! ! ! !</source>
         <translation>ATTENZIONE: NON MODIFICARE QUESTO FILE A MANO! ! ! ! ! ! ! ! ! ! ! ! ! ! !</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="417"/>
+        <location filename="../windowManager.cpp" line="420"/>
         <source>Saved project to %1</source>
         <translation>Progetto salvato in %1</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="425"/>
+        <location filename="../windowManager.cpp" line="428"/>
         <source>Open project</source>
         <translation>Apri progetto</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="451"/>
-        <location filename="../windowManager.cpp" line="467"/>
-        <location filename="../windowManager.cpp" line="478"/>
+        <location filename="../windowManager.cpp" line="444"/>
+        <location filename="../windowManager.cpp" line="460"/>
+        <location filename="../windowManager.cpp" line="476"/>
+        <location filename="../windowManager.cpp" line="487"/>
+        <location filename="../windowManager.cpp" line="504"/>
         <source>Bad project file</source>
         <translation>File progetto non valido</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="452"/>
+        <location filename="../windowManager.cpp" line="445"/>
+        <source>Sorry, %1 is not a valid project file (diagnostic: unable to open file)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../windowManager.cpp" line="461"/>
         <source>Sorry, %1 is not a valid project file (diagnostic: wrong first line)</source>
         <translation>Spiacente, %1 non è un file progetto valido (motivo: prima riga sbagliata)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="468"/>
+        <location filename="../windowManager.cpp" line="477"/>
         <source>Sorry, %1 appears to be corrupted (diagnostic: bad separator)</source>
         <translation>Spiacente, %1 sembra essere corrotto (motivo: separatore non valido)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="479"/>
+        <location filename="../windowManager.cpp" line="488"/>
         <source>Sorry, %1 appears to be corrupted (diagnostic: parse failed)</source>
         <translation>Spiacente, %1 sembra essere corrotto (motivo: analisi fallita)</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="1052"/>
+        <location filename="../windowManager.cpp" line="505"/>
+        <source>Sorry, %1 appears to be corrupted (diagnostic: empty image)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../windowManager.cpp" line="1070"/>
         <source>The file %1 no longer exists.</source>
         <translation>Il file %1 non esiste più.</translation>
     </message>
     <message>
-        <location filename="../windowManager.cpp" line="1053"/>
+        <location filename="../windowManager.cpp" line="1071"/>
         <source>Load failed</source>
         <translation>Caricamento fallito</translation>
     </message>

@@ -61,7 +61,7 @@ void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
   const QString outputFile =
     QFileDialog::getSaveFileName(NULL, QObject::tr("Save pattern"), ".",
                                  QObject::tr("Pdf files (*.pdf)\n"
-                                    "All (*.*)"));
+                                             "All (*)"));
   if (outputFile.isEmpty()) {
     return;
   }

@@ -20,6 +20,7 @@
 #ifndef COLORCHOOSERPROCESSMODES_H
 #define COLORCHOOSERPROCESSMODES_H
 
+#include <QtCore/QObject>
 #include <QtCore/QSharedData>
 #include <QtCore/QVector>
 

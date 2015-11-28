@@ -28,12 +28,14 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QScrollBar>
+#include <QtWidgets/QMessageBox>
 
 #include "windowManager.h"
 #include "imageLabel.h"
 #include "comboBox.h"
 #include "leftRightAccessors.h"
 #include "imageUtility.h"
+#include "xmlUtility.h"
 
 imageCompareBase::imageCompareBase(windowManager* windowMgr)
   : imageSaverWindow(tr("Colors"), windowMgr),
@@ -959,4 +961,118 @@ void imageCompareBase::addLeftImageMenuAction(QAction* action) {
 void imageCompareBase::addRightImageMenuAction(QAction* action) {
 
   rightImageMenu_->addAction(action);
+}
+
+void imageCompareBase::appendCurrentSettings(QDomDocument* doc,
+                                             QDomElement* appendee) const {
+
+  if (leftImage()) {
+    ::appendTextElement(doc, "left_index",
+                        QString::number(imageNameToIndex(leftImage()->name())),
+                        appendee);
+  }
+  if (rightImage()) {
+    ::appendTextElement(doc, "right_index",
+                        QString::number(imageNameToIndex(rightImage()->name())),
+                        appendee);
+  }
+  if (curImage()) {
+    ::appendTextElement(doc, "current_index",
+                        QString::number(imageNameToIndex(curImage()->name())),
+                        appendee);
+  }
+}
+
+static void addParseErrorMessage(const QString& side,
+                                 const QString& stringBeingParsed,
+                                 QString* errorMessage) {
+
+  QString& message = *errorMessage;
+  if (!message.isNull()) {
+    message += "<br /><br />";
+  }
+  message += QObject::tr("<b>Parse error parsing '%1' for %2 index</b>")
+                         .arg(stringBeingParsed, side);
+}
+
+static void addImageMissingError(const QString& side, int imageIndex,
+                                 QString* errorMessage) {
+
+  QString& message = *errorMessage;
+  if (!message.isNull()) {
+    message += "<br /><br />";
+  }
+  message += QObject::tr("<b>Image Missing error: %1 image %2</b>")
+                         .arg(side).arg(imageIndex);
+}
+
+QString imageCompareBase::updateCurrentSettings(const QDomElement& settings) {
+
+  QString errorMessage;
+
+  if (!settings.firstChildElement("left_index").isNull()) {
+    bool parseOk = false;
+    const int leftIndex =
+      ::getElementText(settings, "left_index").toInt(&parseOk);
+    if (parseOk) {
+      imagePtr leftImage = getImageFromIndex(leftIndex);
+      if (leftImage) {
+        setLeftImage(leftImage);
+        setCur(leftImage);
+      }
+      else {
+        addImageMissingError(tr("left"), leftIndex, &errorMessage);
+      }
+    }
+    else {
+      addParseErrorMessage(tr("left"),
+                           ::getElementText(settings, "left_index"),
+                           &errorMessage);
+    }
+  }
+
+  if (!settings.firstChildElement("right_index").isNull()) {
+    bool parseOk = false;
+    const int rightIndex =
+      ::getElementText(settings, "right_index").toInt(&parseOk);
+    if (parseOk) {
+      imagePtr rightImage = getImageFromIndex(rightIndex);
+      if (rightImage) {
+        setRightImage(rightImage);
+        setCur(rightImage);
+      }
+      else {
+        addImageMissingError(tr("right"), rightIndex, &errorMessage);
+      }
+    }
+    else {
+      addParseErrorMessage(tr("right"),
+                           ::getElementText(settings, "right_index"),
+                           &errorMessage);
+    }
+  }
+
+  // This case is duplicated in patternWindow - see the note there.
+  if (!settings.firstChildElement("current_index").isNull()) {
+    // KEEP THIS IN SYNC WITH patternWindow
+    bool parseOk = false;
+    const int curIndex =
+      ::getElementText(settings, "current_index").toInt(&parseOk);
+    if (parseOk) {
+      imagePtr curImage = getImageFromIndex(curIndex);
+      if (curImage) {
+        setCur(curImage);
+      }
+      else {
+        addImageMissingError(tr("cur"), curIndex, &errorMessage);
+      }
+    }
+    else {
+      addParseErrorMessage(tr("cur"),
+                           ::getElementText(settings, "current_index"),
+                           &errorMessage);
+    }
+  }
+
+  return errorMessage;
 }

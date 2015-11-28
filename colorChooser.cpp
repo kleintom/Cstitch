@@ -403,11 +403,11 @@ void colorChooser::appendCurrentSettings(QDomDocument* doc,
   processMode_.appendColorLists(doc, &colorLists);
 }
 
-void colorChooser::updateCurrentSettings(const QDomElement& xml) {
+QString colorChooser::updateCurrentSettings(const QDomElement& xml) {
 
   QDomElement settings(xml.firstChildElement("color_chooser_settings"));
   if (settings.isNull()) {
-    return;
+    return QString();
   }
   QDomElement colorLists(settings.firstChildElement("color_lists"));
   processMode_.setColorLists(colorLists);
@@ -416,6 +416,8 @@ void colorChooser::updateCurrentSettings(const QDomElement& xml) {
   const QString savedMode = ::getElementText(settings, "mode");
   setModeBox(processMode_.savedModeTextToLocale(savedMode));
   clickedDock_->setColorList(processMode_.clickedColorList());
+
+  return QString();
 }
 
 helpMode colorChooser::getHelpMode() const {

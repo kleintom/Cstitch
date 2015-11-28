@@ -437,6 +437,24 @@ void windowManager::openProject() {
   }
 }
 
+
+static void presentCorruptProjectError(const QString& message) {
+
+  QMessageBox::critical(NULL, QObject::tr("Bad project file"),
+                        QObject::tr("Sorry, the project file appears to be "
+                           "corrupted:<br /><br />%1<br /><br />"
+                           "This may be a sign that data was lost the last "
+                           "time you saved - please report this error to "
+                           "<b>tomklein@users.sourceforge.net</b> along with "
+                           "the version of CStitch you're using and a "
+                           "copy of your project file if you're "
+                           "comfortable doing so (it's possible this is a "
+                           "fixable error in your file).  Thanks.<br /><br />"
+                           "The program will continue running but it's "
+                           "possible the loss of data could make things "
+                           "unstable.").arg(message));
+}
+
 bool windowManager::openProject(const QString& projectFile) {
 
   QFile inFile(projectFile);
@@ -464,21 +482,20 @@ bool windowManager::openProject(const QString& projectFile) {
     return false;
   }
 
-  int lineCount = 0;
-  const int maxLineCount = 100000;
   const QString endTag = "</" + programName + ">";
   QString thisString = "";
   do {
     thisString = textInStream.readLine();
-    inString += thisString + "\n";
-    ++lineCount;
-    if (lineCount > maxLineCount) {
+    if (thisString.isNull()) {
+      // oops, we missed the closing tag and read all the way to the end of the
+      // file...
       QMessageBox::critical(NULL, tr("Bad project file"),
                             tr("Sorry, %1 appears to be corrupted "
-                               "(diagnostic: bad separator)")
+                               "(diagnostic: can't find end of data)")
                             .arg(projectFile));
       return false;
     }
+    inString += thisString + "\n";
   } while (thisString != endTag);
 
   QDomDocument doc;
@@ -596,17 +613,33 @@ bool windowManager::openProject(const QString& projectFile) {
   QDomElement windowGlobals(doc.elementsByTagName("global_settings").
                             item(0).toElement());
   if (colorChooserAction_->isEnabled() && colorChooser_.window()) {
-    colorChooser_.window()->updateCurrentSettings(windowGlobals);
+    const QString error =
+      colorChooser_.window()->updateCurrentSettings(windowGlobals);
+    if (!error.isNull()) {
+      presentCorruptProjectError(error);
+    }
   }
   if (colorCompareAction_->isEnabled() && colorCompareWindow_.window()) {
-    colorCompareWindow_.window()->updateCurrentSettings(windowGlobals);
+    const QString error =
+      colorCompareWindow_.window()->updateCurrentSettings(windowGlobals);
+    if (!error.isNull()) {
+      presentCorruptProjectError(error);
+    }
   }
   if (squareWindowAction_->isEnabled() && squareWindow_.window()) {
-    squareWindow_.window()->updateCurrentSettings(windowGlobals);
+    const QString error =
+      squareWindow_.window()->updateCurrentSettings(windowGlobals);
+    if (!error.isNull()) {
+      presentCorruptProjectError(error);
+    }
     squareWindow_.window()->checkAllColorLists();
   }
   if (patternWindowAction_->isEnabled() && patternWindow_.window()) {
-    patternWindow_.window()->updateCurrentSettings(windowGlobals);
+    const QString error =
+      patternWindow_.window()->updateCurrentSettings(windowGlobals);
+    if (!error.isNull()) {
+      presentCorruptProjectError(error);
+    }
   }
   // read the image number of colors (before the reset)
   const int colorCount = ::getElementText(doc, "color_count").toInt();

@@ -95,10 +95,9 @@ class colorCompare : public imageCompareBase {
   // recreate a square image using the data in <saver> as part of a project
   // restore
   int recreateImage(const squareWindowSaver& saver);
-  // append "global" xml settings to <appendee> for this widget
-  void appendCurrentSettings(QDomDocument* doc, QDomElement* appendee) const;
-  // restore "global" settings for this widget from <xml>
-  void updateCurrentSettings(const QDomElement& xml);
+  void appendCurrentSettings(QDomDocument* doc,
+                             QDomElement* appendee) const; //override;
+  QString updateCurrentSettings(const QDomElement& xml); //override;
 
  private:
   // constructor helper

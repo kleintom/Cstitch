@@ -161,10 +161,9 @@ class squareWindow : public imageCompareBase {
   // update the edit history of the image whose information is contained
   // in <xml> and run the back history if it exists
   void updateImageHistory(const QDomElement& xml);
-  // append "global" xml settings to <appendee> for this widget
-  void appendCurrentSettings(QDomDocument* doc, QDomElement* appendee) const;
-  // restore "global" settings for this widget from <xml>
-  void updateCurrentSettings(const QDomElement& xml);
+  void appendCurrentSettings(QDomDocument* doc,
+                             QDomElement* appendee) const; //override;
+  QString updateCurrentSettings(const QDomElement& xml); //override;
 
  private:
   // constructor helper
@@ -177,8 +176,13 @@ class squareWindow : public imageCompareBase {
   imageLabelBase* leftLabel() const { return leftLabel_; }
   imageLabelBase* rightLabel() const { return rightLabel_; }
   squareImagePtr squareImageFromIndex(int imageIndex) {
-    return
-      squareImagePtr(getImageFromIndex(imageIndex)->squareContainer());
+    const imagePtr image = getImageFromIndex(imageIndex);
+    if (image) {
+      return squareImagePtr(image->squareContainer());
+    }
+    else {
+      return squareImagePtr(NULL);
+    }
   }
   void setCurImage(imagePtr container) {
     curImage_ = container->squareContainer();

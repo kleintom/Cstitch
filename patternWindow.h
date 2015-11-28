@@ -134,10 +134,9 @@ class patternWindow : public imageSaverWindow {
   void updateHistory(const QDomElement& xml);
   // set the grid to be on/off, with color <color>
   void setGrid(QRgb color, bool gridOn);
-  // append "global" xml settings to <appendee> for this widget
-  void appendCurrentSettings(QDomDocument* doc, QDomElement* appendee) const;
-  // restore "global" settings for this widget from <xml>
-  void updateCurrentSettings(const QDomElement& xml);
+  void appendCurrentSettings(QDomDocument* doc,
+                             QDomElement* appendee) const; //override;
+  QString updateCurrentSettings(const QDomElement& xml); //override;
 
  private:
   // constructor helper

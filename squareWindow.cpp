@@ -940,55 +940,30 @@ void squareWindow::appendCurrentSettings(QDomDocument* doc,
 
   QDomElement settings(doc->createElement("square_window_settings"));
   appendee->appendChild(settings);
-  if (leftImage_) {
-    ::appendTextElement(doc, "left_index",
-                        QString::number(imageNameToIndex(leftImage_->name())),
-                        &settings);
-  }
-  if (rightImage_) {
-    ::appendTextElement(doc, "right_index",
-                        QString::number(imageNameToIndex(rightImage_->name())),
-                        &settings);
-  }
-  if (curImage_) {
-    ::appendTextElement(doc, "current_index",
-                        QString::number(imageNameToIndex(curImage_->name())),
-                        &settings);
-  }
+  imageCompareBase::appendCurrentSettings(doc, &settings);
   ::appendTextElement(doc, "grid_on",
                       ::boolToString(gridAction_->isChecked()), &settings);
   ::appendTextElement(doc, "grid_color",
                       ::rgbToString(leftLabel_->gridColor()), &settings);
 }
 
-void squareWindow::updateCurrentSettings(const QDomElement& xml) {
+QString squareWindow::updateCurrentSettings(const QDomElement& xml) {
 
   QDomElement settings(xml.firstChildElement("square_window_settings"));
   if (settings.isNull()) {
-    return;
+    return QString();
   }
   const QRgb gridColor(::xmlStringToRgb(::getElementText(settings,
                                                          "grid_color")));
   leftLabel_->setGridColor(gridColor);
   rightLabel_->setGridColor(gridColor);
   processGridChange(::stringToBool(::getElementText(settings, "grid_on")));
-  const int leftIndex = ::getElementText(settings, "left_index").toInt();
-  squareImagePtr leftImage = squareImageFromIndex(leftIndex);
-  if (leftImage) {
-    leftImage_ = leftImage;
-    setCur(leftImage);
+
+  QString errorMessage = imageCompareBase::updateCurrentSettings(settings);
+  if (!errorMessage.isNull()) {
+    errorMessage = "Square Window setting error(s):<br />" + errorMessage;
   }
-  const int rightIndex = ::getElementText(settings, "right_index").toInt();
-  squareImagePtr rightImage = squareImageFromIndex(rightIndex);
-  if (rightImage) {
-    rightImage_ = rightImage;
-    setCur(rightImage);
-  }
-  const int curIndex = ::getElementText(settings, "current_index").toInt();
-  squareImagePtr curImage = squareImageFromIndex(curIndex);
-  if (curImage) {
-    setCur(curImage);
-  }
+  return errorMessage;
 }
 
 void squareWindow::imageListEmpty() { winManager()->squareWindowEmpty(); }

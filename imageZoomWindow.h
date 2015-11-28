@@ -66,8 +66,9 @@ class imageZoomWindow : public QMainWindow {
   // append "global" xml settings to <appendee> for this widget
   virtual void appendCurrentSettings(QDomDocument* doc,
                                      QDomElement* appendee) const = 0;
-  // restore "global" settings for this widget from <xml>
-  virtual void updateCurrentSettings(const QDomElement& xml) = 0;
+  // restore "global" settings for this widget from <xml>; return an error
+  // message if something goes wrong
+  virtual QString updateCurrentSettings(const QDomElement& xml) = 0;
 
  public slots:
   // provide the user some quick (brief) help for this widget, or close

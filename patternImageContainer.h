@@ -165,7 +165,7 @@ class patternImageContainer : public QObject {
 
 // Copied from qshareddata.h - normally you can't put a QObject in a
 // QExplicitlySharedDataPointer because a call to detach on the pointer
-// would require a copy, which isn't allowed by QObejct.  But I'm not
+// would require a copy, which isn't allowed by QObject.  But I'm not
 // calling detach, so... remove detach and use it.
 // Instead of having patternImageContainer derive from QSharedData
 // (which it can't do since it's already deriving from QObject), which

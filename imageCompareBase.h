@@ -150,11 +150,10 @@ class zoomToOriginalHelperFunction  : public zoomHelperFunction {
 // rightImage_, and curImage_ - curImage_ points to either leftImage_ or
 // rightImage_, whichever is the active image.
 //
-// After construction there is always a curImage_.
-// after construction, there is always a leftImage_ and a rightImage_
-// (with the exception that if all images except original are deleted
-// then there is only a left or a right, but the widget is not visible,
-// and will not become visible again until a new image is added).
+// After construction there is always a curImage_, a leftImage_, and a
+// rightImage_ (with the exception that if all images except original are
+// deleted then there is only a left or a right, but in that case the widget is
+// not visible, and will not become visible again until a new image is added).
 //
 // The image pointers actually point to imageContainers which contain
 // extra information and functionality for the image.  Since the desired
@@ -222,6 +221,9 @@ class imageCompareBase : public imageSaverWindow {
   explicit imageCompareBase(windowManager* windowMgr);
   // delete the image with index <imageIndex>
   void removeImage(int imageIndex);
+  void appendCurrentSettings(QDomDocument* doc,
+                             QDomElement* appendee) const; //override;
+  QString updateCurrentSettings(const QDomElement& settings); //override;
 
  protected:
   // set the current image to <container> and update subwidgets to reflect

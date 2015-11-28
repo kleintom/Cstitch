@@ -382,66 +382,21 @@ void colorCompare::appendCurrentSettings(QDomDocument* doc,
 
   QDomElement settings(doc->createElement("color_compare_settings"));
   appendee->appendChild(settings);
-  if (leftImage_) {
-    ::appendTextElement(doc, "left_index",
-                        QString::number(imageNameToIndex(leftImage_->name())),
-                        &settings);
-  }
-  if (rightImage_) {
-    ::appendTextElement(doc, "right_index",
-                        QString::number(imageNameToIndex(rightImage_->name())),
-                        &settings);
-  }
-  if (curImage_) {
-    ::appendTextElement(doc, "current_index",
-                        QString::number(imageNameToIndex(curImage_->name())),
-                        &settings);
-  }
+  imageCompareBase::appendCurrentSettings(doc, &settings);
 }
 
-void colorCompare::updateCurrentSettings(const QDomElement& xml) {
+QString colorCompare::updateCurrentSettings(const QDomElement& xml) {
 
-  QDomElement settings(xml.firstChildElement("color_compare_settings"));
+  const QDomElement settings(xml.firstChildElement("color_compare_settings"));
   if (settings.isNull()) {
-    return;
+    return QString();
   }
-  imagePtr leftImage(NULL);
-  if (!settings.firstChildElement("left_index").isNull()) {
-    const int leftIndex = ::getElementText(settings, "left_index").toInt();
-    leftImage = getImageFromIndex(leftIndex);
+
+  QString errorMessage = imageCompareBase::updateCurrentSettings(settings);
+  if (!errorMessage.isNull()) {
+    errorMessage = "Color Compare setting error(s):<br />" + errorMessage;
   }
-  if (leftImage) {
-    leftImage_ = leftImage;
-    setCur(leftImage);
-  }
-  imagePtr rightImage(NULL);
-  if (!settings.firstChildElement("right_index").isNull()) {
-    const int rightIndex = ::getElementText(settings, "right_index").toInt();
-    rightImage = getImageFromIndex(rightIndex);
-  }
-  if (rightImage) {
-    rightImage_ = rightImage;
-    setCur(rightImage);
-  }
-  // left and right Image_ may have been set by other restore project code
-  // just to recreate an intermediate image, so clean that out (in case it's
-  // not already)
-  if (!leftImage) {
-    qDebug() << "no left" << leftImage_;
-    leftImage_ = imagePtr(NULL);
-  }
-  if (!rightImage) {
-    qDebug() << "no right" << rightImage_;
-    rightImage_ = imagePtr(NULL);
-  }
-  if (!settings.firstChildElement("current_index").isNull()) {
-    const int curIndex = ::getElementText(settings, "current_index").toInt();
-    imagePtr curImage = getImageFromIndex(curIndex);
-    setCur(curImage);
-  }
-  else {
-    qWarning() << "Lost curImage pointer in colorCompare update";
-  }
+  return errorMessage;
 }
 
 void colorCompare::imageListEmpty() { winManager()->colorCompareEmpty(); }

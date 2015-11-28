@@ -545,25 +545,52 @@ void patternWindow::updateHistory(const QDomElement& xml) {
   }
 }
 
-void patternWindow::updateCurrentSettings(const QDomElement& xml) {
+QString patternWindow::updateCurrentSettings(const QDomElement& xml) {
 
   QDomElement settings(xml.firstChildElement("pattern_window_settings"));
   if (settings.isNull()) {
-    return;
+    return QString();
   }
   imageLabel_->setGridColor(::xmlStringToRgb(::getElementText(settings,
                                                            "grid_color")));
   processGridChange(::stringToBool(::getElementText(settings, "grid_on")));
-  const int currentIndex =
-    ::getElementText(settings, "current_index").toInt();
-  patternImagePtr container = getImageFromIndex(currentIndex);
-  if (container) {
-    setCur(container);
+
+
+  // TODO: De-duplicate this from the imageCompareBase version.  :-(
+  // Seems like imagePtr and patternImagePtr should be related, but they're not
+  // (because imageContainer and patternImageContainer aren't either, and really
+  // don't share a common interface, which is what makes this a mess), and so
+  // functions here "common" to imageCompareBase and patternWindow like
+  // getImageFromIndex and setCur can't be virtualized into a common base.
+  // getImageFromIndex could/maybe should be templated and factored down, but
+  // setCur can't be - we could template this code as well and pass a
+  // doubly-templated functor to call the right setCur on the right object, but
+  // yuk.  Live with the duplication for now.
+  QString errorMessage;
+  if (!settings.firstChildElement("current_index").isNull()) {
+    // KEEP THIS IN SYNC WITH imageCompareBase
+    bool parseOk = false;
+    const int curIndex =
+      ::getElementText(settings, "current_index").toInt(&parseOk);
+    if (parseOk) {
+      patternImagePtr curImage = getImageFromIndex(curIndex);
+      if (curImage) {
+        setCur(curImage);
+      }
+      else {
+        errorMessage +=
+          tr("Pattern Window setting error(s):<br />"
+             "Image Missing error: image %1").arg(curIndex);
+      }
+    }
+    else {
+      errorMessage += tr("Pattern Window setting error(s):<br />"
+                         "Parse error parsing \"%1\" for index")
+        .arg(::getElementText(settings, "current_index"));
+    }
   }
-  else {
-    qWarning() << "Misplaced container on patternUpdateSettings:" <<
-      currentIndex;
-  }
+
+  return errorMessage;
 }
 
 void patternWindow::appendCurrentSettings(QDomDocument* doc,

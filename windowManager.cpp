@@ -220,6 +220,34 @@ void windowManager::addColorCompareImage(const QImage& image,
   colorCompareSavers_.push_back(saver);
 }
 
+static void reportMissingParent(const QString& parentContext, int parent,
+                                const QString& childContext, int child) {
+
+  QMessageBox::critical(NULL, QObject::tr("Internal Error"),
+                        QObject::tr("We're sorry, but something very bad has "
+                                    "happened.  We've been asked to register "
+                                    "%1 window Image %2 as having been created "
+                                    "from %3 window Image %4, but we have no "
+                                    "record of the latter Image.  You should "
+                                    "delete both cited Images now since "
+                                    "neither of them can be saved to a project "
+                                    "file (that means any work you have "
+                                    "done/will do on those images is lost, "
+                                    "sorry).  Alternatively you could try "
+                                    "reloading your project file and hope that "
+                                    "the error doesn't already exist there."
+                                    "<br /><br />"
+                                    "In any case, please report this error to "
+                                    "<b>tomklein@users.sourceforge.net</b> "
+                                    "along with the version of CStitch you're "
+                                    "using and a copy of your project file if "
+                                    "you're comfortable doing so (and then "
+                                    "please also include the image "
+                                    "information given above).  Thanks.")
+                        .arg(childContext).arg(child)
+                        .arg(parentContext).arg(parent));
+}
+
 void windowManager::addSquareWindow(const QImage& image, int dimension,
                                     const QVector<triC>& colors,
                                     flossType type,
@@ -253,7 +281,9 @@ void windowManager::addSquareWindow(const QImage& image, int dimension,
   }
   squareWindowAction_->setEnabled(true);
   squareWindowSavers_.push_back(saver);
-  addChild(&colorCompareSavers_, parentIndex, imageIndex);
+  if (!addChild(&colorCompareSavers_, parentIndex, imageIndex)) {
+    reportMissingParent("color compare", parentIndex, "square", imageIndex);
+  }
 }
 
 void windowManager::addPatternWindow(const QImage& image, int dimension,
@@ -290,12 +320,42 @@ void windowManager::addPatternWindow(const QImage& image, int dimension,
   }
   patternWindowAction_->setEnabled(true);
   patternWindowSavers_.push_back(saver);
-  addChild(&squareWindowSavers_, parentIndex, imageIndex);
+  if (!addChild(&squareWindowSavers_, parentIndex, imageIndex)) {
+    reportMissingParent("square", parentIndex, "pattern", imageIndex);
+  }
 }
 
 void windowManager::save() {
 
   saveAs(projectFilename_);
+}
+
+static void reportMissingChild(const QString& parentContext, int parent,
+                               const QString& childContext, int child) {
+
+  QMessageBox::critical(NULL, QObject::tr("Internal Error"),
+                        QObject::tr("CStitch's internal representation of the "
+                                    "current images says the %1 window Image "
+                                    "%2 generated an Image %3 in the %4 "
+                                    "window, but we have no record of the "
+                                    "latter image, so it won't be saved.  We "
+                                    "probably got our wires crossed at some "
+                                    "point, which could mean that other data "
+                                    "has been lost as well.  That's very bad, "
+                                    "sorry.<br /><br />"
+                                    "We'll save what data we do have now, but "
+                                    "please report this error to "
+                                    "<b>tomklein@users.sourceforge.net</b> "
+                                    "along with the version of CStitch "
+                                    "you're using and a copy of your project "
+                                    "file if you're comfortable doing so (and "
+                                    "then please also include the image "
+                                    "information given above).  "
+                                    "Please also load the project file being "
+                                    "created now and report any lost images.  "
+                                    "Thanks.")
+                        .arg(parentContext).arg(parent)
+                        .arg(child).arg(childContext));
 }
 
 void windowManager::saveAs(const QString projectFilename) {
@@ -370,6 +430,11 @@ void windowManager::saveAs(const QString projectFilename) {
           const int thisCompareChild = colorCompareChildren[ii];
           const squareWindowSaver thisSquareWindowSaver =
             getSaverFromIndex(squareWindowSavers_, thisCompareChild);
+          if (thisSquareWindowSaver.index() != thisCompareChild) {
+            reportMissingChild("color compare", thisColorCompareSaver.index(),
+                               "square", thisCompareChild);
+            continue;
+          }
           QDomElement thisSquareXml = thisSquareWindowSaver.toXml(&doc);
           squareWindowElement.appendChild(thisSquareXml);
           if (!thisSquareWindowSaver.hidden()) {
@@ -390,6 +455,11 @@ void windowManager::saveAs(const QString projectFilename) {
               const int thisSquareChild = squareWindowChildren[iii];
               const patternWindowSaver thisPatternWindowSaver =
                 getSaverFromIndex(patternWindowSavers_, thisSquareChild);
+              if (thisPatternWindowSaver.index() != thisSquareChild) {
+                reportMissingChild("square", thisCompareChild,
+                                   "pattern", thisSquareChild);
+                continue;
+              }
               QDomElement thisPatternXml = thisPatternWindowSaver.toXml(&doc);
               patternWindowElement.appendChild(thisPatternXml);
               // append the history for this child
@@ -438,7 +508,7 @@ void windowManager::openProject() {
 }
 
 
-static void presentCorruptProjectError(const QString& message) {
+static void reportCorruptProject(const QString& message) {
 
   QMessageBox::critical(NULL, QObject::tr("Bad project file"),
                         QObject::tr("Sorry, the project file appears to be "
@@ -616,21 +686,21 @@ bool windowManager::openProject(const QString& projectFile) {
     const QString error =
       colorChooser_.window()->updateCurrentSettings(windowGlobals);
     if (!error.isNull()) {
-      presentCorruptProjectError(error);
+      reportCorruptProject(error);
     }
   }
   if (colorCompareAction_->isEnabled() && colorCompareWindow_.window()) {
     const QString error =
       colorCompareWindow_.window()->updateCurrentSettings(windowGlobals);
     if (!error.isNull()) {
-      presentCorruptProjectError(error);
+      reportCorruptProject(error);
     }
   }
   if (squareWindowAction_->isEnabled() && squareWindow_.window()) {
     const QString error =
       squareWindow_.window()->updateCurrentSettings(windowGlobals);
     if (!error.isNull()) {
-      presentCorruptProjectError(error);
+      reportCorruptProject(error);
     }
     squareWindow_.window()->checkAllColorLists();
   }
@@ -638,7 +708,7 @@ bool windowManager::openProject(const QString& projectFile) {
     const QString error =
       patternWindow_.window()->updateCurrentSettings(windowGlobals);
     if (!error.isNull()) {
-      presentCorruptProjectError(error);
+      reportCorruptProject(error);
     }
   }
   // read the image number of colors (before the reset)
@@ -929,8 +999,8 @@ windowManager::childDeletedFromList(QList<T>* list, int thisIndex,
     if (thisItem.index() == thisIndex) {
       thisItem.removeChild(childIndex);
       if (!thisItem.hasChildren() && thisItem.hidden()) {
-        list->removeAt(i);
         const int parent = thisItem.parent();
+        list->removeAt(i);
         return parentChildren(thisIndex, parent);
       }
       else {
@@ -952,7 +1022,7 @@ windowManager::getSaverFromIndex(const QList<T>& list, int index) {
   return T();
 }
 
-template<class T> void windowManager::addChild(QList<T>* list,
+template<class T> bool windowManager::addChild(QList<T>* list,
                                                int thisIndex,
                                                int childIndex) {
 
@@ -960,9 +1030,10 @@ template<class T> void windowManager::addChild(QList<T>* list,
     T& thisItem = (*list)[i]; // a modifiable reference
     if (thisItem.index() == thisIndex) {
       thisItem.addChild(childIndex);
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 void windowManager::colorCompareImageDeleted(int imageIndex) {
@@ -989,8 +1060,8 @@ void windowManager::patternWindowImageDeleted(int imageIndex) {
       childDeletedFromList(&squareWindowSavers_, propogate.parentIndex(),
                            propogate.thisIndex());
     if (propogateAgain.parentIndex() != -1) {
-      childDeletedFromList(&colorCompareSavers_, propogate.parentIndex(),
-                           propogate.thisIndex());
+      childDeletedFromList(&colorCompareSavers_, propogateAgain.parentIndex(),
+                           propogateAgain.thisIndex());
     }
   }
 }

@@ -315,8 +315,7 @@ void colorCompare::processSquareButton(imagePtr container,
                                   squareModeString, squareSize);
     winManager()->addSquareWindow(newImage, squareSize, colorsUsed,
                                   container->flossMode(), saver,
-                                  imageNameToIndex(container->name()),
-                                  newIndex);
+                                  parentIndex, newIndex);
   }
 }
 

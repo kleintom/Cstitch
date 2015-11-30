@@ -91,9 +91,11 @@ void squareWindow::constructActionsAndMenus() {
 
   backHistoryAction_ = new QAction(QIcon(":leftArrow.png"),
                                    tr("Undo"), this);
+  backHistoryAction_->setShortcut(QKeySequence("Ctrl+z"));
   backHistoryAction_->setEnabled(false);
   forwardHistoryAction_ = new QAction(QIcon(":rightArrow.png"),
                                       tr("Redo"), this);
+  forwardHistoryAction_->setShortcut(QKeySequence("Ctrl+y"));
   forwardHistoryAction_->setEnabled(false);
 
   imageMenu()->addAction(gridAction_);

@@ -834,7 +834,8 @@ the <a href="#change_a_color_tool"><i>Change a Color Tool</i></a>.
 You can undo and redo your edits using the edit
 history buttons on the toolbar: undo
 <img src="leftArrow.png" alt="left arrow icon" /> and
-redo <img src="rightArrow.png" alt="right arrow icon" />.  Your edits
+redo <img src="rightArrow.png" alt="right arrow icon" />, or you can use the
+keyboard shortcuts "Ctrl + z" (undo) and "Ctrl + y" (redo).  Your edits
 are saved when you save your project.
 </p>
 </div>
@@ -868,6 +869,9 @@ Right Arrow" to make the right image active, "Shift + Up Arrow" to
 move up in the image list for the active side, and "Shift + Down
 Arrow" to move down in the image list for the active side.  The same
 shortcuts apply in the color compare panel.
+</p>
+<p>
+You can also press "Ctrl + z" to undo one edit and "Ctrl + y" to redo one edit.
 </p>
 <p>
 See the <a href="overview#overview_keyboard_shortcuts">overview</a> for
@@ -1059,6 +1063,9 @@ You can press "Shift + Up Arrow" (i.e. hold down the shift key and
 then press the up arrow) to move up in the image list and "Shift +
 Down Arrow" to move down in the image list.  The same shortcuts apply
 in the color compare and square edit panels.
+</p>
+<p>
+You can also press "Ctrl + z" to undo one edit and "Ctrl + y" to redo one edit.
 </p>
 <p>
 See the <a href="overview#overview_keyboard_shortcuts">overview</a> for

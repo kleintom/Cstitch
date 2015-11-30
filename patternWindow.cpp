@@ -103,6 +103,7 @@ void patternWindow::constructActions() {
   backHistoryAction_ =
     new QAction(QIcon(":leftArrow.png"),
                 tr("Undo"), this);
+  backHistoryAction_->setShortcut(QKeySequence("Ctrl+z"));
   backHistoryAction_->setEnabled(false);
   connect(backHistoryAction_, SIGNAL(triggered()),
           this, SLOT(backHistoryActionSlot()));
@@ -110,6 +111,7 @@ void patternWindow::constructActions() {
   forwardHistoryAction_ =
     new QAction(QIcon(":rightArrow.png"),
                 tr("Redo"), this);
+  forwardHistoryAction_->setShortcut(QKeySequence("Ctrl+y"));
   forwardHistoryAction_->setEnabled(false);
   connect(forwardHistoryAction_, SIGNAL(triggered()),
           this, SLOT(forwardHistoryActionSlot()));

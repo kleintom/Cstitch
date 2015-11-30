@@ -251,8 +251,8 @@ class windowManager : public QObject {
   // return the saver object for the image with index <index> from <list>
   template<class T> T getSaverFromIndex(const QList<T>& list, int index);
   // add the child with index <childIndex> to the item on <list> with
-  // index <thisIndex>
-  template<class T> void addChild(QList<T>* list, int thisIndex,
+  // index <thisIndex>; return false if the list item couldn't be found
+  template<class T> bool addChild(QList<T>* list, int thisIndex,
                                   int childIndex);
   // hide any currently visible main window
   void hideWindows();

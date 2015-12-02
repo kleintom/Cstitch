@@ -55,6 +55,10 @@ for i in range(len(fileLines)):
 
 newVersionFile = open(versionFilename, 'w')
 newVersionFile.writelines(fileLines)
+newVersionFile.close()
+
+print "Adding newly versioned " + versionFilename + " to this commit."
+subprocess.Popen(["git", "add", versionFilename]);
 
 # exit non-zero to abort the commit
 #sys.exit(1)

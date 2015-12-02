@@ -8,6 +8,27 @@ http://cstitch.sourceforge.net/
 See **INSTALL_linux.md** for linux compile instructions.
 
 ### Release Notes ###
+Beta version 0.9.7 released on December 2, 2015:
+* Fixes for a couple of issues causing projects to fail to open. **All Cstitch
+  users should update to this release to avoid loss of data due to these
+  bugs!**
+    * Older versions of Cstitch have a bug related to deleting images which can
+      cause a square image that was never deleted to not be saved in a project,
+      even though that square image was visible on screen at the time of the
+      save.  Unfortunately the data associated with that square image is gone
+      for good.  If you believe you've experienced this issue (maybe Cstitch
+      crashed when you loaded your project file the next time), your project
+      should load with the new version of Cstitch, but it may warn you that it
+      has detected an error.  If resaving your project with the new version of
+      Cstitch doesn't cause that error to go away, feel free to send me your
+      project file and I may be able to help (though unfortunately I can't
+      retrieve any data that has been lost in this case).
+    * Older versions of Cstitch will refuse to open very large project files
+      (around 15,000 history edits seems to be about enough).  If you think
+      you may have run into this issue, loading your project file with this
+      new version of Cstitch should work.
+* Added shortcut keys to Undo an edit (Ctrl+z) and Redo an edit (Ctrl+y).
+
 Beta version 0.9.6 released on January 24, 2015:
 * Better support for images with transparency
 * Three additions contributed by [Simon Norberg](https://github.com/Norberg):

@@ -34,12 +34,12 @@ def insertString(inputString, searchRE, insertionRE, stringToInsert):
     if searchRE == '' or re.search(searchRE, inputString) == None:
         insertLocation = inputString.find(insertionRE)
         if insertLocation != -1:
-            print "  Inserting '" + stringToInsert.replace("\n","") + "'..."
+            print("  Inserting '" + stringToInsert.replace("\n","") + "'...")
             inputString = (inputString[:insertLocation] + stringToInsert +
                            inputString[insertLocation:])
             return (True, inputString)
         else:
-            print "\n\n!!     Couldn't find insert location: " + insertionRE + "\n\n"
+            print("\n\n!!     Couldn't find insert location: " + insertionRE + "\n\n")
             sys.exit(-1)
     else:
         #print "'" + insertString.replace("\n","") + "' already exists"
@@ -50,11 +50,10 @@ def insertString(inputString, searchRE, insertionRE, stringToInsert):
 ###############################################################################
 help = [arg for arg in sys.argv if arg.find('--help') != -1]
 if help != []:
-    print "\n  Usage: " + sys.argv[0],
-    print """ [--help | config1 config2 ...]
+    print("""\n Usage: {0} [--help | config1 config2 ...]
          where config1, config2, ... will be added to the pro file as
          CONFIG += config1 config2 ...
-         """
+         """.format(sys.argv[0]))
     sys.exit(0)
 configArgs = " ".join(sys.argv[1:])
 
@@ -63,11 +62,11 @@ configArgs = " ".join(sys.argv[1:])
 ###############################################################################
 projectName = os.path.split(os.getcwd())[1] # current directory name
 proFilename = projectName + '.pro'
-print ""
+print("")
 try:
     projectFile = open(proFilename)
 except:
-    print "  Recreating project file..."
+    print("  Recreating project file...")
     #    subprocess.Popen(["qmake", "-project"])
     # block until qmake returns
     subprocess.call(["qmake", "-project"])
@@ -105,8 +104,8 @@ if updateNeeded:
     projectFile = open(proFilename, 'w')
     projectFile.write(projectString)
     projectFile.close()
-    print "  " + proFilename + " updated."
+    print("  " + proFilename + " updated.")
 else:
-    print "  No updates required."
+    print("  No updates required.")
 
-print ""
+print("")

@@ -107,7 +107,7 @@ class sections:
         elif partsType == "singleWeb":
             createParts = lambda element: singleWebParts(element)
         else:
-            print "!Unrecognized parts type: " + partsType
+            print("!Unrecognized parts type: " + partsType)
             sys.exit(-1)
         dom = xml.dom.minidom.parse(xmlFilename)
         self.pages = []

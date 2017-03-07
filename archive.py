@@ -22,8 +22,7 @@
 import sys, re, os, shutil, subprocess
 
 if len(sys.argv) < 2 or sys.argv[1] == "--help" or len(sys.argv) != 2:
-    print "\n Usage: " + sys.argv[0],
-    print "program_file\n"
+    print("\n Usage: " + sys.argv[0] + " program_file\n")
     sys.exit(-1)
 
 binary = sys.argv[1]
@@ -42,10 +41,10 @@ class archiver:
             found = versionRE.search(line)
             if found:
                 self.version = found.group(1)
-                print "  Version: " + self.version
+                print("  Version: " + self.version)
                 break
         else:
-            print "Couldn't determine version!"
+            print("Couldn't determine version!")
             sys.exit(-1)
         self.binary = binary
         self.readmes = readmes
@@ -81,9 +80,9 @@ class windowsArchiver(archiver):
         packStatus = subprocess.call(["upx", newBinaryLocation])
         if packStatus != 0:
             if packStatus == 2:
-                print self.binary + " is already packed, so quitting..."
+                print(self.binary + " is already packed, so quitting...")
             else:
-                print "Unknown packing error on " + newBinaryLocation + ", so quitting..."
+                print("Unknown packing error on " + newBinaryLocation + ", so quitting...")
             sys.exit(-1)
 
         # create the zip archive
@@ -95,7 +94,7 @@ class windowsArchiver(archiver):
             os.remove(zipFile)
         subprocess.call("zip " + zipFile + " " + archiveDir + "/*",
                         shell=True)
-        print "  Created " + zipFile
+        print("  Created " + zipFile)
 
 class linuxArchiver(archiver):
     """Create a linux archive for the input binary and README files."""
@@ -116,13 +115,13 @@ class linuxArchiver(archiver):
 #            sys.exit(-1)
 
         # pack the binary
-        print "  Packing the binary..."
+        print("  Packing the binary...")
         packStatus = subprocess.call(["upx", self.binary])
         if packStatus != 0:
             if packStatus == 2:
-                print self.binary + " is already packed, so quitting..."
+                print(self.binary + " is already packed, so quitting...")
             else:
-                print "Unknown packing error on " + self.binary + ", so quitting..."
+                print("Unknown packing error on " + self.binary + ", so quitting...")
             sys.exit(-1)
 
         # create the archive
@@ -136,7 +135,7 @@ class linuxArchiver(archiver):
         ##shutil.move(archiveName, self.versionsDir)
         shutil.copy2(archiveName, self.versionsDir)
         os.remove(archiveName)
-        print "  Created " + archiveName
+        print("  Created " + archiveName)
 
 ## main #######################################################################
 

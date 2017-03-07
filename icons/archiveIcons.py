@@ -36,7 +36,7 @@ for pngFile in matches:
     zipFile.write(pngFile)
 
 zipFile.close()
-print "\n  Wrote " + str(len(matches)) + " files to " + zipFileName + ".\n"
+print("\n  Wrote " + str(len(matches)) + " files to " + zipFileName + ".\n")
 
 
 

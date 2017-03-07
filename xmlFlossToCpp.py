@@ -59,6 +59,6 @@ for elem in root.getchildren():
         floss_list.append(newFloss);
 
 for floss in floss_list:
-    print(floss.toCpp())
+    print((floss.toCpp()))
 
-print("\n Count:", len(floss_list))
+print(("\n Count:", len(floss_list)))

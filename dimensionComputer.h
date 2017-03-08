@@ -23,6 +23,7 @@
 #include "cancelAcceptDialogBase.h"
 
 class QSpinBox;
+class QDoubleSpinBox;
 class QLabel;
 class QComboBox;
 
@@ -40,6 +41,14 @@ class dimensionComputer : public cancelAcceptDialogBase {
                              int startDimension, QWidget* parent);
   int getDimension() const;
 
+ private:
+  static QString highlightText(const QString& text);
+  // Create the end text for a label describing the fabric size corresponding to
+  // some squares per <unit> fabric, where the size of the fabric is
+  // <width>x<height>.
+  QString createFabricDescriptionEnd(qreal width, qreal height,
+                                     QString unit, QString unitPlural);
+
  private slots:
   // update the computed dimensions based on the current input values
   void updateDims();
@@ -48,6 +57,7 @@ class dimensionComputer : public cancelAcceptDialogBase {
   // image width and height in pixels
   const int width_;
   const int height_;
+  const QString tab_;
   // let the user select the square size for their pattern
   QSpinBox* squareSizeBox_;
   // imperial or metric?
@@ -55,6 +65,12 @@ class dimensionComputer : public cancelAcceptDialogBase {
   // the end of the square size text label (the beginning is fixed)
   QLabel* squareSizeLabelEnd_;
   QLabel* outputLabel_; // the output text
+  // Let the user specify a fabric square count per unit.
+  QString fabricSizeTextStart_;
+  QString fabricSizeTextMid_;
+  QString fabricSizeTextEnd_;
+  QDoubleSpinBox* fabricCountBox_;
+  QLabel* fabricChoiceLabelEnd_;
 };
 
 #endif

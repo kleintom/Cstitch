@@ -19,12 +19,14 @@
 
 #include "dimensionComputer.h"
 
+#include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QVBoxLayout>
 #include <QDebug>
+#include <QStringBuilder>
 
 #include "utility.h"
 
@@ -35,7 +37,8 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
                                      int startDimension,
                                      QWidget* parent)
   : cancelAcceptDialogBase(parent),
-    width_(imageSize.width()), height_(imageSize.height()) {
+    width_(imageSize.width()), height_(imageSize.height()),
+    tab_("&nbsp;&nbsp;&nbsp;&nbsp;") {
 
   //: note space at the end
   QLabel* unitsLabel = new QLabel(tr("Units: "), this);
@@ -77,18 +80,46 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   squareSizeLayout->addWidget(squareSizeBox_);
   squareSizeLayout->addWidget(squareSizeLabelEnd_);
   squareSizeLayout->addStretch();
+
+  // A line for computing dimensions from a user-settable fabric count.
+  QHBoxLayout* fabricChooserLayout = new QHBoxLayout;
+  //: These three strings eventually get glued together to read, for example:
+  //: "[Final fabric dimensions for] 8 [squares per] cm [fabric]: 5x10"
+  fabricSizeTextStart_ = tr("Final fabric dimensions for");
+  fabricSizeTextMid_ = tr("squares per");
+  fabricSizeTextEnd_ = tr("fabric");
+  QLabel* fabricChoiceLabelStart =
+    new QLabel(tab_ % fabricSizeTextStart_ % " ", this);
+  // (This is required as soon as you add some non-default stretch to the layout
+  // containing the label. Shrug.)
+  fabricChoiceLabelStart->setTextFormat(Qt::RichText);
+  // Text will be set in updateDims().
+  fabricChoiceLabelEnd_ = new QLabel(this);
+  fabricChoiceLabelEnd_->setTextFormat(Qt::RichText);
+  fabricCountBox_ = new QDoubleSpinBox(this);
+  fabricCountBox_->setDecimals(1);
+  fabricCountBox_->setRange(0, 99.5);
+  connect(fabricCountBox_, SIGNAL(valueChanged(const QString& )),
+          this, SLOT(updateDims()));
+  fabricChooserLayout->addWidget(fabricChoiceLabelStart);
+  fabricChooserLayout->addWidget(fabricCountBox_);
+  fabricChooserLayout->addWidget(fabricChoiceLabelEnd_);
+  fabricChooserLayout->addStretch();
   
   QVBoxLayout* groupBoxLayout = new QVBoxLayout;
   groupBoxLayout->addLayout(squareSizeLayout);
   groupBoxLayout->addWidget(outputLabel_);
-groupBoxLayout->setSizeConstraint(QLayout::SetFixedSize);
+  groupBoxLayout->addSpacing(4);
+  groupBoxLayout->addLayout(fabricChooserLayout);
+  groupBoxLayout->setSizeConstraint(QLayout::SetFixedSize);
+
   groupBox->setLayout(groupBoxLayout);
 
   QVBoxLayout* vLayout = new QVBoxLayout;
   vLayout->addLayout(unitsLayout);
   vLayout->addWidget(groupBox);
   vLayout->addWidget(cancelAcceptWidget());
-vLayout->setSizeConstraint(QLayout::SetFixedSize);
+  vLayout->setSizeConstraint(QLayout::SetFixedSize);
 
   setLayout(vLayout);
   setWindowTitle(tr("Compute dimensions"));
@@ -107,7 +138,7 @@ void dimensionComputer::updateDims() {
     newUnit = tr("inch");
     //: plural
     newUnitPlural = tr("inches");
-    aidas << 7 << 10 << 11 << 12 << 14 << 16 << 18 << 22 << 25 << 28;
+    aidas << 7 << 10 << 11 << 12 << 14 << 16 << 18 << 20 << 22 << 24 << 25 << 28;
   }
   else {
     //: singular
@@ -118,30 +149,74 @@ void dimensionComputer::updateDims() {
   }
 
   const int newValue = squareSizeBox_->value();
-  const int xBoxes = width_/newValue;
-  const int yBoxes = height_/newValue;
+  const int xBoxes = width_ / newValue;
+  const int yBoxes = height_ / newValue;
   const QString endText = tr("your final pattern will be %1x%2 squares.")
                             .arg(::itoqs(xBoxes)).arg(::itoqs(yBoxes));
   squareSizeLabelEnd_->setText(endText);
 
+  //// Update the labels for the fixed fabric sizes.
+  const QString newlines("<br /><br />");
   QString newText;
-  const QString tab = "   ";
   for (int i = 0, size = aidas.size(); i < size; ++i) {
-    const qreal width = xBoxes/aidas[i];
-    const qreal height = yBoxes/aidas[i];
+    const qreal width = xBoxes / aidas[i];
+    const qreal height = yBoxes / aidas[i];
     const QString count = QString("%1").arg(aidas[i], 2);
-    newText += tab + tr("Final fabric dimensions for "
-                        "<span style='color: #474858'>%1</span> squares per "
-                        "%2 fabric: "
-                        "<span style='color: #474858'>%3x%4</span> "
-                        "%5<br /><br />")
-                       .arg(count).arg(newUnit).arg(::rtoqs(width))
-                       .arg(::rtoqs(height)).arg(newUnitPlural);
-    
+    // (The "%"s are StringBuilder concatenation.)
+    newText = newText %
+      tab_ %
+      fabricSizeTextStart_ % " " %
+      highlightText(count) % " " %
+      createFabricDescriptionEnd(width, height, newUnit, newUnitPlural) %
+      newlines;
   }
-  newText.chop(12); // remove the last 2 <br />
+  newText.chop(newlines.size()); // Remove the newlines on the last entry.
   outputLabel_->setText(newText);
+
+  //// Update the label for the user-specified fabric size.
+  const double userSquaresPerUnit = fabricCountBox_->value();
+  qreal userSetWidth, userSetHeight;
+  if (userSquaresPerUnit == 0) {
+    userSetWidth = 0;
+    userSetHeight = 0;
+  }
+  else {
+    userSetWidth = xBoxes / userSquaresPerUnit;
+    userSetHeight = yBoxes / userSquaresPerUnit;
+  }
+  const QString userSetEndText = createFabricDescriptionEnd(userSetWidth,
+                                                            userSetHeight,
+                                                            newUnit,
+                                                            newUnitPlural);
+  fabricChoiceLabelEnd_->setText("&nbsp;" % userSetEndText);
+
   update();
+}
+
+QString dimensionComputer::createFabricDescriptionEnd(qreal width, qreal height,
+                                                      QString unit,
+                                                      QString unitPlural) {
+
+  // "[squares per] cm [fabric]:"
+  const QString descriptionStart =
+    fabricSizeTextMid_ % " " %
+    unit % " " %
+    fabricSizeTextEnd_ % ":";
+
+  if (width == 0 || height == 0) {
+    return descriptionStart;
+  }
+  else {
+    return
+      descriptionStart % " " %
+      highlightText(::rtoqs(width) + "x" % ::rtoqs(height)) % " " %
+      unitPlural;
+  }
+}
+
+QString dimensionComputer::highlightText(const QString& text) {
+
+  return "<b style='color: #298220'>" % text % "</b>";
 }
 
 int dimensionComputer::getDimension() const {

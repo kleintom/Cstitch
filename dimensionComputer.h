@@ -49,11 +49,15 @@ class dimensionComputer : public cancelAcceptDialogBase {
   QString createFabricDescriptionEnd(qreal width, qreal height,
                                      QString unit, QString unitPlural);
 
+ protected slots:
+  virtual void processAcceptClick();
+
  private slots:
   // update the computed dimensions based on the current input values
   void updateDims();
 
  private:
+  enum {INCHES, CENTIMETERS};
   // image width and height in pixels
   const int width_;
   const int height_;

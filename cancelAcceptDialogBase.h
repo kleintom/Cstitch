@@ -46,7 +46,8 @@ class cancelAcceptDialogBase : public QDialog {
   // enable or disable the accept button
   void enableAcceptButton(bool b);
 
- private slots:
+ protected slots:
+  // If you override these, be sure to call the base as well.
   virtual void processCancelClick();
   virtual void processAcceptClick();
 

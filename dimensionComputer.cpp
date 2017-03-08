@@ -19,6 +19,7 @@
 
 #include "dimensionComputer.h"
 
+#include <QtCore/QSettings>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QComboBox>
@@ -43,8 +44,8 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   //: note space at the end
   QLabel* unitsLabel = new QLabel(tr("Units: "), this);
   unitsBox_ = new QComboBox(this);
-  unitsBox_->addItem(tr("Inches"));
-  unitsBox_->addItem(tr("Centimeters"));
+  unitsBox_->addItem(tr("Inches"), QVariant(INCHES));
+  unitsBox_->addItem(tr("Centimeters"), QVariant(CENTIMETERS));
   connect(unitsBox_, SIGNAL(currentTextChanged(const QString& )),
           this, SLOT(updateDims()));
 
@@ -123,6 +124,27 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
 
   setLayout(vLayout);
   setWindowTitle(tr("Compute dimensions"));
+
+  const QSettings settings("cstitch", "cstitch");
+  if (settings.contains("dimension_computer_units")) {
+    const QVariant units = settings.value("dimension_computer_units");
+    unitsBox_->setCurrentIndex(unitsBox_->findData(units));
+  }
+  else {
+    // Set units based on the locale.
+    const QLocale locale;
+    if (locale.measurementSystem() == QLocale::MetricSystem) {
+      unitsBox_->setCurrentIndex(unitsBox_->findData(QVariant(CENTIMETERS)));
+    }
+    else {
+      unitsBox_->setCurrentIndex(unitsBox_->findData(QVariant(INCHES)));
+    }
+  }
+  if (settings.contains("dimension_computer_fabric_count")) {
+    const double fabricCount =
+      settings.value("dimension_computer_fabric_count").toDouble();
+    fabricCountBox_->setValue(fabricCount);
+  }
   // (call updateDims() instead of just doing the setValue here since 
   // if the setValue doesn't change the default value then updateDims()
   // is never called)
@@ -222,4 +244,16 @@ QString dimensionComputer::highlightText(const QString& text) {
 int dimensionComputer::getDimension() const {
 
   return squareSizeBox_->value();
+}
+
+void dimensionComputer::processAcceptClick() {
+
+  QSettings settings("cstitch", "cstitch");
+  settings.setValue("dimension_computer_units", unitsBox_->currentData().toInt());
+  const double fabricCount = fabricCountBox_->value();
+  if (fabricCount > 0) {
+    settings.setValue("dimension_computer_fabric_count", fabricCount);
+  }
+
+  cancelAcceptDialogBase::processAcceptClick();
 }

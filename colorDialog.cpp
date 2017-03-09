@@ -277,7 +277,7 @@ colorDialog::colorDialog(const QVector<triC>& squareColors,
   setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
   dialogLayout_->setSpacing(0);
   setLayout(dialogLayout_);
-  if (squareColors.size() > 1) {
+  if (squareColors_.size() > 1) {
     constructorHelper(true, type);
     setInitialMode(CD_SQUARE);
   }

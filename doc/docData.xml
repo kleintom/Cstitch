@@ -690,6 +690,11 @@ If the square you click on contains more than one color <i>in the
 original image</i> then this mode will allow you to choose from the
 colors from the original image in the clicked square.
 </p>
+<p>
+If you're in DMC only or Anchor only mode then the colors from the original
+image are translated to DMC, respectively Anchor, colors before deciding whether
+or not this option is available.
+</p>
 </div>
 
 <div class="h3">

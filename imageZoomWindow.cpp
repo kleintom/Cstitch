@@ -197,8 +197,8 @@ void imageZoomWindow::addZoomActionsToImageMenu() {
 
 void imageZoomWindow::addToolbarZoomIcons() {
 
-  toolBar_->addAction(originalSizeAction_);
-  toolBar_->addAction(zoomToImageAction_);
+  toolBar_->addAction(zoomInAction_);
+  toolBar_->addAction(zoomOutAction_);
   toolBar_->addAction(zoomToWidthAction_);
   toolBar_->addAction(zoomToHeightAction_);
 }

@@ -23,6 +23,7 @@
 
 #include <QtCore/qmath.h>
 #include <QtCore/QDebug>
+#include <QtCore/QSettings>
 
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QVBoxLayout>
@@ -255,7 +256,7 @@ colorDialog::colorDialog(const QVector<triC>& listColors,
   setLayout(dialogLayout_);
 
   constructorHelper(false, type);
-  setCurMode(CD_LIST);
+  setInitialMode(currentDefaultMode());
 
   setWindowTitle(tr("Select color"));
   fitDialog();
@@ -278,14 +279,38 @@ colorDialog::colorDialog(const QVector<triC>& squareColors,
   setLayout(dialogLayout_);
   if (squareColors.size() > 1) {
     constructorHelper(true, type);
-    setCurMode(CD_SQUARE);
+    setInitialMode(CD_SQUARE);
   }
   else {
     constructorHelper(false, type);
-    setCurMode(CD_LIST);
+    setInitialMode(currentDefaultMode());
   }
   setWindowTitle(tr("Select color"));
   fitDialog();
+}
+
+colorDialog::dialogMode colorDialog::currentDefaultMode() const {
+
+  const QSettings settings("cstitch", "cstitch");
+  if (settings.contains("color_dialog_mode")) {
+    const dialogMode modeFromSettings =
+      settings.value("color_dialog_mode").value<dialogMode>();
+    if (dialogSupportsMode(modeFromSettings)) {
+      return modeFromSettings;
+    }
+  }
+
+  return colorDialog::CD_LIST;
+}
+
+void colorDialog::setInitialMode(dialogMode mode) {
+
+  modeChoiceBox_->setCurrentIndex(modeChoiceBox_->findData(QVariant(mode)));
+  // If that didn't change the index then we need to display the mode by hand
+  // since none has been displayed yet on initial creation.
+  if (curMode_ == NULL) {
+    setCurMode(mode);
+  }
 }
 
 void colorDialog::constructorHelper(bool useSquareColors, flossType type) {
@@ -353,8 +378,8 @@ void colorDialog::constructorHelper(bool useSquareColors, flossType type) {
                             QVariant::fromValue(CD_NEW));
   }
 
-  connect(modeChoiceBox_, SIGNAL(activated(int )),
-          this, SLOT(processModeChange(int )));
+  connect(modeChoiceBox_, SIGNAL(currentIndexChanged(int )),
+          this, SLOT(processModeChange()));
 
   buttonsLayout_ = new QHBoxLayout;
   buttonsLayout_->setSpacing(9);
@@ -396,11 +421,20 @@ void colorDialog::setColorSelected(QRgb color, int x, int y) {
   }
 }
 
-void colorDialog::processModeChange(int index) {
+bool colorDialog::dialogSupportsMode(dialogMode mode) const {
 
-  dialogMode newMode =
-    modeChoiceBox_->itemData(index).value<dialogMode>();
-  setCurMode(newMode);
+  const int indexOfMode = modeChoiceBox_->findData(QVariant(mode));
+  return indexOfMode != -1;
+}
+
+colorDialog::dialogMode colorDialog::getModeBoxMode() const {
+
+  return modeChoiceBox_->itemData(modeChoiceBox_->currentIndex()).value<dialogMode>();
+}
+
+void colorDialog::processModeChange() {
+
+  setCurMode(getModeBoxMode());
   fitDialog();
 }
 
@@ -546,6 +580,7 @@ void colorDialog::processRightClick() {
 void colorDialog::processCancelClick() {
 
   emit finished(QDialog::Rejected, inputColor_, flossColor());
+
   close();
 }
 
@@ -555,6 +590,15 @@ void colorDialog::processMaybeNewAcceptClick(bool fromNewChooser) {
     fromNewChooser ? flossVariable : curMode_->flossMode();
   const flossColor newColor(colorSelected_, type);
   emit finished(QDialog::Accepted, inputColor_, newColor);
+
+  if (!fromNewChooser) {
+    const dialogMode curMode = getModeBoxMode();
+    if (curMode != CD_SQUARE) {
+      QSettings settings("cstitch", "cstitch");
+      settings.setValue("color_dialog_mode", curMode);
+    }
+  }
+
   close();
 }
 

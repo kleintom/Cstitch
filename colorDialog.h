@@ -231,6 +231,15 @@ Q_OBJECT
   void updateMouseClick(QRgb color);
   bool modeIsImageMode() const { return curMode_ == &imageMode_; }
 
+ protected slots:
+  // Emit finished(QDialog::Rejected, inputColor_, flossColor()) and
+  // close() the dialog.
+  // We use close() here and in processAcceptClick() instead of using the base
+  // class's done() in order to unify behavior with the case where the user
+  // closes the dialog by clicking its close button.
+  void processCancelClick();
+  void processAcceptClick() { processMaybeNewAcceptClick(false); }
+
  private:
   // if <useSquareColors> is true than we include the Square Colors mode
   void constructorHelper(bool useSquareColors, flossType type);
@@ -244,11 +253,17 @@ Q_OBJECT
   // call processCancelClick().  In either case this dialog finishes.
   void activateNewChooser();
   void keyPressEvent(QKeyEvent* event);
+  dialogMode getModeBoxMode() const;
+  // Set the mode for the first time.
+  void setInitialMode(dialogMode mode);
   void setCurMode(dialogMode mode);
-  // Emit finished(QDialog::Accepted, inputColor_, flossColor) and
-  // close() the dialog, where flossColor's color is colorSelected_
-  // and its type is determined by curMode_ (<fromNewChooser> is true
-  // if we're called from the new color dialog).
+  // Return true if the current dialog supports the given mode.
+  bool dialogSupportsMode(dialogMode mode) const;
+  dialogMode currentDefaultMode() const;
+  // Emit finished(QDialog::Accepted, inputColor_, flossColor) and close() the
+  // dialog, where flossColor's color is colorSelected_ and its type is
+  // determined by curMode_ (<fromNewChooser> is true if we're called from the
+  // new color dialog).
   void processMaybeNewAcceptClick(bool fromNewChooser = false);
 
  private slots:
@@ -257,15 +272,9 @@ Q_OBJECT
   // color in the appropriate mode map for the current mode.
   // Update the color selected portion in the leftRightColorPatch_.
   void setColorSelected(QRgb color, int x, int y);
-  // Emit finished(QDialog::Rejected, inputColor_, flossColor()) and
-  // close() the dialog.
-  void processCancelClick();
-  void processAcceptClick() { processMaybeNewAcceptClick(false); }
-  // Called when the user chooses a new mode; <index> is the index of the
-  // user's choice from the drop down menu.  Return if the mode is already
-  // in use, otherwise hide the old mode widgets and load the new mode
-  // widgets.
-  void processModeChange(int index);
+  // Called when the user chooses a new mode; hide the old mode widgets and load
+  // the new mode widgets.
+  void processModeChange();
   // Process a left click on the leftRight widget: "click" on the color
   // one to the left in the grid, setting its focus and making it the
   // current color; update the color browse buttons if there are now no

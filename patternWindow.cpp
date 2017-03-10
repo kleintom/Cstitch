@@ -637,7 +637,7 @@ void patternWindow::constructPdfViewerDialog() {
     // find a default viewer if we can
 #ifdef Q_OS_LINUX
     QStringList viewers;
-    viewers << "/usr/bin/evince" << "/usr/bin/kpdf" << "/usr/bin/okular" <<
+    viewers << "/usr/bin/evince" << "/usr/bin/okular" <<
       "/usr/bin/xpdf" << "/usr/bin/acroread";
     for (int i = 0, size = viewers.size(); i < size; ++i) {
       const QString thisViewer = viewers[i];

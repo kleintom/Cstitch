@@ -106,8 +106,8 @@ class patternImageContainer : public QObject {
   // return the symbols using the current symbol dimension and a default
   // border width
   QHash<QRgb, QPixmap> symbols();
-  // return the symbols using <symbolDim> as width and no border
-  QHash<QRgb, QPixmap> symbolsNoBorder(int symbolDim);
+  // return the symbols using the given <symbolDim> and <colorBorderWidth>
+  QHash<QRgb, QPixmap> symbolsWithBorder(int symbolDim, int colorBorderWidth);
   QHash<QRgb, QPixmap> colorSquares() const { return colorSquares_; }
   // pop up a symbol change dialog for the user to change the symbol for
   // <color>.
@@ -227,7 +227,7 @@ class patternImagePtr {
   patternImageContainer *d;
 };
 // make patternImagePtr known to QVariant
-Q_DECLARE_METATYPE(patternImagePtr);
+Q_DECLARE_METATYPE(patternImagePtr)
 
 #endif
 

@@ -104,7 +104,10 @@ class patternPrinter {
   const QImage& squareImage_;
   const int squareDim_;
   const QImage& originalImage_;
-  int pdfSymbolDim_;
+  // Each symbol includes an icon and a (possibly empty) color border.
+  int symbolIconSize_;
+  int symbolColorBorderWidth_;
+  int symbolSize_;
   int boldLinesFrequency_;
   const QVector<flossColor> colors_;
   int patternImageWidth_;

@@ -40,7 +40,8 @@ patternPrinter::patternPrinter(patternImagePtr image,
                                const QImage& originalImage) 
   : imageContainer_(image), squareImage_(image->squareImage()),
     squareDim_(image->squareDimension()), originalImage_(originalImage),
-    pdfSymbolDim_(0), colors_(image->flossColors()), fontMetrics_(QFont()) { }
+    symbolIconSize_(0), symbolColorBorderWidth_(0), symbolSize_(0),
+    colors_(image->flossColors()), fontMetrics_(QFont()) { }
 
 void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
 
@@ -76,15 +77,17 @@ void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
   //// draw title pages with the original and squared images
   drawTitlePage(metadata);
 
-  pdfSymbolDim_ = metadata.pdfSymbolSize();
+  symbolIconSize_ = metadata.pdfSymbolIconSize();
+  symbolColorBorderWidth_ = metadata.pdfSymbolColorBorderWidth();
+  symbolSize_ = symbolIconSize_ + 2 * symbolColorBorderWidth_;
   boldLinesFrequency_ = metadata.boldLinesFrequency();
-  patternImageWidth_ = (squareImage_.width()/squareDim_) * pdfSymbolDim_;
-  patternImageHeight_ = (squareImage_.height()/squareDim_) * pdfSymbolDim_;
+  patternImageWidth_ = (squareImage_.width()/squareDim_) * symbolSize_;
+  patternImageHeight_ = (squareImage_.height()/squareDim_) * symbolSize_;
   // horizontal boxes per pdf page
-  xBoxesPerPage_ = printerWidth_/pdfSymbolDim_;
+  xBoxesPerPage_ = printerWidth_/symbolSize_;
   xBoxes_ = squareImage_.width()/squareDim_;
   // vertical boxes per pdf page
-  yBoxesPerPage_ = printerHeight_/pdfSymbolDim_;
+  yBoxesPerPage_ = printerHeight_/symbolSize_;
   yBoxes_ = squareImage_.height()/squareDim_;
 
   //// figure out which orientation to use and how many pages it will
@@ -215,16 +218,16 @@ void patternPrinter::computeOrientationAndPageCounts() {
   int tWidthPerPage, tHeightPerPage; // temps
 
   // how much room do we want for grid-line-count numbers (in multiples
-  // of pdfSymbolDim_ for future use)
+  // of symbolSize_ for future use)
   margin_ = 0;
   while (margin_ < sWidth("555")) {
-    margin_ += pdfSymbolDim_;
+    margin_ += symbolSize_;
   }
-  xBoxesPerPage_ -= margin_/pdfSymbolDim_;
-  tWidthPerPage = xBoxesPerPage_ * pdfSymbolDim_; // image width per page
+  xBoxesPerPage_ -= margin_/symbolSize_;
+  tWidthPerPage = xBoxesPerPage_ * symbolSize_; // image width per page
 
-  yBoxesPerPage_ -= margin_/pdfSymbolDim_;
-  tHeightPerPage = yBoxesPerPage_ * pdfSymbolDim_; // image height per page
+  yBoxesPerPage_ -= margin_/symbolSize_;
+  tHeightPerPage = yBoxesPerPage_ * symbolSize_; // image height per page
 
   int landscapeXPages, landscapeYPages;
   const int landscapePages =
@@ -265,14 +268,14 @@ int patternPrinter::computeNumPagesHelper(int w, int h, int widthPerPage,
   int tXpages = 0; // will become xPages
   int tYpages = 0; // will become yPages
   // horizontal boxes per page
-  const int xBoxesPerPage = widthPerPage/pdfSymbolDim_;
+  const int xBoxesPerPage = widthPerPage/symbolSize_;
   // vertical boxes per page
-  const int yBoxesPerPage = heightPerPage/pdfSymbolDim_;
+  const int yBoxesPerPage = heightPerPage/symbolSize_;
 
   // horizontal pages needed
-  tXpages = ceil((w/pdfSymbolDim_)/static_cast<qreal>(xBoxesPerPage));
+  tXpages = ceil((w/symbolSize_)/static_cast<qreal>(xBoxesPerPage));
   // vertical pages needed
-  tYpages = ceil((h/pdfSymbolDim_)/static_cast<qreal>(yBoxesPerPage)); 
+  tYpages = ceil((h/symbolSize_)/static_cast<qreal>(yBoxesPerPage));
   *xPages = tXpages;
   *yPages = tYpages;
 
@@ -347,7 +350,7 @@ int patternPrinter::drawLegend() {
 
   // the border
   const qreal xstart = printerWidth_/2 - legendWidth/2;
-  const qreal ystart = pdfSymbolDim_;
+  const qreal ystart = symbolSize_;
   painter_.drawRect(QRectF(xstart, ystart, legendWidth, legendHeight));
   // the interior vertical lines
   for (int i = 1; i * legendBoxWidth < legendWidth; ++i) {
@@ -394,7 +397,7 @@ void patternPrinter::drawColorList(int startHeight) {
   int yused = startHeight;
   // have the list font match the symbol size, within reason
   // TODO: limit so that overflow isn't possible
-  int symbolDim = qMax(pdfSymbolDim_, sHeight("B"));
+  int symbolDim = qMax(symbolSize_, sHeight("B"));
   symbolDim = qMin(symbolDim, 35);
   ::setFontHeight(&painter_, symbolDim);
   const QFont listFont = painter_.font();
@@ -452,7 +455,6 @@ void patternPrinter::drawColorList(int startHeight) {
   QPixmap thisSymbol;
   QPainter symbolPainter;
   QPixmap thisPixmap(symbolDim, symbolDim);
-  QString thisCodeString;
   for (int i = 0, size = flossVector.size(); i < size; ++i) {
     const typedFloss thisFloss = flossVector[i];
     if (yused + fontHeight > printerHeight_) { // out of room in this column
@@ -580,7 +582,7 @@ bool patternPrinter::drawPatternPages() {
   int heightToUse = heightPerPage_;
   const int f = 5; // fudge room for grid number separation from the grid
   const QHash<QRgb, QPixmap> symbolMap =
-    imageContainer_->symbolsNoBorder(pdfSymbolDim_);
+    imageContainer_->symbolsWithBorder(symbolSize_, symbolColorBorderWidth_);
   QProgressDialog progressMeter(QObject::tr("Creating pdf..."),
                                 QObject::tr("Cancel"), 0,
                                 (xPages_ * yPages_)/5);
@@ -610,18 +612,18 @@ bool patternPrinter::drawPatternPages() {
       }
 
       // draw this page's image
-      const int patternXBoxStart = ((x-1) * widthPerPage_)/pdfSymbolDim_;
-      const int patternXBoxEnd = patternXBoxStart + (widthToUse/pdfSymbolDim_);
-      const int patternYBoxStart = ((y-1) * heightPerPage_)/pdfSymbolDim_;
-      const int patternYBoxEnd = patternYBoxStart + (heightToUse/pdfSymbolDim_);
+      const int patternXBoxStart = ((x-1) * widthPerPage_)/symbolSize_;
+      const int patternXBoxEnd = patternXBoxStart + (widthToUse/symbolSize_);
+      const int patternYBoxStart = ((y-1) * heightPerPage_)/symbolSize_;
+      const int patternYBoxEnd = patternYBoxStart + (heightToUse/symbolSize_);
       for (int j = patternYBoxStart, jj = 0; j < patternYBoxEnd;
             ++j, ++jj) {
         for (int i = patternXBoxStart, ii = 0; i < patternXBoxEnd;
               ++i, ++ii) {
           const QPixmap& thisSymbol =
             symbolMap[squareImage_.pixel(i * squareDim_, j * squareDim_)];
-          painter_.drawPixmap(margin_ + ii * pdfSymbolDim_,
-                              margin_ + jj * pdfSymbolDim_, thisSymbol);
+          painter_.drawPixmap(margin_ + ii * symbolSize_,
+                              margin_ + jj * symbolSize_, thisSymbol);
         }
       }
 
@@ -630,24 +632,24 @@ bool patternPrinter::drawPatternPages() {
       painter_.setPen(QPen(Qt::black, 1));
       int tx = 0;
       //// draw the thin x grid lines
-      while (tx * pdfSymbolDim_ <= widthToUse) {
-        painter_.drawLine(tx * pdfSymbolDim_ + margin_, margin_,
-                          tx * pdfSymbolDim_ + margin_, heightToUse + margin_);
+      while (tx * symbolSize_ <= widthToUse) {
+        painter_.drawLine(tx * symbolSize_ + margin_, margin_,
+                          tx * symbolSize_ + margin_, heightToUse + margin_);
         ++tx;
       }
       bool lastXLine = false;
-      if ((x-1) * widthPerPage_ + tx * pdfSymbolDim_ > patternImageWidth_) {
+      if ((x-1) * widthPerPage_ + tx * symbolSize_ > patternImageWidth_) {
         lastXLine = true; // the last x line is drawn on this page
       }
       //// draw the thin y grid lines
       int ty = 0;
-      while (ty * pdfSymbolDim_ <= heightToUse) {
-        painter_.drawLine(margin_, ty * pdfSymbolDim_ + margin_,
-                          widthToUse + margin_, ty * pdfSymbolDim_ + margin_);
+      while (ty * symbolSize_ <= heightToUse) {
+        painter_.drawLine(margin_, ty * symbolSize_ + margin_,
+                          widthToUse + margin_, ty * symbolSize_ + margin_);
         ++ty;
       }
       bool lastYLine = false;
-      if ((y-1) * heightPerPage_ + ty * pdfSymbolDim_ >
+      if ((y-1) * heightPerPage_ + ty * symbolSize_ >
           patternImageHeight_) {
         lastYLine = true; // the last y line is drawn on this page
       }
@@ -662,14 +664,14 @@ bool patternPrinter::drawPatternPages() {
       const int savedTx = tx;
       // draw the x grid counts
       painter_.setPen(QPen(Qt::black, 1));
-      while (tx * pdfSymbolDim_ <= widthToUse) {
+      while (tx * symbolSize_ <= widthToUse) {
         const int tgridx = (x-1) * xBoxesPerPage_ + tx;
         if (tx == 0) { // avoid collision
-          painter_.drawText(margin_ + tx * pdfSymbolDim_, margin_ - f,
+          painter_.drawText(margin_ + tx * symbolSize_, margin_ - f,
                             ::itoqs(tgridx));
         }
         else {
-          painter_.drawText(margin_ + tx * pdfSymbolDim_ - sWidth(tgridx),
+          painter_.drawText(margin_ + tx * symbolSize_ - sWidth(tgridx),
                             margin_ - f, ::itoqs(tgridx));
         }
         tx += boldLinesFrequency_;
@@ -678,9 +680,9 @@ bool patternPrinter::drawPatternPages() {
       // draw the bold x grid lines
       tx = savedTx;
       painter_.setPen(QPen(Qt::black, 3));
-      while (tx * pdfSymbolDim_ <= widthToUse) {
-        painter_.drawLine(tx * pdfSymbolDim_ + margin_, margin_,
-                          tx * pdfSymbolDim_ + margin_, heightToUse + margin_);
+      while (tx * symbolSize_ <= widthToUse) {
+        painter_.drawLine(tx * symbolSize_ + margin_, margin_,
+                          tx * symbolSize_ + margin_, heightToUse + margin_);
         tx += boldLinesFrequency_;
       }
       tx -= boldLinesFrequency_;
@@ -704,16 +706,16 @@ bool patternPrinter::drawPatternPages() {
       const int savedTy = ty;
       // draw the y grid counts
       painter_.setPen(QPen(Qt::black, 1));
-      while (ty * pdfSymbolDim_ <= heightToUse) {
+      while (ty * symbolSize_ <= heightToUse) {
         const int tgridy = (y-1) * yBoxesPerPage_ + ty;
         if (ty == 0) { // avoid confusion
           painter_.drawText(margin_ - sWidth(tgridy) - f,
-                            ty * pdfSymbolDim_ + margin_ + sHeight(tgridy),
+                            ty * symbolSize_ + margin_ + sHeight(tgridy),
                             ::itoqs(tgridy));
         }
         else {
           painter_.drawText(margin_ - sWidth(tgridy) - f,
-                            ty * pdfSymbolDim_ + margin_,
+                            ty * symbolSize_ + margin_,
                             ::itoqs(tgridy));
         }
         ty += boldLinesFrequency_;
@@ -722,9 +724,9 @@ bool patternPrinter::drawPatternPages() {
       // draw the bold y grid lines
       ty = savedTy;
       painter_.setPen(QPen(Qt::black, 3));
-      while (ty * pdfSymbolDim_ <= heightToUse) {
-        painter_.drawLine(margin_, ty * pdfSymbolDim_ + margin_,
-                          widthToUse + margin_, ty * pdfSymbolDim_ + margin_);
+      while (ty * symbolSize_ <= heightToUse) {
+        painter_.drawLine(margin_, ty * symbolSize_ + margin_,
+                          widthToUse + margin_, ty * symbolSize_ + margin_);
         ty += boldLinesFrequency_;
       }
 

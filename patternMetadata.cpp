@@ -357,7 +357,11 @@ int patternMetadata::boldLinesFrequency() const {
   return boldLinesFrequencySpinBox_->value();
 }
 
-int patternMetadata::pdfSymbolSize() const {
+int patternMetadata::pdfSymbolIconSize() const {
 
   return symbolSizeSpinBox_->value();
+}
+
+int patternMetadata::pdfSymbolColorBorderWidth() const {
+    return colorBorderSizeSpinBox_->value();
 }

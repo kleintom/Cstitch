@@ -181,9 +181,9 @@ QHash<QRgb, QPixmap> patternImageContainer::symbols() {
   return symbolChooser_.getSymbols(symbolDimension_);
 }
 
-QHash<QRgb, QPixmap> patternImageContainer::symbolsNoBorder(int symbolDim) {
+QHash<QRgb, QPixmap> patternImageContainer::symbolsWithBorder(int symbolDim, int colorBorderWidth) {
 
-  return symbolChooser_.getSymbolsNoBorder(symbolDim);
+  return symbolChooser_.getSymbolsWithBorder(symbolDim, colorBorderWidth);
 }
 
 bool patternImageContainer::updatePatternImage(const triC& color,

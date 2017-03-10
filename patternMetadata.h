@@ -91,7 +91,8 @@ class patternMetadata : public cancelAcceptDialogBase {
   int titleFontSize() const { return titleFontSize_; }
   int patternByFontSize() const { return patternByFontSize_; }
   int photoByFontSize() const { return photoByFontSize_; }
-  int pdfSymbolSize() const;
+  int pdfSymbolIconSize() const;
+  int pdfSymbolColorBorderWidth() const;
   int boldLinesFrequency() const;
 
  private slots:

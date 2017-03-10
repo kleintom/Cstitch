@@ -111,11 +111,11 @@ class symbolChooser {
   patternSymbolIndex getSymbolCurDim(const triC& color) {
     return getSymbol(color, symbolDimension_);
   }
-  // return a hash of symbols for all colors with total size <symbolDim> and
-  // no border
-  QHash<QRgb, QPixmap> getSymbolsNoBorder(int symbolDim) {
+  // return a hash of symbols for all colors, using total symbol size <symbolDim>
+  // and border size <colorBorderWidth>
+  QHash<QRgb, QPixmap> getSymbolsWithBorder(int symbolDim, int colorBorderWidth) {
     int savedBorderDim = borderDimension_;
-    borderDimension_ = 0;
+    borderDimension_ = colorBorderWidth;
     QHash<QRgb, QPixmap> returnHash(getSymbols(symbolDim));
     borderDimension_ = savedBorderDim;
     return returnHash;

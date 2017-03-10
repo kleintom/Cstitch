@@ -29,8 +29,10 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
 #include <QPainter>
+#include <QDesktopWidget>
 
 #include "imageUtility.h"
 #include "symbolChooser.h"
@@ -147,7 +149,26 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
 
   metadataBox_->setLayout(metadataLayout_);
   widgetLayout_->addWidget(metadataBox_);
-  setLayout(widgetLayout_);
+
+  //// Put everything except cancel/accept into a scroll area.
+  QScrollArea* scroll = new QScrollArea(this);
+  // If I don't set this then the scroll widget gets scrunched vertically, but
+  // setting it means the widget also grows horizontally to match the width of
+  // the scroll area (which looks silly), so we'll give the scroll widget a max
+  // width to avoid that.  Yuk.
+  scroll->setWidgetResizable(true);
+  const QRect screenSize = QApplication::desktop()->availableGeometry();
+  scroll->setMinimumWidth(qMin(screenSize.width() - 100, inputFieldWidth + 100));
+  scroll->setMinimumHeight(qMin(screenSize.height() - 100, 600));
+  scroll->setAlignment(Qt::AlignHCenter);
+
+  QWidget* scrollWidget = new QWidget;
+  scrollWidget->setMaximumWidth(inputFieldWidth + 60);
+  scrollWidget->setLayout(widgetLayout_);
+  scroll->setWidget(scrollWidget);
+
+  QVBoxLayout* topLevelLayout = new QVBoxLayout;
+  topLevelLayout->addWidget(scroll);
 
   // load any saved fields
   const QSettings settings("cstitch", "cstitch");
@@ -157,7 +178,8 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
 
   constructSymbolPreview(settings);
 
-  widgetLayout_->addWidget(cancelAcceptWidget());
+  topLevelLayout->addWidget(cancelAcceptWidget());
+  setLayout(topLevelLayout);
   titleEdit_->setFocus();
   setWindowTitle(tr("Pattern information"));
 }

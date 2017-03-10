@@ -101,8 +101,7 @@ class patternMetadata : public cancelAcceptDialogBase {
   void insertPhotoByLicense();
   // clear all info fields
   void clearMetadata();
-  // update the symbol size preview to reflect <newSymbolSize>
-  void updateSymbolSize(int newSymbolSize);
+  void updateSymbolPreview();
 
  private:
   // load text for <editor> from <settings> using the settings key
@@ -154,14 +153,21 @@ class patternMetadata : public cancelAcceptDialogBase {
 
   QPushButton* clearMetadataButton_;
 
-  //// symbol size selection
-  QGroupBox* symbolSizeBox_;
-  QVBoxLayout* symbolSizeLayout_;
+  //// Symbol specifications.
+  QGroupBox* symbolBox_;
+  QVBoxLayout* symbolLayout_;
+  // Symbol size.
   QHBoxLayout* symbolSizeTitleLayout_;
   QLabel* symbolSizeTitle_;
   QSpinBox* symbolSizeSpinBox_;
   QString symbolSizeKey_;
-
+  // Symbol color border width.
+  const int maxColorBorderSize_;
+  QHBoxLayout* colorBorderSizeTitleLayout_;
+  QLabel* colorBorderSizeTitle_;
+  QSpinBox* colorBorderSizeSpinBox_;
+  QString colorBorderSizeKey_;
+  // The preview includes both the symbol and a color border.
   QHBoxLayout* symbolPreviewLayout_;
   QLabel* symbolPreview_;
 

@@ -49,7 +49,7 @@
 
 // bounds for allowed symbol sizes (too large and file sizes are ridiculous,
 // too small and symbols can't be distinguished)
-extern const int MAX_SYMBOL_SIZE = 60;
+extern const int MAX_SYMBOL_SIZE = 60; // Keep this even.
 extern const int MIN_SYMBOL_SIZE = 15;
 
 patternWindow::patternWindow(windowManager* winMgr)

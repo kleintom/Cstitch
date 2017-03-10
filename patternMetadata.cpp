@@ -69,14 +69,21 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
     photoByLicenseButton_(new QPushButton(tr("Insert"))),
     photoByLicenses_(new QComboBox),
     clearMetadataButton_(new QPushButton(tr("Clear all information"))),
-    symbolSizeBox_(new QGroupBox(tr("Pdf symbol size"))),
-    symbolSizeLayout_(new QVBoxLayout),
+    symbolBox_(new QGroupBox(tr("Pdf symbol size"))),
+    symbolLayout_(new QVBoxLayout),
     symbolSizeTitleLayout_(new QHBoxLayout),
     symbolSizeTitle_(new QLabel(tr("Set the pdf symbol size (from %1 to %2):").
                                 arg(QString::number(MIN_SYMBOL_SIZE)).
                                 arg(QString::number(MAX_SYMBOL_SIZE)))),
     symbolSizeSpinBox_(new QSpinBox),
     symbolSizeKey_("pdf_symbol_size"),
+    maxColorBorderSize_(MAX_SYMBOL_SIZE / 2),
+    colorBorderSizeTitleLayout_(new QHBoxLayout),
+    colorBorderSizeTitle_(new QLabel(tr("Set the pdf symbol color border width (from %1 to %2):").
+                                     arg(QString::number(0)).
+                                     arg(QString::number(maxColorBorderSize_)))),
+    colorBorderSizeSpinBox_(new QSpinBox),
+    colorBorderSizeKey_(tr("pdf_color_border_width")),
     symbolPreviewLayout_(new QHBoxLayout),
     symbolPreview_(new QLabel),
     boldLinesBox_(new QGroupBox(tr("Bold grid lines and square counts"))),
@@ -225,8 +232,7 @@ void patternMetadata::loadLicenses(QComboBox* box, const QFont& font,
 
 void patternMetadata::constructSymbolPreview(const QSettings& settings) {
 
-  connect(symbolSizeSpinBox_, SIGNAL(valueChanged(int )),
-          this, SLOT(updateSymbolSize(int )));
+  //// Construct the symbol size parts.
   symbolSizeSpinBox_->setRange(MIN_SYMBOL_SIZE, MAX_SYMBOL_SIZE);
   if (settings.contains(symbolSizeKey_)) {
     symbolSizeSpinBox_->setValue(settings.value(symbolSizeKey_).toInt());
@@ -234,19 +240,39 @@ void patternMetadata::constructSymbolPreview(const QSettings& settings) {
   else {
     symbolSizeSpinBox_->setValue(30);
   }
-
   symbolSizeTitleLayout_->addWidget(symbolSizeTitle_);
   symbolSizeTitleLayout_->addWidget(symbolSizeSpinBox_);
   symbolSizeTitleLayout_->addStretch();
-  symbolSizeLayout_->addLayout(symbolSizeTitleLayout_);
 
+  //// Construct the color border width parts.
+  colorBorderSizeSpinBox_->setRange(0, maxColorBorderSize_);
+  if (settings.contains(colorBorderSizeKey_)) {
+      colorBorderSizeSpinBox_->setValue(settings.value(colorBorderSizeKey_).toInt());
+  }
+  else {
+      colorBorderSizeSpinBox_->setValue(0);
+  }
+  colorBorderSizeTitleLayout_->addWidget(colorBorderSizeTitle_);
+  colorBorderSizeTitleLayout_->addWidget(colorBorderSizeSpinBox_);
+  colorBorderSizeTitleLayout_->addStretch();
+
+  //// Construct the symbol preview parts.
   symbolPreviewLayout_->addStretch();
   symbolPreviewLayout_->addWidget(symbolPreview_);
   symbolPreviewLayout_->addStretch();
-  symbolSizeLayout_->addLayout(symbolPreviewLayout_);
-  
-  symbolSizeBox_->setLayout(symbolSizeLayout_);
-  widgetLayout_->addWidget(symbolSizeBox_);
+
+  //// Put it all together.
+  symbolLayout_->addLayout(symbolSizeTitleLayout_);
+  symbolLayout_->addLayout(colorBorderSizeTitleLayout_);
+  symbolLayout_->addLayout(symbolPreviewLayout_);
+  symbolBox_->setLayout(symbolLayout_);
+  widgetLayout_->addWidget(symbolBox_);
+
+  connect(symbolSizeSpinBox_, SIGNAL(valueChanged(int )),
+          this, SLOT(updateSymbolPreview()));
+  connect(colorBorderSizeSpinBox_, SIGNAL(valueChanged(int )),
+          this, SLOT(updateSymbolPreview()));
+  updateSymbolPreview();
 }
 
 void patternMetadata::constructBoldLinesFrequencyChooser(const QSettings& settings) {
@@ -280,6 +306,7 @@ void patternMetadata::saveSettings() const {
   settings.setValue(patternBySettingsKey_, patternByEdit_->toPlainText());
   settings.setValue(photoBySettingsKey_, photoByEdit_->toPlainText());
   settings.setValue(symbolSizeKey_, symbolSizeSpinBox_->value());
+  settings.setValue(colorBorderSizeKey_, colorBorderSizeSpinBox_->value());
   settings.setValue(boldLinesFrequencyKey_, boldLinesFrequencySpinBox_->value());
 }
 
@@ -302,15 +329,26 @@ void patternMetadata::clearMetadata() {
   photoByEdit_->setPlainText("");
 }
 
-void patternMetadata::updateSymbolSize(int newSymbolSize) {
+void patternMetadata::updateSymbolPreview() {
 
-  const int viewSize = MAX_SYMBOL_SIZE + 10;
+  const int symbolSize = symbolSizeSpinBox_->value();
+  const int colorBorderWidth = colorBorderSizeSpinBox_->value();
+  const int viewSize = MAX_SYMBOL_SIZE + 2 * maxColorBorderSize_ + 10;
   QPixmap symbol(viewSize, viewSize);
   symbol.fill(palette().color(QPalette::Window));
   QPainter painter(&symbol);
-  const QPixmap sampleSymbol = symbolChooser::getSampleSymbol(newSymbolSize);
-  painter.drawPixmap((viewSize - newSymbolSize)/2,
-                     (viewSize - newSymbolSize)/2, sampleSymbol);
+  painter.setRenderHint(QPainter::Antialiasing, true);
+
+  const int symbolTopLeft = (viewSize - symbolSize) / 2;
+  if (colorBorderWidth > 0) {
+      const int swatchTopLeft = symbolTopLeft - colorBorderWidth;
+      const int colorSwatchSize = symbolSize + 2 * colorBorderWidth;
+      painter.fillRect(QRectF(swatchTopLeft, swatchTopLeft, colorSwatchSize, colorSwatchSize),
+                       QColor(135, 197, 80));
+  }
+  const QPixmap sampleSymbol = symbolChooser::getSampleSymbol(symbolSize);
+  painter.drawPixmap(symbolTopLeft, symbolTopLeft, sampleSymbol);
+
   symbolPreview_->setPixmap(symbol);
 }
 

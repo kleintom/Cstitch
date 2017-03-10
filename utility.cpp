@@ -38,7 +38,7 @@ QString getNewImageFileName(QWidget* activeWindow, bool displayWarning) {
   int returnCode = QMessageBox::Ok;
   if (displayWarning) {
     returnCode = QMessageBox::warning(activeWindow, "Cstitch",
-                                      QObject::tr("All previous work will be"
+                                      QObject::tr("All unsaved work will be"
                                                   " lost if you continue."),
                                       QMessageBox::Cancel | QMessageBox::Ok,
                                       QMessageBox::Ok);

@@ -216,7 +216,7 @@ void imageZoomWindow::setZoomActionsEnabled(bool b) {
 bool imageZoomWindow::quit() {
 
   const int returnCode = QMessageBox::warning(this, "Cstitch",
-    tr("All work will be lost if you continue; are you sure you want to quit?"),
+    tr("All unsaved work will be lost if you continue; are you sure you want to quit?"),
                                 QMessageBox::Cancel | QMessageBox::Ok,
                                 QMessageBox::Ok);
 

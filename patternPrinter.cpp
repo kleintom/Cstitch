@@ -77,6 +77,7 @@ void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
   drawTitlePage(metadata);
 
   pdfSymbolDim_ = metadata.pdfSymbolSize();
+  boldLinesFrequency_ = metadata.boldLinesFrequency();
   patternImageWidth_ = (squareImage_.width()/squareDim_) * pdfSymbolDim_;
   patternImageHeight_ = (squareImage_.height()/squareDim_) * pdfSymbolDim_;
   // horizontal boxes per pdf page
@@ -624,8 +625,7 @@ bool patternPrinter::drawPatternPages() {
         }
       }
 
-      //// draw grid lines and counts (thick every 5, thin every 1)
-      const int thickCount = 5;
+      //// draw grid lines and counts
       //// x grid lines
       painter_.setPen(QPen(Qt::black, 1));
       int tx = 0;
@@ -652,11 +652,11 @@ bool patternPrinter::drawPatternPages() {
         lastYLine = true; // the last y line is drawn on this page
       }
 
-      //// thick lines
+      //// bold lines
       tx = 0; // x grid count for this page
-      if ((x-1) * xBoxesPerPage_ % thickCount != 0) {
-        // to the next multiple of thickCount
-        tx = thickCount - ((x-1) * xBoxesPerPage_ % thickCount);
+      if ((x-1) * xBoxesPerPage_ % boldLinesFrequency_ != 0) {
+        // to the next multiple of boldLinesFrequency_
+        tx = boldLinesFrequency_ - ((x-1) * xBoxesPerPage_ % boldLinesFrequency_);
       }
 
       const int savedTx = tx;
@@ -672,18 +672,18 @@ bool patternPrinter::drawPatternPages() {
           painter_.drawText(margin_ + tx * pdfSymbolDim_ - sWidth(tgridx),
                             margin_ - f, ::itoqs(tgridx));
         }
-        tx += thickCount;
+        tx += boldLinesFrequency_;
       }
 
-      // draw the thick x grid lines
+      // draw the bold x grid lines
       tx = savedTx;
       painter_.setPen(QPen(Qt::black, 3));
       while (tx * pdfSymbolDim_ <= widthToUse) {
         painter_.drawLine(tx * pdfSymbolDim_ + margin_, margin_,
                           tx * pdfSymbolDim_ + margin_, heightToUse + margin_);
-        tx += thickCount;
+        tx += boldLinesFrequency_;
       }
-      tx -= thickCount;
+      tx -= boldLinesFrequency_;
 
       // draw the final line
       if (lastXLine) {
@@ -696,9 +696,9 @@ bool patternPrinter::drawPatternPages() {
       }
 
       ty = 0; // y grid count for this page
-      if ((y-1) * yBoxesPerPage_ % thickCount != 0) {
+      if ((y-1) * yBoxesPerPage_ % boldLinesFrequency_ != 0) {
         // to the next multiple of 5
-        ty = thickCount - ((y-1) * yBoxesPerPage_ % thickCount);
+        ty = boldLinesFrequency_ - ((y-1) * yBoxesPerPage_ % boldLinesFrequency_);
       }
 
       const int savedTy = ty;
@@ -716,16 +716,16 @@ bool patternPrinter::drawPatternPages() {
                             ty * pdfSymbolDim_ + margin_,
                             ::itoqs(tgridy));
         }
-        ty += thickCount;
+        ty += boldLinesFrequency_;
       }
 
-      // draw the thick y grid lines
+      // draw the bold y grid lines
       ty = savedTy;
       painter_.setPen(QPen(Qt::black, 3));
       while (ty * pdfSymbolDim_ <= heightToUse) {
         painter_.drawLine(margin_, ty * pdfSymbolDim_ + margin_,
                           widthToUse + margin_, ty * pdfSymbolDim_ + margin_);
-        ty += thickCount;
+        ty += boldLinesFrequency_;
       }
 
       // draw the final line

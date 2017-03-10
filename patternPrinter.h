@@ -105,6 +105,7 @@ class patternPrinter {
   const int squareDim_;
   const QImage& originalImage_;
   int pdfSymbolDim_;
+  int boldLinesFrequency_;
   const QVector<flossColor> colors_;
   int patternImageWidth_;
   int patternImageHeight_;

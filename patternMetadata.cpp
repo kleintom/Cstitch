@@ -78,7 +78,12 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
     symbolSizeSpinBox_(new QSpinBox),
     symbolSizeKey_("pdf_symbol_size"),
     symbolPreviewLayout_(new QHBoxLayout),
-    symbolPreview_(new QLabel) {
+    symbolPreview_(new QLabel),
+    boldLinesBox_(new QGroupBox(tr("Bold grid lines and square counts"))),
+    boldLinesLayout_(new QHBoxLayout),
+    boldLinesLabel_(new QLabel(tr("Set the frequency with which to draw bold grid lines and square counts:"))),
+    boldLinesFrequencySpinBox_(new QSpinBox),
+    boldLinesFrequencyKey_("pdf_bold_lines_frequency") {
 
   // TODO this won't quite be right since the textEdit has mystery margins
   const int inputFieldWidth = pdfWidth + ::scrollbarWidth();
@@ -177,6 +182,7 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   loadSettings(settings, photoBySettingsKey_, photoByEdit_);
 
   constructSymbolPreview(settings);
+  constructBoldLinesFrequencyChooser(settings);
 
   topLevelLayout->addWidget(cancelAcceptWidget());
   setLayout(topLevelLayout);
@@ -243,6 +249,21 @@ void patternMetadata::constructSymbolPreview(const QSettings& settings) {
   widgetLayout_->addWidget(symbolSizeBox_);
 }
 
+void patternMetadata::constructBoldLinesFrequencyChooser(const QSettings& settings) {
+
+  // Keep the min at least 5 so that we don't have issues with square counts
+  // overlapping.
+  boldLinesFrequencySpinBox_->setRange(5, 99);
+  if (settings.contains(boldLinesFrequencyKey_)) {
+    boldLinesFrequencySpinBox_->setValue(settings.value(boldLinesFrequencyKey_).toInt());
+  }
+  boldLinesLayout_->addWidget(boldLinesLabel_);
+  boldLinesLayout_->addWidget(boldLinesFrequencySpinBox_);
+  boldLinesLayout_->addStretch();
+  boldLinesBox_->setLayout(boldLinesLayout_);
+  widgetLayout_->addWidget(boldLinesBox_);
+}
+
 void patternMetadata::loadSettings(const QSettings& settings,
                                    const QString& settingsKey,
                                    fixedWidthTextEdit* editor) {
@@ -259,6 +280,7 @@ void patternMetadata::saveSettings() const {
   settings.setValue(patternBySettingsKey_, patternByEdit_->toPlainText());
   settings.setValue(photoBySettingsKey_, photoByEdit_->toPlainText());
   settings.setValue(symbolSizeKey_, symbolSizeSpinBox_->value());
+  settings.setValue(boldLinesFrequencyKey_, boldLinesFrequencySpinBox_->value());
 }
 
 void patternMetadata::insertPatternByLicense() {
@@ -290,6 +312,11 @@ void patternMetadata::updateSymbolSize(int newSymbolSize) {
   painter.drawPixmap((viewSize - newSymbolSize)/2,
                      (viewSize - newSymbolSize)/2, sampleSymbol);
   symbolPreview_->setPixmap(symbol);
+}
+
+int patternMetadata::boldLinesFrequency() const {
+
+  return boldLinesFrequencySpinBox_->value();
 }
 
 int patternMetadata::pdfSymbolSize() const {

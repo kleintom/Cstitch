@@ -93,6 +93,7 @@ class patternMetadata : public cancelAcceptDialogBase {
   int patternByFontSize() const { return patternByFontSize_; }
   int photoByFontSize() const { return photoByFontSize_; }
   int pdfSymbolSize() const;
+  int boldLinesFrequency() const;
 
  private slots:
   // insert the text of the currently selected license at the current point
@@ -114,6 +115,7 @@ class patternMetadata : public cancelAcceptDialogBase {
   // symbol if <font> provides it, else use (c)); add "derived from"
   // options if <derived>
   void loadLicenses(QComboBox* box, const QFont& font, bool derived);
+  void constructBoldLinesFrequencyChooser(const QSettings& settings);
 
  private:
   QVBoxLayout* widgetLayout_;
@@ -162,6 +164,13 @@ class patternMetadata : public cancelAcceptDialogBase {
 
   QHBoxLayout* symbolPreviewLayout_;
   QLabel* symbolPreview_;
+
+  //// Bold lines and square count frequency.
+  QGroupBox* boldLinesBox_;
+  QHBoxLayout* boldLinesLayout_;
+  QLabel* boldLinesLabel_;
+  QSpinBox* boldLinesFrequencySpinBox_;
+  QString boldLinesFrequencyKey_;
 };
 
 #endif

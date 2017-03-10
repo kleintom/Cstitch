@@ -83,7 +83,6 @@ class patternMetadata : public cancelAcceptDialogBase {
  public:
   patternMetadata(int pdfWidth, int titleFontSize, int patternByFontSize,
                   int photoByFontSize, QWidget* parent);
-  void constructSymbolPreview(const QSettings& settings);
   QString title() const { return titleEdit_->startText(); }
   QString patternBy() const { return patternByEdit_->startText(); }
   QString photoBy() const { return photoByEdit_->startText(); }
@@ -115,6 +114,7 @@ class patternMetadata : public cancelAcceptDialogBase {
   // symbol if <font> provides it, else use (c)); add "derived from"
   // options if <derived>
   void loadLicenses(QComboBox* box, const QFont& font, bool derived);
+  void constructSymbolPreview(const QSettings& settings);
   void constructBoldLinesFrequencyChooser(const QSettings& settings);
 
  private:

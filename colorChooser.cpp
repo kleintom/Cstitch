@@ -133,13 +133,13 @@ void colorChooser::constructProcessingObjects() {
 
 void colorChooser::popDock() {
 
-  clickedDock_ = new dockListSwatchWidget(QVector<triC>(), this);
+  clickedDock_ = new dockListSwatchWidget(this);
   setListDockWidget(clickedDock_);
   connect(clickedDock_, SIGNAL(colorRemoved(const triC& )),
           this, SLOT(removeColor(const triC& )));
   connect(imageLabel_, SIGNAL(mouseMoved(QMouseEvent* )),
           this, SLOT(processMouseMove(QMouseEvent* )));
-  generatedDock_ = new dockListWidget(QVector<triC>(), this);
+  generatedDock_ = new dockListWidget(this);
   generatedDock_->enableContextMenu(false);
   generatedDockHolder_ = new QDockWidget(tr("Generated colors"), this);
   generatedDockHolder_->setFeatures(QDockWidget::NoDockWidgetFeatures);

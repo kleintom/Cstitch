@@ -31,8 +31,7 @@
 #include "triC.h"
 #include "imageProcessing.h"
 
-dockListWidget::dockListWidget(const QVector<triC>& colorList,
-                               QWidget* parent)
+dockListWidget::dockListWidget(QWidget* parent)
   : constWidthDock(parent), mainLayout_(new QVBoxLayout(this)),
     colorList_(new QListWidget(this)), numColorsLabel_(new QLabel(this)) {
 
@@ -53,8 +52,6 @@ dockListWidget::dockListWidget(const QVector<triC>& colorList,
   const QFontMetrics fontMetric(font);
   numColorsLabel_->setFixedHeight(fontMetric.boundingRect("D").height());
   numColorsLabel_->setAlignment(Qt::AlignCenter);
-  setNumColors(colorList.size());
-  setColorList(colorList);
 
   //// a layout to contain the list and the labels
   mainLayout_->addWidget(numColorsLabel_);
@@ -75,12 +72,25 @@ void dockListWidget::clearList() {
   setNumColors(0);
 }
 
+QListWidgetItem* dockListWidget::findColorListItem(const triC& color) {
+
+  const QColor qColor = color.qc();
+  for (int i = 0, count = colorList_->count(); i < count; ++i) {
+    QListWidgetItem* thisRow = colorList_->item(i);
+    if (thisRow != NULL &&
+        thisRow->data(Qt::UserRole).value<QColor>() == qColor) {
+      return thisRow;
+    }
+  }
+
+  return NULL;
+}
+
 void dockListWidget::moveTo(const triC& color) {
 
-  const QList<QListWidgetItem *> foundColors =
-    colorList_->findItems(::ctos(color), Qt::MatchExactly);
-  if (!foundColors.empty()) {
-    colorList_->setCurrentItem(foundColors[0]);
+  QListWidgetItem* row = findColorListItem(color);
+  if (row) {
+    colorList_->setCurrentItem(row);
   }
   else {
     deselectCurrentListItem();
@@ -151,16 +161,15 @@ QColor dockListWidget::contextColor() {
 
 bool dockListWidget::removeColorFromList(const triC& color) {
 
-  QList<QListWidgetItem *> colorsFound =
-    colorList_->findItems(::ctos(color), Qt::MatchExactly);
-  if (!colorsFound.empty()) {
-    delete colorsFound[0];
+  QListWidgetItem* row = findColorListItem(color);
+  if (row) {
+    delete row;
     setNumColors(colorList_->count());
     colorList_->setCurrentItem(NULL); // no selection
     return true;
   }
   else {
-    qWarning() << "Couldn't find color in remove:" << ctos(color);
+    qWarning() << "Couldn't find color in remove:" << ::ctos(color);
     return false;
   }
 }
@@ -177,15 +186,9 @@ void dockListWidget::prependWidget(QWidget* widget) {
 
 void dockListWidget::addToList(const triC& color) {
 
-  QListWidgetItem* listItem = NULL;
-  const QString colorText = ::ctos(color);
-  QList<QListWidgetItem*> foundItem =
-    colorList_->findItems(colorText, Qt::MatchCaseSensitive);
-  if (!foundItem.isEmpty()) {
-    listItem = foundItem[0];
-  }
-  else {
-    QListWidgetItem* listItem = new QListWidgetItem(::ctos(color));
+  QListWidgetItem* listItem = findColorListItem(color);
+  if (!listItem) {
+    listItem = new QListWidgetItem(::ctos(color));
     listItem->setData(Qt::UserRole, QVariant(color.qc()));
     listItem->setTextAlignment(Qt::AlignLeft);
     listItem->setIcon(QIcon(generateIconSwatch(color)));
@@ -211,9 +214,8 @@ void dockListWidget::addToList(const triC& color) {
   setNumColors(colorList_->count());
 }
 
-dockListSwatchWidget::dockListSwatchWidget(const QVector<triC>& colorList,
-                                           QWidget* parent)
-  : dockListWidget(colorList, parent), colorSwatchLayout_(new QHBoxLayout),
+dockListSwatchWidget::dockListSwatchWidget(QWidget* parent)
+  : dockListWidget(parent), colorSwatchLayout_(new QHBoxLayout),
     colorSwatch_(new QLabel(this)), curColorString_(new QLabel(this)) {
 
   //// a label the user can use to display a color

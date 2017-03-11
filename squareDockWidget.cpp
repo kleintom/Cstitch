@@ -26,6 +26,13 @@
 #include "squareDockTools.h" // for contextColorAction
 #include "triC.h"
 
+squareDockWidget::squareDockWidget(const QVector<triC>& colorList,
+                                   QWidget* parent)
+  : dockListSwatchWidget(parent) {
+
+  setColorList(colorList);
+}
+
 void squareDockWidget::processContextRequest(const QPoint& point) {
 
   if (itemAtPoint(point)) {

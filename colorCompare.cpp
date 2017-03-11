@@ -56,7 +56,7 @@ colorCompare::colorCompare(const QImage& image, int index,
   rightLabel_->setMouseTracking(true);
   rightScroll()->setWidget(rightLabel());
 
-  listDock_ = new dockListSwatchWidget(QVector<triC>());
+  listDock_ = new dockListSwatchWidget();
   listDock_->enableContextMenu(false);
   setListDockWidget(listDock_);
   connect(rightLabel_, SIGNAL(mouseMoved(QMouseEvent* )),

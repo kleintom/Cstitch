@@ -30,13 +30,20 @@ class QHBoxLayout;
 class QVBoxLayout;
 class QLabel;
 
-// a widget for displaying a color list and a "number of colors" label
+//
+// A widget for displaying a list of colors and a "number of colors" label.
+//
+// Implementation note: Different methods for adding colors to the list display
+// the colors in different ways, but each add method is required to add the
+// color of each list item as data on that item, which is the sum total of what
+// other methods get to assume about the structure of list items.
+//
 class dockListWidget : public constWidthDock {
 
   Q_OBJECT
 
  public:
-  dockListWidget(const QVector<triC>& colorList, QWidget* parent);
+  dockListWidget(QWidget* parent);
   bool removeColorFromList(const triC& color);
   // move to and select the entry for <color> if it exists
   void moveTo(const triC& color);
@@ -73,6 +80,9 @@ class dockListWidget : public constWidthDock {
   // generate a pixmap with solid color <swatchColor> to be used as an
   // icon for a list item
   QPixmap generateIconSwatch(const triC& swatchColor) const;
+  // Find an item in the color list based on its color.  Returns a pointer to
+  // the list item if the search was successful, otherwise returns NULL.
+  QListWidgetItem* findColorListItem(const triC& color);
 
  signals:
   void colorRemoved(const triC& color);
@@ -89,8 +99,7 @@ class dockListSwatchWidget : public dockListWidget {
   Q_OBJECT
 
  public:
-  dockListSwatchWidget(const QVector<triC>& colorList,
-                       QWidget* parent = NULL);
+  dockListSwatchWidget(QWidget* parent = NULL);
 
  public slots:
   // change the color on the color swatch

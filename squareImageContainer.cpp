@@ -89,7 +89,7 @@ performDetailing(const QImage& originalImage,
 
   if (detailSquares.empty()) {
     qWarning() << "Detail squares empty" << numColors;
-    return dockListUpdate(QVector<triC>());
+    return dockListUpdate(QVector<flossColor>());
   }
   QVector<historyPixel> history;
   //// start the history by collecting the old pixels
@@ -114,14 +114,14 @@ performDetailing(const QImage& originalImage,
                                            originalDimension_);
 
   //// complete the history
-  QVector<triC> colorsToAdd; // just return the new ones
+  QVector<flossColor> colorsToAdd; // just return the new ones
   for (int i = 0, size = history.size(); i < size; ++i) {
     const triC thisColor(newColors[i]);
     history[i].setNewColor(thisColor.qrgb());
     const flossColor thisFlossColor(thisColor, type);
     if (!flossColors_.contains(thisFlossColor)) {
       history[i].setNewColorIsNew(true);
-      colorsToAdd.push_back(thisColor);
+      colorsToAdd.push_back(thisFlossColor);
       flossColors_.push_back(thisFlossColor);
     }
   }
@@ -176,7 +176,7 @@ mutableSquareImageContainer::changeColor(QRgb oldColor,
                                                          newFlossColor,
                                                          colorAdded,
                                                          changedSquares)));
-    return dockListUpdate(newColor, colorAdded, oldColor);
+    return dockListUpdate(newFlossColor, colorAdded, oldColor);
   }
   else {
     return dockListUpdate();
@@ -200,7 +200,7 @@ dockListUpdate mutableSquareImageContainer::fillRegion(int x, int y,
                                                         colorAdded,
                                                         coordinates)));
   colorListCheckNeeded_ = true;
-  return dockListUpdate(newColor.color(), colorAdded);
+  return dockListUpdate(newColor, colorAdded);
 }
 
 dockListUpdate mutableSquareImageContainer::
@@ -222,7 +222,7 @@ commitChangeOneDrag(const QSet<pairOfInts>& squares, flossColor newColor) {
   addToHistory(historyItemPtr(new changeOneHistoryItem(newColor, colorAdded,
                                                        historyPixels)));
   colorListCheckNeeded_ = true;
-  return dockListUpdate(newRgbColor, colorAdded);
+  return dockListUpdate(newColor, colorAdded);
 }
 
 dockListUpdate mutableSquareImageContainer::moveHistoryForward() {
@@ -368,7 +368,7 @@ dockListUpdate mutableSquareImageContainer::replaceRareColors() {
     }
     addToHistory(historyItemPtr(new rareColorsHistoryItem(changeHistories,
                                                           oldFloss)));
-    return dockListUpdate(oldColors, true);
+    return dockListUpdate(oldColors);
   }
   else {
     return dockListUpdate();

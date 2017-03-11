@@ -98,16 +98,16 @@ performHistoryEdit(mutableSquareImageContainer* container,
   if (toolColorIsNew_) {
     container->addColor(addedColor);
     container->removeColor(removedColor);
-    return dockListUpdate(addedColor.color(), true, removedColor.color());
+    return dockListUpdate(addedColor, true, removedColor.color());
   }
   else {
     if (direction == H_BACK) {
       container->addColor(addedColor);
-      return dockListUpdate(addedColor.color(), true);
+      return dockListUpdate(addedColor, true);
     }
     else {
       container->removeColor(removedColor);
-      return dockListUpdate(addedColor.color(), false, removedColor.color());
+      return dockListUpdate(addedColor, false, removedColor.color());
     }
   }
 }
@@ -150,11 +150,11 @@ performHistoryEdit(mutableSquareImageContainer* container,
   if (toolColorIsNew_) {
     if (direction == H_BACK) {
       container->removeColor(newColor);
-      return dockListUpdate(triC(), false, newColor.color());
+      return dockListUpdate(flossColor(), false, newColor.color());
     }
     else { // forward
       container->addColor(newColor);
-      return dockListUpdate(newColor.color(), true);
+      return dockListUpdate(newColor, true);
     }
   }
   else {
@@ -162,7 +162,7 @@ performHistoryEdit(mutableSquareImageContainer* container,
       return dockListUpdate();
     }
     else { // forward
-      return dockListUpdate(newColor.color(), false);
+      return dockListUpdate(newColor, false);
     }
   }
 }
@@ -215,20 +215,20 @@ performHistoryEdit(mutableSquareImageContainer* container,
       // completely overwrote the old color and the color list was
       // updated to reflect that
       bool colorAdded = container->addColor(priorColor_);
-      return dockListUpdate(priorColor_.color(), colorAdded, newColor.color());
+      return dockListUpdate(priorColor_, colorAdded, newColor.color());
     }
     else { // forward
       container->addColor(newColor);
-      return dockListUpdate(newColor.color(), true);
+      return dockListUpdate(newColor, true);
     }
   }
   else {
     if (direction == H_BACK) {
       bool colorAdded = container->addColor(priorColor_);
-      return dockListUpdate(priorColor_.color(), colorAdded);
+      return dockListUpdate(priorColor_, colorAdded);
     }
     else { // forward
-      return dockListUpdate(newColor.color(), false);
+      return dockListUpdate(newColor, false);
     }
   }
 }
@@ -266,11 +266,10 @@ performHistoryEdit(mutableSquareImageContainer* container,
       }
     }
     container->removeColors(colorsToRemove);
-    return dockListUpdate(triC(), false, colorsToRemove);
+    return dockListUpdate(flossColor(), false, colorsToRemove);
   }
   else { // forward
     QVector<flossColor> colorsToAdd;
-    QVector<triC> updateColors;
     for (int i = 0, size = detailPixels_.size(); i < size; ++i) {
       const historyPixel thisPixel = detailPixels_[i];
       ::changeOneBlock(&container->image_, thisPixel.x(), thisPixel.y(),
@@ -278,13 +277,12 @@ performHistoryEdit(mutableSquareImageContainer* container,
                        container->originalDimension_, true);
       if (thisPixel.newColorIsNew()) {
         const triC newColor = thisPixel.newColor();
-        updateColors.push_back(newColor);
         colorsToAdd.push_back(flossColor(newColor, newColorsType_));
       }
     }
     container->addColors(colorsToAdd);
     container->colorListCheckNeeded_ = true;
-    return dockListUpdate(updateColors);
+    return dockListUpdate(colorsToAdd);
   }
 }
 
@@ -310,13 +308,11 @@ performHistoryEdit(mutableSquareImageContainer* container,
 
   if (direction == H_BACK) {
     QVector<flossColor> colorsToAdd;
-    QVector<triC> updateColors;
     for (int i = 0, size = items_.size(); i < size; ++i) {
       const colorChange thisColorChange = items_[i];
       const triC oldColor = thisColorChange.oldColor();
       ::changeBlocks(&container->image_, thisColorChange.coordinates(),
                      oldColor.qrgb(), container->originalDimension_, true);
-      updateColors.push_back(oldColor);
       const QSet<flossColor>::const_iterator it =
         rareColorTypes_.constFind(flossColor(oldColor));
       if (it != rareColorTypes_.constEnd()) {
@@ -331,7 +327,7 @@ performHistoryEdit(mutableSquareImageContainer* container,
       }
     }
     container->addColors(colorsToAdd);
-    return dockListUpdate(updateColors);
+    return dockListUpdate(colorsToAdd);
   }
   else { // forward
     QVector<triC> colorsToRemove;
@@ -343,6 +339,6 @@ performHistoryEdit(mutableSquareImageContainer* container,
       colorsToRemove.push_back(thisColorChange.oldColor());
     }
     container->removeColors(colorsToRemove);
-    return dockListUpdate(colorsToRemove, true);
+    return dockListUpdate(colorsToRemove);
   }
 }

@@ -44,24 +44,23 @@ enum historyDirection {H_BACK, H_FORWARD};
 // updated after completion of a tool use
 class dockListUpdate {
  public:
-  dockListUpdate() : singleColor_(true), colorsToAdd_(1, triC()),
+  dockListUpdate() : singleColor_(true), colorsToAdd_(1, flossColor()),
     colorIsNew_(false) {}
-  dockListUpdate(const triC& color, bool colorIsNew)
+  dockListUpdate(const flossColor& color, bool colorIsNew)
     : singleColor_(true), colorsToAdd_(1, color), colorIsNew_(colorIsNew)
   { }
-  dockListUpdate(const triC& color, bool colorIsNew, triC removeColor)
+  dockListUpdate(const flossColor& color, bool colorIsNew, const triC& removeColor)
     : singleColor_(true), colorsToAdd_(1, color), colorIsNew_(colorIsNew),
     colorsToRemove_(1, removeColor) { }
-  dockListUpdate(const triC& color, bool colorIsNew,
+  dockListUpdate(const flossColor& color, bool colorIsNew,
                  const QVector<triC>& colorsToRemove)
     : singleColor_(true), colorsToAdd_(1, color), colorIsNew_(colorIsNew),
     colorsToRemove_(colorsToRemove) {}
-  explicit dockListUpdate(const QVector<triC>& colorsToAdd)
+  explicit dockListUpdate(const QVector<flossColor>& colorsToAdd)
     : singleColor_(false), colorsToAdd_(colorsToAdd), colorIsNew_(false) {}
-  // (<remove> is a dummy to distinguish this from the colorsToAdd version)
-  dockListUpdate(const QVector<triC>& colorsToRemove, bool )
+  dockListUpdate(const QVector<triC>& colorsToRemove)
     : singleColor_(false), colorIsNew_(false),
-    colorsToRemove_(colorsToRemove) {}
+      colorsToRemove_(colorsToRemove) {}
   // return true if the update is for a single color
   bool singleColor() const { return singleColor_; }
   // return true if the tool color for this update is a color that wasn't
@@ -69,15 +68,26 @@ class dockListUpdate {
   bool colorIsNew() const { return colorIsNew_; }
   // return the tool color for the tool use that was the source for this
   // update
-  triC color() const { return colorsToAdd_[0]; }
-  QVector<triC> colors() const { return colorsToAdd_; }
+  triC color() const {
+    // TODO return flossColor once the dock list has been updated.
+    return colorsToAdd_[0].color();
+  }
+  QVector<triC> colors() const {
+    // TODO this will return a list of flossColors once the dock list has been
+    // updated.
+    QVector<triC> returnColors;
+    for (int i = 0; i < colorsToAdd_.size(); i++) {
+      returnColors.push_back(colorsToAdd_[i].color());
+    }
+    return returnColors;
+  }
   bool removeColors() const { return !colorsToRemove_.empty(); }
   QVector<triC> colorsToRemove() const { return colorsToRemove_; }
  private:
   bool singleColor_; // true if this update is for a single color
   // colors that need to be added to the color list dock (if they don't
   // already exist there)
-  QVector<triC> colorsToAdd_;
+  QVector<flossColor> colorsToAdd_;
   // true if the color for the tool use that prompted this update wasn't
   // on the color list before
   bool colorIsNew_;

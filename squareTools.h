@@ -83,6 +83,9 @@ class squareTool {
   virtual void setMouseHint() = 0;
  protected:
   squareWindow* parent() const { return parent_; }
+  // Update the tool dock tool color swatch and highlight the color in the color
+  // list.
+  void updateToolColor(QRgb newColor) const;
  private:
   squareWindow* parent_;
 };

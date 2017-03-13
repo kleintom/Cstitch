@@ -33,6 +33,14 @@ void squareTool::activeMouseMove(QMouseEvent* event) {
   parent()->colorListDock_->updateColorSwatch(curImage->image().pixel(px, py));
 }
 
+void squareTool::updateToolColor(QRgb newColor) const {
+
+  // Make the clicked color the tool color.
+  parent()->toolDock_->setToolLabelColor(newColor);
+  // Select the new tool color in the color list.
+  parent()->colorListDock_->moveTo(newColor);
+}
+
 void inactiveImageClickBase::inactiveImageClick(QMouseEvent* event) {
 
   const squareImageLabel* label = parent()->inactiveSquareLabel();
@@ -66,7 +74,9 @@ void inactiveImageClickBase::inactiveImageClick(QMouseEvent* event) {
     const int originalX = (x*image.width())/w;
     const int originalY = (y*image.height())/h;
     const QRgb newColor = image.pixel(originalX, originalY);
-    parent()->toolDock_->setToolLabelColor(newColor);
+    // It's possible newColor won't exist in the color list in this case, but
+    // that's okay.
+    updateToolColor(newColor);
   }
 }
 
@@ -128,8 +138,7 @@ void changeOneTool::activeImageClick(QMouseEvent* event) {
                                  originalDimension, oldColor);
   }
   else if (mouseButton == Qt::RightButton) {
-    // make the clicked color the tool color
-    parent()->toolDock_->setToolLabelColor(oldColor);
+    updateToolColor(oldColor);
   }
 }
 
@@ -187,8 +196,7 @@ void changeAllTool::activeImageClick(QMouseEvent* event) {
                                  originalDimension, oldColor);
   }
   else if (mouseButton == Qt::RightButton) {
-    // make the clicked color the tool color
-    parent()->toolDock_->setToolLabelColor(oldColor);
+    updateToolColor(oldColor);
   }
 }
 
@@ -219,8 +227,7 @@ void fillTool::activeImageClick(QMouseEvent* event) {
                                  originalDimension, oldColor);
   }
   else if (mouseButton == Qt::RightButton) {
-    // make the clicked color the tool color
-    parent()->toolDock_->setToolLabelColor(oldColor);
+    updateToolColor(oldColor);
   }
 }
 

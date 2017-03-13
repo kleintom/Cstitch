@@ -118,8 +118,7 @@ void colorCompare::populateToolbar() {
 
   addToolbarSeparator();
   addToolbarSeparator();
-  addToolbarWidget(squareModeBox_);
-  addToolbarWidget(squareSizeBox_);
+  addToolbarWidgetPair(squareModeBox_, squareSizeBox_);
   addToolbarSeparator();
   addToolbarSeparator();
   addToolbarAction(dimensionsAction_);

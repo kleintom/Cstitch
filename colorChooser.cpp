@@ -109,8 +109,7 @@ void colorChooser::constructProcessingObjects() {
 
   addToolbarSeparator();
   addToolbarSeparator();
-  addToolbarWidget(processModeBox_);
-  addToolbarWidget(numColorsBox_);
+  addToolbarWidgetPair(processModeBox_, numColorsBox_);
   addToolbarSeparator();
   addToolbarSeparator();
   addToolbarWidget(processButton_);

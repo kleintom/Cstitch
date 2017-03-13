@@ -31,6 +31,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QMessageBox>
+#include <QHBoxLayout>
 
 #include "windowManager.h"
 #include "utility.h"
@@ -417,6 +418,22 @@ void imageZoomWindow::addToolbarWidget(QWidget* widget) {
 }
 
 void imageZoomWindow::addToolbarSeparator() {toolBar_->addSeparator(); }
+
+void imageZoomWindow::addToolbarWidgetPair(QWidget* widget1, QWidget* widget2) {
+
+  QWidget* holderWidget = new QWidget;
+  QHBoxLayout* holderLayout = new QHBoxLayout;
+  int top, bottom;
+  holderLayout->getContentsMargins(NULL, &top, NULL, &bottom);
+  const int spacing = 2;
+  holderLayout->setContentsMargins(spacing, top, spacing, bottom);
+  holderLayout->addWidget(widget1);
+  holderLayout->addSpacing(spacing);
+  holderLayout->addWidget(widget2);
+  holderWidget->setLayout(holderLayout);
+
+  toolBar_->addWidget(holderWidget);
+}
 
 void imageZoomWindow::setToolbarEnabled(bool b) { toolBar_->setEnabled(b); }
 

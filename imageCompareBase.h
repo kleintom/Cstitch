@@ -44,22 +44,24 @@ class QSplitter;
 // Note: the label text will be appended with ':'
 class stateLabel : public QLabel {
  public:
-  explicit stateLabel(const QString& label) : label_(label) {
-    setText(label_ + ":");
+  explicit stateLabel(const QString& label) : labelBase_(label) {
+    setText(fullLabel());
     setEnabled(false);
     const QFontMetrics metric(font());
-    setFixedWidth(metric.boundingRect(label_ + ":").width());
+    // Calling boundingRect on highlightedFullLabel() doesn't do what one might
+    // hope. :P
+    setFixedWidth(metric.boundingRect(fullLabel()).width() + 6);
   }
   // enable the label
-  void on() { setText(label_ + ":"); setEnabled(true); on_ = true; }
+  void on() { setText(fullLabel()); setEnabled(true); on_ = true; }
   // disable the label
-  void off() { setText(label_ + ":"); setEnabled(false); on_ = false; }
+  void off() { setText(fullLabel()); setEnabled(false); on_ = false; }
   // enable, underline, and bold the label
   // if the buddy is currently cur, it will become just enabled, otherwise
   // it stays as is
   void cur() {
     setEnabled(true); on_ = true;
-    setText("<b><u><font color='green'>" + label_ + "</font></u>:</b>");
+    setText(highlightedFullLabel());
     buddy_->buddyIsCur();
   }
   // save a pointer to the buddy label for this label
@@ -68,8 +70,19 @@ class stateLabel : public QLabel {
   // we're not cur, our buddy is
   // we drop to simply enabled if we were cur
   void buddyIsCur() { if ( on_ ) { on(); } }
+
  private:
-  QString label_;
+  // Coordinate this with highlightedFullLabel(), which needs to add markup to
+  // labelBase_.
+  QString fullLabel() const { return labelBase_ + suffix(); }
+  QString highlightedFullLabel() const {
+    return "<b><u><font color='green'>" + labelBase_ + "</font></u>" +
+      suffix() + "</b>";
+  }
+  QString suffix() const { return ":"; }
+
+ private:
+  QString labelBase_;
   // we're on if we're on() or cur(); there's no way to tell which one
   // we're in
   bool on_;

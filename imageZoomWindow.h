@@ -90,6 +90,8 @@ class imageZoomWindow : public QMainWindow {
   void addToolbarWidget(QWidget* widget);
   // append
   void addToolbarSeparator();
+  // Append both widgets, with spacing in between
+  void addToolbarWidgetPair(QWidget* widget1, QWidget* widget2);
   void setToolbarEnabled(bool b);
   void setZoomActionsEnabled(bool b);
   void addZoomActionsToImageMenu();

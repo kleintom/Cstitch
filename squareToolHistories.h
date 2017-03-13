@@ -68,19 +68,8 @@ class dockListUpdate {
   bool colorIsNew() const { return colorIsNew_; }
   // return the tool color for the tool use that was the source for this
   // update
-  triC color() const {
-    // TODO return flossColor once the dock list has been updated.
-    return colorsToAdd_[0].color();
-  }
-  QVector<triC> colors() const {
-    // TODO this will return a list of flossColors once the dock list has been
-    // updated.
-    QVector<triC> returnColors;
-    for (int i = 0; i < colorsToAdd_.size(); i++) {
-      returnColors.push_back(colorsToAdd_[i].color());
-    }
-    return returnColors;
-  }
+  flossColor color() const { return colorsToAdd_[0]; }
+  QVector<flossColor> colors() const { return colorsToAdd_; }
   bool removeColors() const { return !colorsToRemove_.empty(); }
   QVector<triC> colorsToRemove() const { return colorsToRemove_; }
  private:

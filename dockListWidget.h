@@ -26,6 +26,7 @@
 #include "constWidthDock.h"
 
 class triC;
+class typedFloss;
 class QHBoxLayout;
 class QVBoxLayout;
 class QLabel;
@@ -50,6 +51,10 @@ class dockListWidget : public constWidthDock {
   void clearList();
   void deselectCurrentListItem() { colorList_->setCurrentItem(NULL); }
   void setColorList(QVector<triC> colors);
+  void setColorList(QVector<typedFloss> colors);
+  // add <color> to the list and highlight it
+  void addToList(const triC& color);
+  void addToList(const typedFloss& color);
   // update the numColorsLabel_
   void setNumColors(int numColors);
   // enable or disable context menus on the color list
@@ -58,10 +63,6 @@ class dockListWidget : public constWidthDock {
       b ? Qt::CustomContextMenu : Qt::PreventContextMenu;
     colorList_->setContextMenuPolicy(policy);
   }
-
- public slots:
-  // add <color> to the list and highlight it
-  void addToList(const triC& color);
 
  protected:
   // return the currently highlighted color
@@ -77,12 +78,21 @@ class dockListWidget : public constWidthDock {
   virtual void processContextRequest(const QPoint& point);
 
  private:
+  // Create and return a new dock list item using the given data.  If
+  // <appendItem> is true then the new item is appended to the color list;
+  // otherwise the caller is responsible for inserting the item.
+  QListWidgetItem* createDockListItem(const triC& color, const QString& text,
+                                      bool appendItem);
   // generate a pixmap with solid color <swatchColor> to be used as an
   // icon for a list item
   QPixmap generateIconSwatch(const triC& swatchColor) const;
   // Find an item in the color list based on its color.  Returns a pointer to
   // the list item if the search was successful, otherwise returns NULL.
-  QListWidgetItem* findColorListItem(const triC& color);
+  QListWidgetItem* findColorListItem(const triC& color) const;
+  QString getListTextForFloss(const typedFloss& color) const;
+  void maybeAddToolTipToListItem(QListWidgetItem* item,
+                                 const typedFloss& color) const;
+  void addListItemByIntensity(QListWidgetItem* item, int itemIntensity);
 
  signals:
   void colorRemoved(const triC& color);

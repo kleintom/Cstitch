@@ -26,6 +26,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QPainter>
+#include <QStringBuilder>
 #include <QtWidgets/QMenu>
 
 #include "triC.h"
@@ -47,6 +48,13 @@ dockListWidget::dockListWidget(QWidget* parent)
   // See http://www.cfcl.com/vlb/h/fontmono.html for many more options
   font.setFixedPitch(true);
   colorList_->setFont(font);
+  colorList_->setAlternatingRowColors(true);
+  // (I thought "show-decoration-selected: 0;" would highlight the text only,
+  // but in fact it highlights/tints the icon as well (which it took me a while
+  // to recognize).)
+  // (It would be nice to add a little top/bottom margin/padding to the list
+  // items as well, but all the ways I tried to do so only added bottom (5.8).)
+  setStyleSheet(" QListWidget { alternate-background-color: #ecebea; }");
 
   //// a label for the number of colors in the list
   const QFontMetrics fontMetric(font);
@@ -72,7 +80,7 @@ void dockListWidget::clearList() {
   setNumColors(0);
 }
 
-QListWidgetItem* dockListWidget::findColorListItem(const triC& color) {
+QListWidgetItem* dockListWidget::findColorListItem(const triC& color) const {
 
   const QColor qColor = color.qc();
   for (int i = 0, count = colorList_->count(); i < count; ++i) {
@@ -105,14 +113,124 @@ void dockListWidget::setColorList(QVector<triC> colors) {
   // create the list items
   for (int i = 0, size = colors.size(); i < size; ++i) {
     const triC thisColor = colors[i];
-    QListWidgetItem* listItem =
-      new QListWidgetItem(::ctos(thisColor), colorList_);
-    // also store the color values for convenience
-    listItem->setData(Qt::UserRole, QVariant(thisColor.qc()));
-    listItem->setTextAlignment(Qt::AlignLeft);
-    listItem->setIcon(QIcon(generateIconSwatch(thisColor)));
+    createDockListItem(thisColor, ::ctos(thisColor), true);
   }
   setNumColors(colorList_->count());
+}
+
+QString dockListWidget::getListTextForFloss(const typedFloss& color) const {
+
+  QString colorText;
+  if (color.type() == flossDMC) {
+    // (Funny note: if you don't convert the code to a QString before
+    // concatenation, Qt interprets the concatenated string as a reference to a
+    // resource plus the color name.)
+    const QString code =
+      color.code() < 0 ? "N/A" : QString::number(color.code());
+    colorText = code % "\n" % color.name();
+  }
+  else if (color.type() == flossAnchor) {
+    colorText = codeToString(color.code());
+  }
+  else {
+    colorText = ::ctos(color.color());
+  }
+  return colorText;
+}
+
+void dockListWidget::setColorList(QVector<typedFloss> colors) {
+
+  colorList_->clear();
+  // sort the list by intensity
+  std::sort(colors.begin(), colors.end(), typedFlossIntensity());
+  // create the list items
+  for (int i = 0, size = colors.size(); i < size; ++i) {
+    const typedFloss thisColor = colors[i];
+    const QString colorText = getListTextForFloss(thisColor);
+    QListWidgetItem* listItem =
+      createDockListItem(thisColor.color(), colorText, true);
+    maybeAddToolTipToListItem(listItem, thisColor);
+  }
+  setNumColors(colorList_->count());
+}
+
+void dockListWidget::maybeAddToolTipToListItem(QListWidgetItem* item,
+                                               const typedFloss& color) const {
+
+  if (color.type() == flossDMC) {
+    const QString tooltip = color.name() % "\n" % ::colorToTriple(color.color());
+    item->setToolTip(tooltip);
+  }
+  else if (color.type() == flossAnchor) {
+    item->setToolTip(::colorToTriple(color.color()));
+  }
+}
+
+void dockListWidget::addListItemByIntensity(QListWidgetItem* item,
+                                            int itemIntensity) {
+
+  for (int i = 0, size = colorList_->count(); i < size; ++i) {
+    const triC thisColor =
+      triC(colorList_->item(i)->data(Qt::UserRole).value<QColor>());
+    if (itemIntensity < thisColor.intensity()) {
+      // Inserts in front of.
+      colorList_->insertItem(i, item);
+      return;
+    }
+  }
+
+  // Append it.
+  colorList_->insertItem(colorList_->count(), item);
+}
+
+void dockListWidget::addToList(const triC& color) {
+
+  QListWidgetItem* listItem = findColorListItem(color);
+  if (!listItem) {
+    listItem = createDockListItem(color, ::ctos(color), false);
+    addListItemByIntensity(listItem, color.intensity());
+  }
+  colorList_->setCurrentItem(listItem);
+  setNumColors(colorList_->count());
+}
+
+void dockListWidget::addToList(const typedFloss& color) {
+
+  QListWidgetItem* listItem = findColorListItem(color.color());
+  if (!listItem) {
+    const QString colorText = getListTextForFloss(color);
+    listItem = createDockListItem(color.color(), colorText, false);
+    maybeAddToolTipToListItem(listItem, color);
+    addListItemByIntensity(listItem, color.color().intensity());
+  }
+  colorList_->setCurrentItem(listItem);
+  setNumColors(colorList_->count());
+}
+
+QListWidgetItem* dockListWidget::createDockListItem(const triC& color,
+                                                    const QString& text,
+                                                    bool appendItem) {
+
+  QListWidgetItem* listItem = NULL;
+  if (appendItem) {
+    listItem = new QListWidgetItem(text, colorList_);
+  }
+  else {
+    listItem = new QListWidgetItem(text);
+  }
+  listItem->setData(Qt::UserRole, QVariant(color.qc()));
+  listItem->setTextAlignment(Qt::AlignLeft);
+  // Using "show-decoration-selected: 0;" actually highlights separately just
+  // the text and just the icon :/  Do this instead(!):
+  // https://stackoverflow.com/questions/5044449/how-to-change-qt-qlistview-icon-selection-highlight
+  QIcon colorIcon;
+  const QPixmap iconPixmap = generateIconSwatch(color);
+  colorIcon.addPixmap(iconPixmap, QIcon::Normal);
+  colorIcon.addPixmap(iconPixmap, QIcon::Selected);
+
+  listItem->setIcon(colorIcon);
+
+  return listItem;
 }
 
 QPixmap dockListWidget::generateIconSwatch(const triC& swatchColor) const {
@@ -182,36 +300,6 @@ void dockListWidget::prependLayout(QHBoxLayout* layout) {
 void dockListWidget::prependWidget(QWidget* widget) {
 
   mainLayout_->insertWidget(0, widget);
-}
-
-void dockListWidget::addToList(const triC& color) {
-
-  QListWidgetItem* listItem = findColorListItem(color);
-  if (!listItem) {
-    listItem = new QListWidgetItem(::ctos(color));
-    listItem->setData(Qt::UserRole, QVariant(color.qc()));
-    listItem->setTextAlignment(Qt::AlignLeft);
-    listItem->setIcon(QIcon(generateIconSwatch(color)));
-    
-    // insert by intensity
-    const int inputIntensity = color.intensity();
-    bool added = false;
-    for (int i = 0, size = colorList_->count(); i < size; ++i) {
-      const triC thisColor =
-        triC(colorList_->item(i)->data(Qt::UserRole).value<QColor>());
-      if (inputIntensity < thisColor.intensity()) {
-        added = true;
-        // inserts in front of
-        colorList_->insertItem(i, listItem);
-        break;
-      }
-    }
-    if (!added) {
-      colorList_->insertItem(colorList_->count(), listItem);
-    }
-  }
-  colorList_->setCurrentItem(listItem);
-  setNumColors(colorList_->count());
 }
 
 dockListSwatchWidget::dockListSwatchWidget(QWidget* parent)

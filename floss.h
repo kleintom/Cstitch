@@ -109,7 +109,7 @@ bool colorsContainType(const QVector<flossColor>& colors, flossType type);
 class floss {
 
  public:
-  floss() : code_(-1) {}
+  floss() : code_(-1), name_("N/A"), color_() {}
   explicit floss(const triC& color)
     : code_(-1), name_("N/A"), color_(color) {}
   floss(int code, const QString& name, const triC& color)
@@ -147,9 +147,24 @@ class typedFloss : public floss {
   flossType type_;
 };
 
-// return floss information for the given <colors>, in the same order.
+// functor for comparing the intensity of two typedFlosses
+class typedFlossIntensity {
+ public:
+  bool operator()(const typedFloss& c1, const typedFloss& c2) const {
+    return c1.color().intensity() < c2.color().intensity();
+  }
+};
+
+// Return floss information for the given <rgbColors>, in the same order.
+QVector<typedFloss> rgbToFloss(const QVector<flossColor>& rgbColors);
+typedFloss rgbToFloss(const flossColor& color);
+
+// Return floss information for the given <rgbColors>, in the same order.
 // If a color isn't DMC, give the floss the name of the closest DMC color
 // in the form ~[DMCcode]:[name], and make the code -1
-QVector<typedFloss> rgbToFloss(const QVector<flossColor>& rgbColors);
+QVector<typedFloss> rgbToVerboseFloss(const QVector<flossColor>& rgbColors);
+
+// Return the DMC or Anchor color code as a fixed width string.
+QString codeToString(int code);
 
 #endif

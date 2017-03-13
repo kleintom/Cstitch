@@ -24,16 +24,24 @@
 #include <QtWidgets/QWidget>
 #include <QPainter>
 #include <QPen>
+#include <QStringBuilder>
 
 extern const int D_MAX;
 
-// color to string: return the rgb values of <color> as a string
-// with fixed width for each component
+// Color to string: return the rgb values of <color> as a string of the form
+// 'xxx xxx xxx' with fixed width for each component.
 QString ctos(const triC& color) {
 
   char buff[12];
   sprintf(buff, "%3d %3d %3d", color.r(), color.g(), color.b());
   return buff;
+}
+
+// "color to triple" of the form '(r, g, b)'
+QString colorToTriple(const triC& color) {
+  return "(" % QString::number(color.r()) % ", " %
+               QString::number(color.g()) % ", " %
+               QString::number(color.b()) % ")";
 }
 
 void showAndRaise(QWidget* widget) {

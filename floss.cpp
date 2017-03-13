@@ -26,6 +26,17 @@
 #include "colorLists.h"
 #include "imageProcessing.h"
 
+QString codeToString(int code) {
+
+  if (code < 0) {
+    return QString("    ");
+  }
+
+  char buff[4];
+  sprintf(buff, "%4d", code);
+  return buff;
+}
+
 QString flossType::text() const {
 
   switch (value_) {
@@ -157,12 +168,88 @@ bool typedFloss::operator<(const typedFloss& f) const {
   }
 }
 
-QVector<typedFloss> rgbToFloss(const QVector<flossColor>& rgbColors) {
+typedFloss rgbToFloss(const flossColor& color) {
+
+  // Keep this in sync with rgbToFloss(const QVector<flossColor>& colors).
+  const flossTypeValue type = color.type().value();
+  if (type == flossDMC) {
+    const QVector<floss> dmcColors = ::initializeDMC();
+    const int index = dmcColors.indexOf(floss(color.color()));
+    if (index != -1) {
+      const floss thisDmcFloss = dmcColors[index];
+      return typedFloss(thisDmcFloss, flossDMC);
+    }
+  }
+  else if (type == flossAnchor) {
+    const QVector<floss> anchorColors = ::initializeAnchor();
+    const int index = anchorColors.indexOf(floss(color.color()));
+    if (index != -1) {
+      const floss thisAnchorFloss = anchorColors[index];
+      return typedFloss(thisAnchorFloss, flossAnchor);
+    }
+  }
+
+  return typedFloss(floss(color.color()), flossVariable);
+}
+
+QVector<typedFloss> rgbToFloss(const QVector<flossColor>& colors) {
+
+  // Keep this in sync with rgbToFloss(const flossColor& color) - we're keeping
+  // this version separate so that we don't need to load the DMC/Anchor color
+  // list for each color on this list.
+  // Also, WARNING: there was a bug in an old version of cstitch which in
+  // certain cases allowed a non-floss color to be labeled as floss, so now
+  // forevermore we need to handle that case just for any projects saved with
+  // the bug. :(
+  QVector<typedFloss> returnFloss;
+  returnFloss.reserve(colors.size());
+  QVector<floss> dmcColors;
+  QVector<floss> anchorColors;
+  for (int i = 0, size = colors.size(); i < size; ++i) {
+    const flossColor color = colors[i];
+    switch (color.type().value()) {
+      case flossDMC: {
+        if (dmcColors.isEmpty()) {
+          dmcColors = ::initializeDMC();
+        }
+        const int index = dmcColors.indexOf(floss(color.color()));
+        if (index != -1) {
+          const floss thisDmcFloss = dmcColors[index];
+          returnFloss.push_back(typedFloss(thisDmcFloss, flossDMC));
+        }
+        else {
+          returnFloss.push_back(typedFloss(floss(color.color()), flossVariable));
+        }
+        break;
+      }
+      case flossAnchor: {
+        if (anchorColors.isEmpty()) {
+          anchorColors = ::initializeAnchor();
+        }
+        const int index = anchorColors.indexOf(floss(color.color()));
+        if (index != -1) {
+          const floss thisAnchorFloss = anchorColors[index];
+          returnFloss.push_back(typedFloss(thisAnchorFloss, flossAnchor));
+        }
+        else {
+          returnFloss.push_back(typedFloss(floss(color.color()), flossVariable));
+        }
+        break;
+      }
+      case flossVariable:
+        returnFloss.push_back(typedFloss(floss(color.color()), flossVariable));
+        break;
+    }
+  }
+  return returnFloss;
+}
+
+QVector<typedFloss> rgbToVerboseFloss(const QVector<flossColor>& rgbColors) {
 
   QVector<typedFloss> returnFloss;
   returnFloss.reserve(rgbColors.size());
-  const QVector<floss> dmcFloss = ::initializeDMC();
   const QVector<int> flossCodes = ::rgbToCode(rgbColors);
+  const QVector<floss> dmcFloss = ::initializeDMC();
   for (int i = 0, size = rgbColors.size(); i < size; ++i) {
     const flossColor thisColor = rgbColors[i];
     if (thisColor.type() == flossDMC) {

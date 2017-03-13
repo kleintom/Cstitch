@@ -445,7 +445,7 @@ void patternPrinter::drawColorList(int startHeight) {
 
   int xtab = 0;
   bool partial = true; // the first page list may be a partial page
-  QVector<typedFloss> flossVector = ::rgbToFloss(colors_);
+  QVector<typedFloss> flossVector = ::rgbToVerboseFloss(colors_);
   std::sort(flossVector.begin(), flossVector.end(), flossIntensity());
 
   // build a color count map

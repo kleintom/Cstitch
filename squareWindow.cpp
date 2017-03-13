@@ -268,12 +268,12 @@ void squareWindow::updateSubWidgetStates() {
   patternButton_->setEnabled(curValid);
   // an image is valid if it doesn't have too many (or no) colors
   if (curValid) {
-    colorListDock_->setColorList(curImage_->colors());
+    colorListDock_->setColorList(::rgbToFloss(curImage_->flossColors()));
     curTool_->setMouseHint();
     toolDock_->setFlossType(curImage_->getCurrentToolFlossType());
   }
   else {
-    colorListDock_->setColorList(QVector<triC>());
+    colorListDock_->setColorList(QVector<typedFloss>());
     colorListDock_->setNumColors(curImage_->numColors());
     toolDock_->setToolToNoop();
     if (curImage_->numColors()) {
@@ -790,15 +790,15 @@ void squareWindow::curImageUpdated(const dockListUpdate& update,
   }
   if (update.singleColor()) {
     if (update.colorIsNew()) {
-      colorListDock_->addToList(update.color());
+      colorListDock_->addToList(::rgbToFloss(update.color()));
     }
-    else if (update.color().isValid()) {
-      colorListDock_->moveTo(update.color());
+    else if (update.color().color().isValid()) {
+      colorListDock_->moveTo(update.color().color());
     }
     // else do nothing
   }
   else {
-    colorListDock_->addColors(update.colors());
+    colorListDock_->addColors(::rgbToFloss(update.colors()));
   }
   if (curImage_->colorListCheckNeeded()) {
     updateColorListAction_->setEnabled(true);

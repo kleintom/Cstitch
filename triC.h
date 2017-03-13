@@ -95,7 +95,9 @@ class triCIntensity {
   }
 };
 
-// "color to string"
+// "color to string" of the form 'xxx xxx xxx'
 QString ctos(const triC& color);
+// "color to triple" of the form '(r, g, b)'
+QString colorToTriple(const triC& color);
 
 #endif

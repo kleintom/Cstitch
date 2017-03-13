@@ -384,26 +384,32 @@ QVector<int> rgbToCode(const QVector<flossColor>& colors) {
 
   QVector<int> returnCodes;
   returnCodes.reserve(colors.size());
-  const QVector<floss> dmcColors = ::initializeDMC();
-  const QVector<floss> anchorColors = ::initializeAnchor();  
+  QVector<floss> dmcColors;
+  QVector<floss> anchorColors;
   for (int i = 0, size = colors.size(); i < size; ++i) {
     const flossColor thisColor = colors[i];
     switch (thisColor.type().value()) {
-    case flossDMC: {
-      const int code =
-        dmcColors[dmcColors.indexOf(floss(thisColor.color()))].code();
-      returnCodes.push_back(code);
-      break;
-    }
-    case flossAnchor: {
-      const int code =
-        anchorColors[anchorColors.indexOf(floss(thisColor.color()))].code();
-      returnCodes.push_back(code);
-      break;
-    }
-    case flossVariable:
-      returnCodes.push_back(-1);
-      break;
+      case flossDMC: {
+        if (dmcColors.isEmpty()) {
+          dmcColors = ::initializeDMC();
+        }
+        const int index = dmcColors.indexOf(floss(thisColor.color()));
+        const int code = index == -1 ? -1 : dmcColors[index].code();
+        returnCodes.push_back(code);
+        break;
+      }
+      case flossAnchor: {
+        if (anchorColors.isEmpty()) {
+          anchorColors = ::initializeAnchor();
+        }
+        const int index = anchorColors.indexOf(floss(thisColor.color()));
+        const int code = index == -1 ? -1 : anchorColors[index].code();
+        returnCodes.push_back(code);
+        break;
+      }
+      case flossVariable:
+        returnCodes.push_back(-1);
+        break;
     }
   }
   return returnCodes;

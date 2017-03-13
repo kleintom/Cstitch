@@ -25,6 +25,7 @@
 
 #include "squareDockTools.h" // for contextColorAction
 #include "triC.h"
+#include "floss.h"
 
 void squareDockWidget::processContextRequest(const QPoint& point) {
 
@@ -72,9 +73,9 @@ void squareDockWidget::removeColors(const QVector<triC>& colors) {
   }
 }
 
-void squareDockWidget::addColors(const QVector<triC>& colors) {
+void squareDockWidget::addColors(const QVector<typedFloss>& colors) {
 
-  for (QVector<triC>::const_iterator it = colors.begin(),
+  for (QVector<typedFloss>::const_iterator it = colors.begin(),
          end = colors.end(); it != end; ++it) {
     addToList(*it);
   }

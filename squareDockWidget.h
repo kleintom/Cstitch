@@ -25,6 +25,7 @@
 
 class contextColorAction;
 class triC;
+class typedFloss;
 
 // squareDockWidget extends dockListSwatchWidget by providing controls
 // to add and remove context actions (in the form of contextColorActions)
@@ -35,7 +36,7 @@ class squareDockWidget : public dockListSwatchWidget {
  public:
   squareDockWidget(QWidget* parent) : dockListSwatchWidget(parent) {}
   void removeColors(const QVector<triC>& colors);
-  void addColors(const QVector<triC>& colors);
+  void addColors(const QVector<typedFloss>& colors);
 
  public slots:
   void addContextAction(contextColorAction* action, bool addToTop = false);

@@ -182,19 +182,13 @@ void colorCompare::addImage(const QImage& image, int index,
   setCur(rightImage_);
 }
 
-void colorCompare::setColorCompareVisibles(bool visible,
-                                           const QVector<triC>& v) {
-
-  squareButton_->setEnabled(visible);
-  listDock_->setEnabled(visible);
-  listDock_->setColorList(v);
-  setZoomActionsEnabled(visible);
-}
-
 void colorCompare::setCur(imagePtr container) {
 
   imageCompareBase::setCur(container);
-  setColorCompareVisibles(true, curImage_->colors());
+  squareButton_->setEnabled(true);
+  listDock_->setEnabled(true);
+  listDock_->setColorList(::rgbToFloss(curImage_->flossColors()));
+  setZoomActionsEnabled(true);
 }
 
 // update the list dock color swatch with the color under mouse

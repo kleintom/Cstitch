@@ -108,9 +108,6 @@ class colorCompare : public imageCompareBase {
   // to indicate no image is active
   // extends imageCompareBase::setCur
   void setCur(imagePtr ic);
-  // If <visible>, set the widget's subwidgets to their enabled state, else
-  // disabled.  Set the color list to v.
-  void setColorCompareVisibles(bool visible, const QVector<triC>& v);
   // return the current image at the scale the user is seeing, else
   // return a null image
   // implements imageSaverWindow::

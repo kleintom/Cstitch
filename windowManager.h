@@ -190,10 +190,10 @@ class windowManager : public QObject {
   // ask the user for a new image file - if one's given, reset and then
   // set it as the new image in colorChooser
   void openNewImage();
-  // a new <image> with name <imageName> has been opened, so reset/delete
-  // all old data to prepare for new data
+  // A new <image> has been loaded, so reset/delete all old data to prepare for
+  // new data.
   void reset(const QImage& image, const QByteArray& byteArray,
-             const QString& imageName);
+             const QString& imageName = QString());
   // call only when the program is definitely quitting
   void quit();
   // there is no non-const access to the original image
@@ -296,7 +296,8 @@ class windowManager : public QObject {
  private:
   QByteArray originalImageData_; // the user's original image (as raw data)
   QImage originalImage_; // the user's original image (as a QImage)
-  // the filename of the original image (excluding the path)
+  // the filename of the original image (excluding the path); empty if we've
+  // loaded a project
   QString originalImageName_;
   // WARNING never read this value directly - colorCountComputation_
   // may be in the process of computing it; use getOriginalImageColorCount
@@ -304,7 +305,7 @@ class windowManager : public QObject {
   int originalImageColorCount_; // # of colors in the original image
   // the result of a "future" computation in a separate thread
   QFuture<int> colorCountComputation_;
-  QString projectFilename_;
+  QString projectFilename_; // full path
 
   // all main windows share the same geometry
   QRect currentGeometry_;

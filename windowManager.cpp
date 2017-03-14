@@ -387,8 +387,6 @@ void windowManager::saveAs(const QString projectFilename) {
   // date
   ::appendTextElement(&doc, "date", QDateTime::currentDateTime().toString(),
                       &root);
-  // image name
-  ::appendTextElement(&doc, "image_name", originalImageName_, &root);
   // image color count
   ::appendTextElement(&doc, "color_count",
                       ::itoqs(getOriginalImageColorCount()), &root);
@@ -580,8 +578,6 @@ bool windowManager::openProject(const QString& projectFile) {
   // a blank line between the xml and the image
   inString += textInStream.readLine() + "\n";
 
-  // read the image file name
-  const QString fileName = ::getElementText(doc, "image_name");
   // now read the binary data image
   inFile.seek(inString.length());
   QDataStream imageStream(&inFile);
@@ -617,7 +613,7 @@ bool windowManager::openProject(const QString& projectFile) {
   
   // read the project version number
   setProjectVersion(::getElementAttribute(doc, "cstitch", "version"));
-  reset(newImage, imageByteArray, fileName);
+  reset(newImage, imageByteArray);
 
   //// colorChooser
   colorChooser_.window()->setNewImage(newImage);

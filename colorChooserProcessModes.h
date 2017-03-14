@@ -34,9 +34,7 @@ class QDomDocument;
 class QDomElement;
 template<class T> class QExplicitlySharedDataPointer;
 class QString;
-template<class T1, class T2> struct QPair;
 
-typedef QPair<QString, QString> QStringPair;
 typedef QExplicitlySharedDataPointer<colorChooserProcessMode> processModePtr;
 
 // Used to indicate what needs updating when the colorChooser processing mode
@@ -73,6 +71,10 @@ class processChange {
 // class derived by the actual process modes.
 // This class maintains the color lists for the mode.
 class colorChooserProcessMode : public QSharedData {
+
+ public:
+  enum processMode { NUM_COLORS, NUM_COLORS_TO_DMC, NUM_COLORS_TO_ANCHOR,
+                     DMC, ANCHOR };
 
  public:
   // input the color list for this mode
@@ -114,6 +116,7 @@ class colorChooserProcessMode : public QSharedData {
   // completed but the color list doesn't need updating
   virtual triState performProcessing(QImage* image, int numColors,
                                      int numImageColors) = 0;
+  virtual processMode mode() const = 0;
   // if we're only using one floss type, return that type, otherwise
   // return flossVariable
   virtual flossType flossMode() const = 0;
@@ -141,6 +144,19 @@ class colorChooserProcessMode : public QSharedData {
   // generated colors are the ones we generated for the user
   QVector<triC> generatedColors_;
 };
+typedef colorChooserProcessMode::processMode processModeValue;
+Q_DECLARE_METATYPE(processModeValue)
+
+struct processModeData {
+ public:
+  processModeData(processModeValue mode, QString modeText, QString modeToolTip)
+    : mode_(mode), modeText_(modeText), modeToolTip_(modeToolTip) {}
+
+  processModeValue mode_;
+  // The mode string the user sees for this mode.
+  QString modeText_;
+  QString modeToolTip_;
+};
 
 // a group of processing modes supporting the common process mode interface
 // on whichever mode is current
@@ -148,15 +164,15 @@ class processModeGroup {
 
  public:
   processModeGroup();
-  // return the mode strings the user sees for the modes in this group
-  QList<QStringPair> modeStrings() const;
-  void setNewMode(const QString& mode);
+  QList<processModeData> modesData() const;
+  void setNewMode(processModeValue mode);
   // clear the color lists of all modes in this group
   void clearColorLists();
-  flossType flossMode() const;
   // return the current locale's description for a project file <mode> description
   QString savedModeTextToLocale(const QString& mode) const;
   //// methods below delegate to curMode_
+  processModeValue mode() const { return curMode_->mode(); }
+  flossType flossMode() const;
   QString modeText() const { return curMode_->modeText(); }
   QString saveText() const { return curMode_->saveText(); }
   processChange makeProcessChange() const {
@@ -225,6 +241,7 @@ class numColorsBaseModes : public colorChooserProcessMode {
 
 class numberOfColorsMode : public numColorsBaseModes {
  public:
+  processMode mode() const { return NUM_COLORS; }
   flossType flossMode() const;
   QString modeText() const { return QObject::tr("Num Colors"); }
   QString saveText() const { return "Num Colors"; }
@@ -237,6 +254,7 @@ class numberOfColorsMode : public numColorsBaseModes {
 class numberOfColorsToDmcMode : public numColorsBaseModes {
  public:
   triC addColor(const triC& color, bool* added);
+  processMode mode() const { return NUM_COLORS_TO_DMC; }
   flossType flossMode() const;
   QString modeText() const { return QObject::tr("Num Colors to DMC"); }
   QString saveText() const { return "Num Colors to DMC"; }
@@ -249,6 +267,7 @@ class numberOfColorsToDmcMode : public numColorsBaseModes {
 class numberOfColorsToAnchorMode : public numColorsBaseModes {
  public:
   triC addColor(const triC& color, bool* added);
+  processMode mode() const { return NUM_COLORS_TO_ANCHOR; }
   flossType flossMode() const;
   QString modeText() const { return QObject::tr("Num Colors to Anchor"); }
   QString saveText() const { return "Num Colors to Anchor"; }
@@ -276,6 +295,7 @@ class dmcMode : public fixedListBaseMode {
     return processChange(false, false, false, QObject::tr("DMC colors"),
                          clickedColorList(), generatedColorList());
   }
+  processMode mode() const { return DMC; }
   flossType flossMode() const;
   bool resetColorList();
   QString modeText() const { return QObject::tr("DMC"); }
@@ -296,6 +316,7 @@ class anchorMode : public fixedListBaseMode {
     return processChange(false, false, false, QObject::tr("Anchor colors"),
                          clickedColorList(), generatedColorList());
   }
+  processMode mode() const { return ANCHOR; }
   flossType flossMode() const;
   QString modeText() const { return QObject::tr("Anchor"); }
   QString saveText() const { return "Anchor"; }

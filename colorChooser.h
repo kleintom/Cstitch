@@ -95,6 +95,7 @@ class colorChooser : public imageZoomWindow {
   void setWidgetActive(bool active);
   // Create and show the color list dock
   void popDock();
+  void restoreSettings();
   // zoom in or out on the image by the given pixel amount
   void zoom(int zoomIncrement);
   // reset the image to its original size

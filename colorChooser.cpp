@@ -20,6 +20,7 @@
 #include "colorChooser.h"
 
 #include <QtCore/qmath.h>
+#include <QtCore/QSettings>
 
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QScrollArea>
@@ -61,7 +62,7 @@ colorChooser::colorChooser(windowManager* winMgr)
   constructMenuObjects();
   constructProcessingObjects();
   popDock();
-  processProcessChange(0); // set processMode_ to the first box entry
+  restoreSettings();
 
   setStatus(tr("Click the left folder icon to open a new image or "
                "the right folder icon to open a saved project."));
@@ -100,11 +101,11 @@ void colorChooser::constructProcessingObjects() {
   // the processing type chooser
   processModeBox_ = new QComboBox(this);
   processModeBox_->setToolTip(tr("Select the mode used to choose colors"));
-  // first is the item text, second is the toolTip for that item
-  QList<QStringPair> modeStrings = processMode_.modeStrings();
-  for (int i = 0, size = modeStrings.size(); i < size; ++i) {
-    processModeBox_->addItem(modeStrings[i].first);
-    processModeBox_->setItemData(i, modeStrings[i].second, Qt::ToolTipRole);
+  const QList<processModeData> modesData = processMode_.modesData();
+  for (int i = 0, size = modesData.size(); i < size; ++i) {
+    const processModeData data = modesData[i];
+    processModeBox_->addItem(data.modeText_, QVariant::fromValue(data.mode_));
+    processModeBox_->setItemData(i, data.modeToolTip_, Qt::ToolTipRole);
   }
 
   addToolbarSeparator();
@@ -123,11 +124,8 @@ void colorChooser::constructProcessingObjects() {
   processButton_->resize(processButton_->width(), boxHeight);
   processModeBox_->resize(processModeBox_->width(), boxHeight);
 
-  connect(processModeBox_, SIGNAL(currentIndexChanged(int )),
-          this, SLOT(processProcessChange(int )));
   connect(processButton_, SIGNAL(clicked()),
           this, SLOT(processProcessing()));
-
 }
 
 void colorChooser::popDock() {
@@ -144,6 +142,36 @@ void colorChooser::popDock() {
   generatedDockHolder_->setFeatures(QDockWidget::NoDockWidgetFeatures);
   generatedDockHolder_->setWidget(generatedDock_);
   addDockWidget(Qt::RightDockWidgetArea, generatedDockHolder_);
+}
+
+void colorChooser::restoreSettings() {
+
+  const QSettings settings("cstitch", "cstitch");
+
+  //// Restore the processing mode.
+  int indexToSet = 0;
+  if (settings.contains("color_chooser_mode")) {
+    const QVariant savedMode = settings.value("color_chooser_mode");
+    const int storedIndex = processModeBox_->findData(savedMode);
+    if (storedIndex != -1) {
+      indexToSet = storedIndex;
+    }
+  }
+  processModeBox_->setCurrentIndex(indexToSet);
+  // We haven't setup the slot for currentIndexChanged yet, so do this one by
+  // hand (and even if we had setup the slot already, it wouldn't get called if
+  // the saved value was the same as the default value, so I've preferred to
+  // just call it once, for sure, here).
+  processProcessChange(indexToSet);
+
+  connect(processModeBox_, SIGNAL(currentIndexChanged(int )),
+          this, SLOT(processProcessChange(int )));
+
+  //// Restore the number of colors setting.
+  if (settings.contains("color_chooser_num_colors")) {
+    const int numColors = settings.value("color_chooser_num_colors").toInt();
+    numColorsBox_->setValue(numColors);
+  }
 }
 
 void colorChooser::processMouseMove(QMouseEvent* event) {
@@ -276,7 +304,8 @@ void colorChooser::clearList() {
 
 void colorChooser::processProcessChange(int boxIndex) {
 
-  processMode_.setNewMode(processModeBox_->itemText(boxIndex));
+  processMode_.setNewMode(
+    processModeBox_->itemData(boxIndex).value<processModeValue>());
   const processChange update = processMode_.makeProcessChange();
   imageLabel_->setMouseTracking(update.mouseTracking());
   numColorsBox_->setEnabled(update.numColorsBoxEnabled());
@@ -337,6 +366,12 @@ void colorChooser::processProcessing() {
                                        processMode_.colorList(),
                                        processMode_.flossMode(),
                                        saver);
+
+    QSettings settings("cstitch", "cstitch");
+    settings.setValue("color_chooser_mode", processMode_.mode());
+    if (numColorsBox_->isEnabled()) {
+      settings.setValue("color_chooser_num_colors", numColorsBox_->value());
+    }
   }
   else { // processing cancelled
     return;

@@ -37,21 +37,21 @@ processModeGroup::processModeGroup() {
   activeModes_.push_back(processModePtr(new anchorMode()));
 }
 
-QList<QStringPair> processModeGroup::modeStrings() const {
+QList<processModeData> processModeGroup::modesData() const {
 
-  QList<QStringPair> returnList;
+  QList<processModeData> returnList;
   for (int i = 0, size = activeModes_.size(); i < size; ++i) {
-    processModePtr thisModePtr = activeModes_[i];
-    returnList.push_back(qMakePair(thisModePtr->modeText(),
-                                   thisModePtr->toolTip()));
+    returnList.push_back(processModeData(activeModes_[i]->mode(),
+                                         activeModes_[i]->modeText(),
+                                         activeModes_[i]->toolTip()));
   }
   return returnList;
 }
 
-void processModeGroup::setNewMode(const QString& mode) {
+void processModeGroup::setNewMode(processModeValue mode) {
 
   for (int i = 0, size = activeModes_.size(); i < size; ++i) {
-    if (activeModes_[i]->modeText() == mode) {
+    if (activeModes_[i]->mode() == mode) {
       curMode_ = activeModes_[i];
       break;
     }

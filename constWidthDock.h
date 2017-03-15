@@ -40,16 +40,26 @@ class constWidthDock : public QWidget {
     widgetFont.setFixedPitch(true);
     const QFontMetrics metric(widgetFont);
     iconSize_ = QSize(metric.height() - 2, metric.height() - 2);
-    // (weak)
-    width_ = 20 + 5 + iconSize_.width() + 5 + metric.width("255 255 255") +
-      5 + style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 8;
+    // The width chosen here is based primarily on how many dmc color names will
+    // fit without needing to horizontal scroll or check the tooltip.  Only 18%
+    // of dmc names are longer than 16 characters, and the longest is 25
+    // characters (which is just too wide), so this seems like a good
+    // compromise.
+    const int leftPadding = 20;
+    const int rightPadding = 8;
+    const int partsSpacing = 5;
+    const int scrollBarWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+    width_ = leftPadding +
+      /* icon */ partsSpacing + iconSize_.width() + partsSpacing +
+      /* dmc text */ metric.width("1234567890123456") + partsSpacing +
+      scrollBarWidth + rightPadding;
     setFixedWidth(width_);
   }
 
  protected:
   int dockWidth() const { return width_; }
   QSize swatchSize() const { return QSize(32, 32); }
-  QSize iconSize() const { return iconSize_; }    
+  QSize iconSize() const { return iconSize_; }
 
  private:
   int width_;

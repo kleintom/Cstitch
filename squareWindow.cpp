@@ -56,7 +56,7 @@ squareWindow::squareWindow(const QImage& newImage, int imageIndex,
   rightScroll()->setWidget(rightLabel());
 
   constructActionsAndMenus();
-  constructDocks(colors);
+  constructDocks();
 
   // track mouse movements for color updates etc
   rightLabel()->setMouseTracking(true);
@@ -126,7 +126,7 @@ void squareWindow::constructActionsAndMenus() {
   addToolbarSeparator();
 }
 
-void squareWindow::constructDocks(const QVector<triC>& colors) {
+void squareWindow::constructDocks() {
 
   // the tool dock
   toolDockHolder_ = new QDockWidget(tr("Tools"));
@@ -137,7 +137,7 @@ void squareWindow::constructDocks(const QVector<triC>& colors) {
   addDockWidget(Qt::RightDockWidgetArea, toolDockHolder_);
 
   // the color list dock
-  colorListDock_ = new squareDockWidget(colors, this);
+  colorListDock_ = new squareDockWidget(this);
   setListDockWidget(colorListDock_);
 
   changeAllContextAction* changeAllAction =

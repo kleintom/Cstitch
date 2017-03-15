@@ -33,7 +33,7 @@ class squareDockWidget : public dockListSwatchWidget {
   Q_OBJECT
 
  public:
-  squareDockWidget(const QVector<triC>& colorList, QWidget* parent);
+  squareDockWidget(QWidget* parent) : dockListSwatchWidget(parent) {}
   void removeColors(const QVector<triC>& colors);
   void addColors(const QVector<triC>& colors);
 

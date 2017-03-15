@@ -169,7 +169,7 @@ class squareWindow : public imageCompareBase {
   // constructor helper
   void constructActionsAndMenus();
   // constructor helper - there is a color list dock and a tool dock
-  void constructDocks(const QVector<triC>& colors);
+  void constructDocks();
   // constructor helper - set all of the signal/slot connections
   void setConnections();
   // for imageCompareBase

@@ -157,7 +157,9 @@ class typedFlossIntensity {
 
 // Return floss information for the given <rgbColors>, in the same order.
 QVector<typedFloss> rgbToFloss(const QVector<flossColor>& rgbColors);
+QVector<typedFloss> rgbToFloss(const QVector<triC>& colors, flossType type);
 typedFloss rgbToFloss(const flossColor& color);
+typedFloss rgbToFloss(const triC& color, flossType type);
 
 // Return floss information for the given <rgbColors>, in the same order.
 // If a color isn't DMC, give the floss the name of the closest DMC color

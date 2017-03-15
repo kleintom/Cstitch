@@ -194,7 +194,8 @@ void colorChooser::setNewImage(const QImage& newImage) {
   setLabelImage(newImage);
   zoomToImage();
   processMode_.clearColorLists();
-  clickedDock_->setColorList(processMode_.clickedColorList());
+  clickedDock_->setColorList(::rgbToFloss(processMode_.clickedColorList(),
+                                          processMode_.flossMode()));
   generatedDock_->clearList();
   generatedDockHolder_->setEnabled(false);
   setStatus(processMode_.statusHint());
@@ -307,14 +308,16 @@ void colorChooser::processProcessChange(int boxIndex) {
   processMode_.setNewMode(
     processModeBox_->itemData(boxIndex).value<processModeValue>());
   const processChange update = processMode_.makeProcessChange();
+  const flossType modeFlossType = processMode_.flossMode();
   imageLabel_->setMouseTracking(update.mouseTracking());
   numColorsBox_->setEnabled(update.numColorsBoxEnabled());
   clickedDock_->enableContextMenu(update.listRemoveEnabled());
   clearListAction_->setEnabled(update.listRemoveEnabled());
-  clickedDock_->setColorList(update.clickedColors());
+  clickedDock_->setColorList(::rgbToFloss(update.clickedColors(),
+                                          modeFlossType));
   setListDockTitle(update.dockTitle());
   const QVector<triC>& generatedColors = update.generatedColors();
-  generatedDock_->setColorList(generatedColors);
+  generatedDock_->setColorList(::rgbToFloss(generatedColors, modeFlossType));
   generatedDockHolder_->setEnabled(!generatedColors.isEmpty());
   setStatus(processMode_.statusHint());
 }
@@ -325,11 +328,11 @@ void colorChooser::processColorAdd(QMouseEvent* event) {
                                                   imageLabel_->width(),
                                                   imageLabel_->height(),
                                                   originalImage());
-  // addedColor may be a DMC version of color
+  // addedColor may be a DMC or Anchor version of color
   bool added = false;
   const triC addedColor = processMode_.addColor(color, &added);
   if (added) {
-    clickedDock_->addToList(addedColor);
+    clickedDock_->addToList(::rgbToFloss(addedColor, processMode_.flossMode()));
   }
   else {
     // the color already exists
@@ -378,7 +381,8 @@ void colorChooser::processProcessing() {
   }
   if (returnCode == triTrue) { // update dock
     generatedDockHolder_->setEnabled(true);
-    generatedDock_->setColorList(processMode_.generatedColorList());
+    generatedDock_->setColorList(::rgbToFloss(processMode_.generatedColorList(),
+                                              processMode_.flossMode()));
   }
 }
 
@@ -449,7 +453,8 @@ QString colorChooser::updateCurrentSettings(const QDomElement& xml) {
   // set mode after color lists in order to pick up the new lists
   const QString savedMode = ::getElementText(settings, "mode");
   setModeBox(processMode_.savedModeTextToLocale(savedMode));
-  clickedDock_->setColorList(processMode_.clickedColorList());
+  clickedDock_->setColorList(::rgbToFloss(processMode_.clickedColorList(),
+                                          processMode_.flossMode()));
 
   return QString();
 }

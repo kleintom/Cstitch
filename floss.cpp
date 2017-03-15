@@ -192,6 +192,11 @@ typedFloss rgbToFloss(const flossColor& color) {
   return typedFloss(floss(color.color()), flossVariable);
 }
 
+typedFloss rgbToFloss(const triC& color, flossType type) {
+
+  return ::rgbToFloss(flossColor(color, type));
+}
+
 QVector<typedFloss> rgbToFloss(const QVector<flossColor>& colors) {
 
   // Keep this in sync with rgbToFloss(const flossColor& color) - we're keeping
@@ -241,6 +246,37 @@ QVector<typedFloss> rgbToFloss(const QVector<flossColor>& colors) {
         break;
     }
   }
+  return returnFloss;
+}
+
+QVector<typedFloss> rgbToFloss(const QVector<triC>& colors, flossType type) {
+
+  // We could just add the type to each color and then call the flossColor
+  // version of this function, but I expect this code to be stable, so in this
+  // case I think it's better to special case in order to avoid the memory/time
+  // hit.
+  QVector<typedFloss> returnFloss;
+  returnFloss.reserve(colors.size());
+  if (type == flossDMC || type == flossAnchor) {
+    const QVector<floss> sourceFloss =
+      type == flossDMC ? ::initializeDMC() : ::initializeAnchor();
+    for (int i = 0, size = colors.size(); i < size; ++i) {
+      const triC color = colors[i];
+      const int index = sourceFloss.indexOf(floss(color));
+      if (index != -1) {
+        returnFloss.push_back(typedFloss(sourceFloss[index], type));
+      }
+      else {
+        returnFloss.push_back(typedFloss(floss(color), flossVariable));
+      }
+    }
+  }
+  else {
+    for (int i = 0, size = colors.size(); i < size; ++i) {
+      returnFloss.push_back(typedFloss(floss(colors[i]), flossVariable));
+    }
+  }
+
   return returnFloss;
 }
 

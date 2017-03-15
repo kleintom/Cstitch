@@ -34,10 +34,8 @@ class QLabel;
 //
 // A widget for displaying a list of colors and a "number of colors" label.
 //
-// Implementation note: Different methods for adding colors to the list display
-// the colors in different ways, but each add method is required to add the
-// color of each list item as data on that item, which is the sum total of what
-// other methods get to assume about the structure of list items.
+// Implementation note: The only thing you're allowed to assume about the
+// structure of a list item is that its data field is its QColor.
 //
 class dockListWidget : public constWidthDock {
 
@@ -50,10 +48,8 @@ class dockListWidget : public constWidthDock {
   void moveTo(const triC& color);
   void clearList();
   void deselectCurrentListItem() { colorList_->setCurrentItem(NULL); }
-  void setColorList(QVector<triC> colors);
   void setColorList(QVector<typedFloss> colors);
   // add <color> to the list and highlight it
-  void addToList(const triC& color);
   void addToList(const typedFloss& color);
   // update the numColorsLabel_
   void setNumColors(int numColors);

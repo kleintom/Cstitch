@@ -105,19 +105,6 @@ void dockListWidget::moveTo(const triC& color) {
   }
 }
 
-void dockListWidget::setColorList(QVector<triC> colors) {
-
-  colorList_->clear();
-  // sort the list by intensity
-  std::sort(colors.begin(), colors.end(), triCIntensity());
-  // create the list items
-  for (int i = 0, size = colors.size(); i < size; ++i) {
-    const triC thisColor = colors[i];
-    createDockListItem(thisColor, ::ctos(thisColor), true);
-  }
-  setNumColors(colorList_->count());
-}
-
 QString dockListWidget::getListTextForFloss(const typedFloss& color) const {
 
   QString colorText;
@@ -181,17 +168,6 @@ void dockListWidget::addListItemByIntensity(QListWidgetItem* item,
 
   // Append it.
   colorList_->insertItem(colorList_->count(), item);
-}
-
-void dockListWidget::addToList(const triC& color) {
-
-  QListWidgetItem* listItem = findColorListItem(color);
-  if (!listItem) {
-    listItem = createDockListItem(color, ::ctos(color), false);
-    addListItemByIntensity(listItem, color.intensity());
-  }
-  colorList_->setCurrentItem(listItem);
-  setNumColors(colorList_->count());
 }
 
 void dockListWidget::addToList(const typedFloss& color) {

@@ -122,31 +122,28 @@ turning the mouse wheel.
 
 <p>
 The first three stages also provide two sets of icons for zooming operations.
-The first set appears on the toolbar (and also from the <i>Image</i>
-menu) and consists of a "Zoom to fit" option
-<img src="zoomToImage.png" alt="zoom to image icon"/> that zooms the image to
-be as large as possible and still fit in the available space, a "Zoom to width"
-option <img src="zoomToWidth.png" alt="zoom to width icon" /> that zooms the
-image to fit the available width, a "Zoom to height" option
-<img src="zoomToHeight.png" alt="zoom to height icon"/> that zooms the image
-to fit the available height, and an "Original size" option
-<img src="zoomToOriginal.png" alt="zoom to original icon" /> that zooms the
-image to its original size.  (There's a caveat for square images - see
+The first set appears on the toolbar (and also from the <i>Image</i> menu) and
+consists of a "Zoom in" option <img src="zoomIn.png" alt="zoom in icon" /> that
+increases the zoom by a fixed amount, a "Zoom out" option <img src="zoomOut.png"
+alt="zoom out icon" /> that decreases the zoom by a fixed amount, a "Zoom to
+width" option <img src="zoomToWidth.png" alt="zoom to width icon" /> that zooms
+the image to fit the available width, and a "Zoom to height" option <img
+src="zoomToHeight.png" alt="zoom to height icon"/> that zooms the image to fit
+the available height.  (There's a caveat for square images - see
 <a href="square#zoom_caveat">this</a> for details.)
 </p>
 
 <p>
-The second set of zoom options is available from the <i>Image</i> menu
-and consists of a "Zoom in" option <img src="zoomIn.png" alt="zoom in icon" /> that
-increases the zoom by a fixed amount and a "Zoom out"
-option <img src="zoomOut.png" alt="zoom out icon" /> that decreases the zoom by a fixed
-amount.
+The second set of zoom options is available from the <i>Image</i> menu and
+additionally consists of a "Zoom to fit" option <img src="zoomToImage.png"
+alt="zoom to image icon"/> that zooms the image to be as large as possible and
+still fit in the available space, and an "Original size" option <img
+src="zoomToOriginal.png" alt="zoom to original icon" /> that zooms the image to
+its original size.
 </p>
 
 <p>
-In the last (pattern) stage, only the second set of icons is
-available, either from the toolbar or from the <i>Image</i> menu.  In
-all stages the zoom level has no effect on processing.
+In all stages the zoom level has no effect on processing.
 </p>
 
 <h1>Saving images</h1>
@@ -305,7 +302,7 @@ determined by the "color selection mode", described next.
 <h2 id="colorSelectionMode">Choosing the Color Selection Mode</h2>
 <p>
 The color selection mode is chosen from the dropdown box on the
-toolbar.  There are three modes to choose from:
+toolbar.  There are five modes to choose from:
 </p>
 </div>
 
@@ -576,7 +573,7 @@ color that appears most often in that block.
 <div class="h2Div">
 <h2>Proceeding to the Square Editing Panel</h2>
 <p>
- Once you have chosen the <i>squaring mode</i> and <i>square</i>
+Once you have chosen the <i>squaring mode</i> and <i>square</i>
 size, <b>click on the image you wish to square</b> to select it and
 then click the <i>Square</i> button on the toolbar, which will take
 you to the <a href="square">Square Editing Panel</a>.  
@@ -686,9 +683,9 @@ Anchor, respectively.
 <div class="h3">
 <h3>Choose a Square Color</h3> 
 <p>
-If the square you click on contains more than one color <i>in the
-original image</i> then this mode will allow you to choose from the
-colors from the original image in the clicked square.
+If the square you click on contains more than one color <i>in the original
+image</i> then this mode will allow you to choose from the colors from the
+original image in the clicked square.
 </p>
 <p>
 If you're in DMC only or Anchor only mode then the colors from the original
@@ -958,10 +955,10 @@ The pattern edit panel allows you to change color symbols and to save
 your pattern as a pdf.
 </p>
 <p>
-<b>Note: </b>The pattern view shows a border around each symbol filled
-with the color of the corresponding square - this is for on-screen
-reference purposes and does not appear in the final pdf version of the
-pattern.
+<b>Note: </b>The pattern view shows a border around each symbol filled with the
+color of the corresponding square - by default that color border will not appear
+in the final pdf version of the pattern, but the save options allow you to set a
+color border for squares in the pdf if you so desire.
 </p>
 
 <p> 
@@ -1054,10 +1051,27 @@ and then assign the new color the just freed symbol.
 
 <p>
 To save your pattern to a pdf, click the <i>To pdf</i> button on the
-toolbar.  Before your pattern is saved you'll have the opportunity to
-choose the size of the symbols to be used in the pdf as well as to
-provide a title and/or any copyright information you'd like to
+toolbar.  Before your pattern is saved you'll have the opportunity to:
+</p>
+
+<ul>
+<li>
+Choose the size of the symbols to be used in the pdf;
+</li>
+<li>
+Choose the size of a color border you'd like to show around each square (set
+this to 0 to show no color border);
+</li>
+<li>
+Choose the frequency with which to draw bold lines and square counts in the
+pdf.  For example, a value of 5 (the default) means to draw a thicker grid line
+and a square count every 5 squares;
+<li>
+Provide a title and/or any copyright information you'd like to
 include.
+</li>
+</ul>
+
 </p>
 </div>
 

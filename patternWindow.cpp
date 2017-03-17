@@ -660,7 +660,7 @@ void patternWindow::constructPdfViewerDialog() {
         // install an older version after a newer version then this will
         // choose the wrong version
         const QStringList readers =
-          thisDir.entryList(QStringList("Reader *"), QDir::Dirs,
+          thisDir.entryList(QStringList("*Reader *"), QDir::Dirs,
                             QDir::Time|QDir::Reversed);
         if (!readers.empty() && thisDir.exists(readers[0] + "/Reader")) {
           thisDir.cd(readers[0] + "/Reader");

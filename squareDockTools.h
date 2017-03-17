@@ -129,7 +129,7 @@ class squareDockToolButton : public QToolButton {
   void toolButtonClicked(squareDockToolButton* clickedTool);
 };
 // make squareDockTool* known to QVariant
-Q_DECLARE_METATYPE(squareDockToolButton*);
+Q_DECLARE_METATYPE(squareDockToolButton*)
 
 // the noop tool just provides the standard mouse behavior
 class noopToolButton : public squareDockToolButton {

@@ -328,6 +328,6 @@ Q_OBJECT
   QHBoxLayout* buttonsLayout_;
 };
 
-Q_DECLARE_METATYPE(colorDialog::dialogMode);
+Q_DECLARE_METATYPE(colorDialog::dialogMode)
 
 #endif

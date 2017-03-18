@@ -41,6 +41,9 @@ class patternPrinter {
   void save(bool usePdfViewer, const QString& pdfViewerPath);
 
  private:
+  // Return true if we're able to successfully begin the painter for writing to
+  // <outputFileName>, otherwise warn the user and return false.
+  bool beginPainter(const QString& outputFileName);
   // draw the <metadata> and the original and square images
   void drawTitlePage(const patternMetadata& metadata);
   // draw <text> centered at the top of the rectangle

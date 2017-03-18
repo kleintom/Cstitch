@@ -22,6 +22,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/qmath.h>
 #include <QtCore/QProcess>
+#include <QMessageBox>
 
 #include <QtGui/QImage>
 #include <QtWidgets/QFileDialog>
@@ -42,6 +43,23 @@ patternPrinter::patternPrinter(patternImagePtr image,
     squareDim_(image->squareDimension()), originalImage_(originalImage),
     symbolIconSize_(0), symbolColorBorderWidth_(0), symbolSize_(0),
     colors_(image->flossColors()), fontMetrics_(QFont()) { }
+
+bool patternPrinter::beginPainter(const QString& outputFileName) {
+
+  if (painter_.begin(&printer_)) {
+    return true;
+  }
+
+  // Acroread (and maybe others?) locks any file it has opened, in which case
+  // our attempt to write fails.  Warn the user.
+  const QString errorString =
+    QObject::tr("We were unable to write to the selected file. If there are any "
+                "applications/tabs currently viewing the file please close them "
+                "and try again, or try saving to a different file.\n\n%1")
+             .arg(outputFileName);
+  QMessageBox::warning(NULL, QObject::tr("Unable to write to pdf"), errorString);
+  return false;
+}
 
 void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
 
@@ -71,7 +89,9 @@ void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
 
   // to "print", you draw on the printer object
   // do printer.newPage() for each new page
-  painter_.begin(&printer_);
+  if (!beginPainter(outputFile)) {
+    return;
+  }
   fontMetrics_ = painter_.fontMetrics();
 
   //// draw title pages with the original and squared images

@@ -108,23 +108,41 @@ public:
   }
 };
 
+// colorMatcher's job is to find the closest match to a given color on either
+// the dmc or anchor color list.
+////
+// Implementation notes: colorMatcher only searches for matches amongst colors
+// on the color list with the same order type as color_ (dmcColorsHash_ and
+// anchorColorsHash_ track those sublists).  Things are further sped up by
+// precomputing *IntensitySpreads_, which, for a given color order, compute the
+// max distance from color_.intensity() you need to look on a dmc or anchor
+// color list for a closest distance-squared match (i.e. if c_match is the
+// closest distance_squared color on the color list to color_, then
+// |c_match.intensity() - color_.intensity()| < intensity_spread_value). Those
+// values allow us to quickly narrow down our search by binary searching on
+// intensity rather than on the slower and non-linearly ordered distance
+// squared.
 class colorMatcher {
  public:
   colorMatcher(flossType type, const triC& color);
-  static void resetDataSources();
-  // first looks for a "good" match to a color on colorList_ with the same
-  // rgb value order as color_; if that fails then it just returns the
-  // closest color to color_ on colorList_
   triC closestMatch() const;
+  static void resetDataSources();
  private:
   void loadColorList(const orderComparator* comparator,
                      const QVector<triC>& colors,
                      QVector<iColor>* newList) const;
  private:
   const triC color_;
+  // The list of colors on the dmc or anchor list matching the color order of
+  // color_.
   QVector<iColor> colorList_;
+  // The intensity spread value to be used with color_.
   int intensitySpread_;
+  // Key is a color order, value is all dmc colors having that color order.
   static QHash<colorOrder, QVector<iColor> > dmcColorsHash_;
+  // Key is a color order, value is an int <d> with the property that an
+  // arbitrary color with the given color order is, with respect to intensity,
+  // within <d> of some dmc color with the same color order.
   static QHash<colorOrder, int> dmcIntensitySpreads_;
   static QHash<colorOrder, QVector<iColor> > anchorColorsHash_;
   static QHash<colorOrder, int> anchorIntensitySpreads_;
@@ -168,49 +186,20 @@ inline colorOrder getColorOrder(const triC& color) {
   }
 }
 
-QVector<floss> initializePre0_9_5_30DMC();
-QVector<floss> initializePost0_9_5_29DMC();
 QVector<floss> initializeDMC();
 QVector<floss> initializeAnchor();
 
 // return the DMC colors
 QVector<triC> loadDMC();
 QVector<triC> loadAnchor();
-// load DMC colors with intensities; assign to <intensitySpread> the
-// (smallest) distance that guarantees that an arbitrary color will be
-// within that distance of a color on the list in intensity
-QVector<iColor> loadIDMC(int* intensitySpread);
-// return the "gray" dmc colors
-QVector<iColor> loadDmcGray(int* intensitySpread);
-// return the dmc colors with color component order r >= g >= b;
-// assign to <intensitySpread> the (smallest) distance that guarantess
-// that for an arbitrary  color with r >= g >= b, the closest color on
-// the list will be within <intensitySpread> of the arbitrary color in
-// intensity
-QVector<iColor> loadDmcRGB(int* intensitySpread);
-QVector<iColor> loadDmcRBG(int* intensitySpread);
-QVector<iColor> loadDmcGRB(int* intensitySpread);
-QVector<iColor> loadDmcGBR(int* intensitySpread);
-QVector<iColor> loadDmcBRG(int* intensitySpread);
-QVector<iColor> loadDmcBGR(int* intensitySpread);
 
 // return true if the color(s) is(are) DMC
 bool colorIsDmc(const triC& color);
 bool colorsAreDmc(const QVector<triC>& colors);
 
+// Return the color in <colorList> that is (Euclidean) closest to <color>.
 QRgb closestMatch(const triC& color, const QList<QRgb>& colorList);
 
-// return the color in <colorList> that is (Euclidean) closest to <color>.
-// <colorList> MUST be non-empty and sorted by increasing intensity
-// and the intensity interval
-// [color.intensity() - intensitySpread, color.intensity() + intensitySpread]
-// BETTER contain an element of colorList (or you'll get nonsense).
-// <intensitySpread> should have the property that for an arbitary color,
-// the color on <colorList> at min distance from the arbitrary color
-// should be within <intensitySpread> intensity distance from the arbitrary
-// color.
-triC closestMatch(const triC& color, const QVector<iColor>& colorList,
-                  int intensitySpread);
 // return the DMC color closest to <color>
 triC rgbToDmc(const triC& color);
 triC rgbToAnchor(const triC& color);
@@ -226,7 +215,5 @@ QVector<triC> rgbToColorList(const QVector<triC>& rgbColors,
 
 // Return the floss code for each flossColor in <colors> in the same order.
 QVector<int> rgbToCode(const QVector<flossColor>& colors);
-
-bool useNewDmcColorList();
 
 #endif

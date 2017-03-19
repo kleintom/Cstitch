@@ -29,6 +29,10 @@
 
 extern const int D_MAX;
 
+bool useNewDmcColorList();
+QVector<floss> initializePre0_9_5_30DMC();
+QVector<floss> initializePost0_9_5_29DMC();
+
 QHash<colorOrder, QVector<iColor> > colorMatcher::dmcColorsHash_ =
   QHash<colorOrder, QVector<iColor> >();
 QHash<colorOrder, QVector<iColor> > colorMatcher::anchorColorsHash_ =

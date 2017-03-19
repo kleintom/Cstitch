@@ -1119,7 +1119,7 @@ void windowManager::setProjectVersion(const QString& projectVersion) {
 
   projectVersion_ = projectVersion;
   versionProcessor::setProcessor(projectVersion_);
-  colorMatcher::initializeIntensitySpreads();
+  colorMatcher::resetDataSources();
 }
 
 void windowManager::updateRecentFiles(const QString& file,

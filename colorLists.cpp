@@ -38,7 +38,7 @@ QHash<colorOrder, int> colorMatcher::dmcIntensitySpreads_ =
 QHash<colorOrder, int> colorMatcher::anchorIntensitySpreads_ = 
   QHash<colorOrder, int>();
 
-void colorMatcher::initializeIntensitySpreads() {
+void colorMatcher::resetDataSources() {
 
   // (I'm not certain that old projects would recreate the same colors if we mess
   // with these, so I guess we need to set them based on version)
@@ -103,6 +103,9 @@ void colorMatcher::initializeIntensitySpreads() {
   anchorIntensitySpreads_[O_GBR] = 175;
   anchorIntensitySpreads_[O_BGR] = 175;
   anchorIntensitySpreads_[O_BRG] = 263;
+
+  dmcColorsHash_.clear();
+  anchorColorsHash_.clear();
 }
 
 bool useNewDmcColorList() {

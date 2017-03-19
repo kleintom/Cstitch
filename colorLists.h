@@ -111,7 +111,7 @@ public:
 class colorMatcher {
  public:
   colorMatcher(flossType type, const triC& color);
-  static void initializeIntensitySpreads();
+  static void resetDataSources();
   // first looks for a "good" match to a color on colorList_ with the same
   // rgb value order as color_; if that fails then it just returns the
   // closest color to color_ on colorList_

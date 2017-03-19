@@ -145,8 +145,6 @@ class patternWindow : public imageSaverWindow {
   void constructMenus();
   // constructor helper
   void constructToolbar();
-  // set up the dialog for the user to choose a pdf viewer
-  void constructPdfViewerDialog();
   patternImagePtr getImageFromIndex(int index) const;
   // zoom in or out on the image by the given pixel amount
   void zoom(int zoomIncrement);
@@ -261,10 +259,6 @@ class patternWindow : public imageSaverWindow {
   // keep fontMetrics for the app font since we use them a lot
   QFontMetrics fontMetrics_;
 
-  // remember whether or not we're loading a pdf viewer to view saved
-  // pdf patterns
-  bool usePdfViewer_;
-  QString pdfViewerPath_;
   QAction* setPdfViewerAction_;
 };
 

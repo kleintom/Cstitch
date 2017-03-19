@@ -36,14 +36,20 @@ class patternPrinter {
  public:
   // <image> provides color/symbol information for the pattern
   patternPrinter(patternImagePtr image, const QImage& originalImage);
-  // write the pdf - if <usePdfViewer> then use <pdfViewerPath> to open
-  // the pdf
-  void save(bool usePdfViewer, const QString& pdfViewerPath);
+  // Write the pdf; maybe load it in a viewer (depending on settings).
+  void save();
 
  private:
   // Return true if we're able to successfully begin the painter for writing to
   // <outputFileName>, otherwise warn the user and return false.
   bool beginPainter(const QString& outputFileName);
+  // Load <pdfPath> in an external pdf viewer if user settings say we should and
+  // we can find a viewer.
+  static void maybeLoadExternalPdfViewer(const QString& pdfPath);
+  // Try to find a pdf viewer path.  The return string is empty if we fail.
+  static QString getExternalPdfViewer();
+  static void loadPdfInViewer(const QString& pdfPath,
+                              const QString& pdfViewerPath);
   // draw the <metadata> and the original and square images
   void drawTitlePage(const patternMetadata& metadata);
   // draw <text> centered at the top of the rectangle

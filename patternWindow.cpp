@@ -92,7 +92,6 @@ patternWindow::patternWindow(windowManager* winMgr)
   constructActions();
   constructMenus();
   constructToolbar();
-  constructPdfViewerDialog();
 
   setPermanentStatus(tr("Click the 'To pdf' button to save the pattern as a pdf."));
   setStatus(tr("left click: change symbol; right click: switch between square and symbol images"));
@@ -418,7 +417,7 @@ QSize patternWindow::curImageViewSize() const {
 void patternWindow::saveSlot() {
 
   patternPrinter printer(curImage_, originalImage());
-  printer.save(usePdfViewer_, pdfViewerPath_);
+  printer.save();
 }
 
 bool patternWindow::eventFilter(QObject* watched, QEvent* event) {
@@ -623,75 +622,22 @@ helpMode patternWindow::getHelpMode() const {
   return helpMode::H_PATTERN;
 }
 
-void patternWindow::constructPdfViewerDialog() {
-
-  usePdfViewer_ = false;
-  pdfViewerPath_ = "";
-  const QSettings settings("cstitch", "cstitch");
-  if (settings.contains("use_pdf_viewer") &&
-      settings.contains("pdf_viewer_path")) {
-    usePdfViewer_ = settings.value("use_pdf_viewer").toBool();
-    pdfViewerPath_ = settings.value("pdf_viewer_path").toString();
-  }
-  else { // very first run on this machine
-    // find a default viewer if we can
-#ifdef Q_OS_LINUX
-    QStringList viewers;
-    viewers << "/usr/bin/evince" << "/usr/bin/okular" <<
-      "/usr/bin/xpdf" << "/usr/bin/acroread";
-    for (int i = 0, size = viewers.size(); i < size; ++i) {
-      const QString thisViewer = viewers[i];
-      if (QFile::exists(thisViewer)) {
-        pdfViewerPath_ = thisViewer;
-        break;
-      }
-    }
-#endif
-#ifdef Q_OS_WIN
-    // try to find acroread
-    QStringList adobeDirectories;
-    adobeDirectories << "C:/Program Files/Adobe/" <<
-      "C:/Program Files (x86)/Adobe/";
-    for (int i = 0, size = adobeDirectories.size(); i < size; ++i) {
-      QDir thisDir = adobeDirectories[i];
-      if (thisDir.exists()) {
-        // sort by time - if somebody has multiple versions of Reader
-        // installed (not officially supported by Adobe) and they
-        // install an older version after a newer version then this will
-        // choose the wrong version
-        const QStringList readers =
-          thisDir.entryList(QStringList("*Reader *"), QDir::Dirs,
-                            QDir::Time|QDir::Reversed);
-        if (!readers.empty() && thisDir.exists(readers[0] + "/Reader")) {
-          thisDir.cd(readers[0] + "/Reader");
-          if (thisDir.exists("AcroRd32.exe")) {
-            pdfViewerPath_ = thisDir.absoluteFilePath("AcroRd32.exe");
-            break;
-          }
-          else if (thisDir.exists("AcroRd64.exe")) {
-            pdfViewerPath_ = thisDir.absoluteFilePath("AcroRd64.exe");
-            break;
-          }
-        }
-      }
-    }
-#endif // Q_OS_WIN
-    if (!pdfViewerPath_.isEmpty()) {
-      usePdfViewer_ = true;
-    }
-  }
-}
-
 void patternWindow::updatePdfViewerOptions() {
 
-  pdfViewerDialog viewerDialog(usePdfViewer_, pdfViewerPath_, this);
+  QSettings settings("cstitch", "cstitch");
+  bool usePdfViewer = false;
+  QString pdfViewerPath;
+  if (settings.contains("use_pdf_viewer") &&
+      settings.contains("pdf_viewer_path")) {
+    usePdfViewer = settings.value("use_pdf_viewer").toBool();
+    pdfViewerPath = settings.value("pdf_viewer_path").toString();
+  }
+
+  pdfViewerDialog viewerDialog(usePdfViewer, pdfViewerPath, this);
   const int rc = viewerDialog.exec();
   if (rc == QDialog::Accepted) {
-    QSettings settings("cstitch", "cstitch");
-    usePdfViewer_ = viewerDialog.useViewer();
-    settings.setValue("use_pdf_viewer", usePdfViewer_);
-    pdfViewerPath_ = viewerDialog.viewerPath();
-    settings.setValue("pdf_viewer_path", pdfViewerPath_);
+    settings.setValue("use_pdf_viewer", viewerDialog.useViewer());
+    settings.setValue("pdf_viewer_path", viewerDialog.viewerPath());
   }
 }
 

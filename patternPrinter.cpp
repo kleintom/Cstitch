@@ -23,6 +23,8 @@
 #include <QtCore/qmath.h>
 #include <QtCore/QProcess>
 #include <QMessageBox>
+#include <QSettings>
+#include <QDesktopServices>
 
 #include <QtGui/QImage>
 #include <QtWidgets/QFileDialog>
@@ -61,7 +63,7 @@ bool patternPrinter::beginPainter(const QString& outputFileName) {
   return false;
 }
 
-void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
+void patternPrinter::save() {
 
   printer_.setOutputFormat(QPrinter::PdfFormat);  // actually default
   //qreal l,r,t,b;
@@ -131,11 +133,93 @@ void patternPrinter::save(bool usePdfViewer, const QString& pdfViewerPath) {
     fileToRemove.remove();
     return;
   }
+  // End printing.
+  painter_.end();
 
-  if (usePdfViewer) {
-    QProcess::startDetached(pdfViewerPath,
-                            QStringList(QDir::toNativeSeparators(outputFile)));
+  maybeLoadExternalPdfViewer(outputFile);
+}
+
+void patternPrinter::maybeLoadExternalPdfViewer(const QString& pdfPath) {
+
+  const QSettings settings("cstitch", "cstitch");
+  if (settings.contains("use_pdf_viewer") &&
+      settings.contains("pdf_viewer_path")) {
+    const bool usePdfViewer = settings.value("use_pdf_viewer").toBool();
+    const QString pdfViewerPath = settings.value("pdf_viewer_path").toString();
+    if (usePdfViewer) {
+      loadPdfInViewer(pdfPath, pdfViewerPath);
+    }
+    // If the user told us what to do then don't try anything else.
+    // TODO: Allow the user to revert to having us try to find a viewer.
+    return;
   }
+
+  // Let the system try to find a viewer.
+  if (QDesktopServices::openUrl(QUrl("file:///" + pdfPath))) {
+    return;
+  }
+
+  // Try to find a viewer ourselves.
+  loadPdfInViewer(pdfPath, getExternalPdfViewer());
+}
+
+void patternPrinter::loadPdfInViewer(const QString& pdfPath,
+                                     const QString& pdfViewerPath) {
+
+  if (pdfViewerPath.isEmpty()) {
+    return;
+  }
+
+  QProcess::startDetached(pdfViewerPath,
+                          QStringList(QDir::toNativeSeparators(pdfPath)));
+}
+
+QString patternPrinter::getExternalPdfViewer() {
+
+  QString pdfViewerPath;
+#ifdef Q_OS_LINUX
+  QStringList viewers;
+  viewers << "/usr/bin/evince" << "/usr/bin/okular" <<
+    "/usr/bin/xpdf" << "/usr/bin/acroread";
+  for (int i = 0, size = viewers.size(); i < size; ++i) {
+    const QString thisViewer = viewers[i];
+    if (QFile::exists(thisViewer)) {
+      pdfViewerPath = thisViewer;
+      break;
+    }
+  }
+#endif
+#ifdef Q_OS_WIN
+  // try to find acroread
+  QStringList adobeDirectories;
+  adobeDirectories << "C:/Program Files/Adobe/" <<
+    "C:/Program Files (x86)/Adobe/";
+  for (int i = 0, size = adobeDirectories.size(); i < size; ++i) {
+    QDir thisDir = adobeDirectories[i];
+    if (thisDir.exists()) {
+      // sort by time - if somebody has multiple versions of Reader
+      // installed (not officially supported by Adobe) and they
+      // install an older version after a newer version then this will
+      // choose the wrong version
+      const QStringList readers =
+        thisDir.entryList(QStringList("*Reader *"), QDir::Dirs,
+                          QDir::Time|QDir::Reversed);
+      if (!readers.empty() && thisDir.exists(readers[0] + "/Reader")) {
+        thisDir.cd(readers[0] + "/Reader");
+        if (thisDir.exists("AcroRd32.exe")) {
+          pdfViewerPath = thisDir.absoluteFilePath("AcroRd32.exe");
+          break;
+        }
+        else if (thisDir.exists("AcroRd64.exe")) {
+          pdfViewerPath = thisDir.absoluteFilePath("AcroRd64.exe");
+          break;
+        }
+      }
+    }
+  }
+#endif
+
+  return pdfViewerPath;
 }
 
 void patternPrinter::drawTitlePage(const patternMetadata& metadata) {

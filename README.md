@@ -8,6 +8,23 @@ http://cstitch.sourceforge.net/
 See **INSTALL_linux.md** for linux compile instructions.
 
 ### Release Notes ###
+Beta version 0.9.8 released on March 20, 2017:
+* Added options during pattern saving for specifying the width of a color border
+  around each symbol in the pdf pattern, and for specifying how often the
+  bold/heavier lines should appear in the pdf pattern grid.
+* DMC/Anchor color codes and names are now displayed in the main windows (instead
+  of RGB).
+* Added the ability to specify fabric of a particular squares per inch/cm in the
+  dimensions computer.
+* We should now do better at finding a pdf viewer to auto-display saved pdf
+  patterns.
+* More settings are remembered so that they don't need to be reconfigured each
+  time the program is run.
+* Bug fixes.
+
+This is the first version for which the downloadable executable for Windows does
+not run on Windows XP.
+
 Beta version 0.9.7 released on December 2, 2015:
 * Fixes for a couple of issues causing projects to fail to open. **All Cstitch
   users should update to this release to avoid loss of data due to these

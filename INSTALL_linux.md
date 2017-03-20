@@ -2,17 +2,16 @@
 
 1.  Install the QT (gui toolkit) headers and libraries.
 
-    Starting with version 0.9.4, cstitch is built using Qt 5 (I've tested on
-5.2.1).  Qt include locations were changed in going from Qt4 to Qt5, so >= 0,9.4
-cstitch versions will not compile under Qt4 (though I suspect that if
-you simply change the includes back to their Qt4 locations, you would
-be very close to compiling).
+    Starting with version 0.9.4, cstitch is built using Qt 5.  Qt include
+locations were changed in going from Qt4 to Qt5, so >= 0.9.4 cstitch versions
+will not compile under Qt4 (though I suspect that if you simply change the
+includes back to their Qt4 locations, you would be very close to compiling).
 
     On Fedora-like systems the package you're after is probably called
 **qt5-qtbase-devel** - it provides the QT header files and pulls in the
 required librairies and build tools.  If your distribution does not
 yet support Qt5, you may need to download directly from Qt.
-     
+
 2.  Download the Cstitch source files.
 
     It's possible to download the files as a tarball from the project
@@ -36,7 +35,7 @@ and all files will be updated to the latest version.
 3.  Download the program icon files.
 
     Download the icons zip file from
-http://sourceforge.net/projects/cstitch/files/Cstitch/Icons/
+https://sourceforge.net/projects/cstitch/files/Cstitch/Icons/
 and unzip it in the **cstitch/icons/** directory.
 
 4.  Generate the documentation.

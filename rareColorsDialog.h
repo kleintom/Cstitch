@@ -31,7 +31,7 @@ class QLabel;
 class QSpinBox;
 class QScrollArea;
 class QWidget;
-template<class T1, class T2> struct QPair;
+#include <QtCore/QPair>
 
 typedef QPair<QRgb, QRgb> QRgbPair;
 

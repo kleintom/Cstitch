@@ -19,6 +19,8 @@
 
 #include "imageZoomWindow.h"
 
+#include <QtCore/QRegularExpression>
+
 #include <QtCore/QString>
 
 #include <QtXml/QDomDocument>
@@ -281,9 +283,9 @@ int imageZoomWindow::imageNameToIndex(const QString& imageName) const {
     return 0;
   }
   else {
-    QRegExp regularExpression("Image (\\d+)");
-    regularExpression.indexIn(imageName);
-    const QString indexString = regularExpression.cap(1);
+    const QRegularExpression regularExpression("Image (\\d+)");
+    const QString indexString =
+      regularExpression.match(imageName).captured(1);
 
     return indexString.isNull() ? -1 : indexString.toInt();
   }

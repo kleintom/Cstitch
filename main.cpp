@@ -25,6 +25,11 @@
 #include "imageUtility.h"
 #include "colorLists.h"
 
+// CSTITCH_VERSION comes from VERSION.txt via progen.py
+#ifndef CSTITCH_VERSION
+#define CSTITCH_VERSION "0.0.0"
+#endif
+
 int main(int argc, char *argv[]) {
 
 #ifdef Q_OS_LINUX
@@ -42,10 +47,7 @@ int main(int argc, char *argv[]) {
 
   windowManager winManager;
   windowManager::setStatic(&winManager);
-  // the version is updated by the git pre-commit script based on the
-  // current git label and the current git revision count
-  // (if you change "@GIT-VERSION" you'll need to change the script too)
-  winManager.setProgramVersion("0.9.8.84"); // @GIT-VERSION - don't touch this comment
+  winManager.setProgramVersion(CSTITCH_VERSION);
   colorChooser colorChooserWindow(&winManager);
   colorChooserWindow.show();
 

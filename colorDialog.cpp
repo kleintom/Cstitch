@@ -34,7 +34,7 @@
 #include <QPainter>
 #include <QCloseEvent>
 #include <QtWidgets/QColorDialog>
-#include <QtWidgets/QDesktopWidget>
+#include <QScreen>
 
 #include "colorLists.h"
 #include "colorButton.h"
@@ -232,7 +232,7 @@ void imageDialogMode::updateImageColorLabel(QRgb color, bool mouseClick) {
   // mouse move if not mouseClick
   const int yStart = mouseClick ? CFI_BORDER : CFI_WIDTH/2;
 
-  QPixmap colorPatch = *(colorLabel_->pixmap());
+  QPixmap colorPatch = colorLabel_->pixmap();
   QPainter painter;
   painter.begin(&colorPatch);
   painter.fillRect(CFI_WIDTH/2, yStart,
@@ -399,7 +399,7 @@ void colorDialog::setColorSelected(QRgb color, int x, int y) {
 
   curMode_->setCurrentGridSelection(pairOfInts(x, y));
   colorSelected_ = color;
-  QPixmap colorPatch = *(leftRightColorPatch_->pixmap());
+  QPixmap colorPatch = leftRightColorPatch_->pixmap();
   QPainter painter;
   painter.begin(&colorPatch);
   painter.fillRect(LR_BORDER + LR_BOX, LR_BORDER, LR_BOX, LR_BOX,
@@ -477,8 +477,8 @@ void colorDialog::fitDialog() {
   int newx = geometry().x();
   int newy = geometry().y();
 
-  const int desktopWidth = QApplication::desktop()->width();
-  const int desktopHeight = QApplication::desktop()->height();
+  const int desktopWidth = screen()->geometry().width();
+  const int desktopHeight = screen()->geometry().height();
 
   bool scrollx = false, scrolly = false;
   if (frameWidth_ + hintWidth > desktopWidth) {

@@ -21,7 +21,7 @@
 
 #include <algorithm>
 
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QStack>
 
 #include "colorLists.h"
@@ -448,7 +448,7 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   toDmc.reserve(colorCountMap.size());
   QHash<QRgb, int> dmcCountMap; // counts of dmc colors
   dmcCountMap.reserve(DMC_POST_0_9_5_29_COUNT);
-  QTime t;
+  QElapsedTimer t;
   t.start();
   altMeter progressMeter(QObject::tr("Choosing colors Step 2/2..."),
                          QObject::tr("Cancel"), 0, colorCountMap.size()/64);
@@ -493,7 +493,8 @@ QVector<triC> chooseColorsFromList(const QHash<QRgb, int>& colorCountMap,
   }
   //  qDebug() << "cchoose colors recount:" << double(t.elapsed())/1000.;
   t.restart();
-  std::sort(colorCounts.begin(), colorCounts.end(), qGreater<colorCount>());
+  std::sort(colorCounts.begin(), colorCounts.end(),
+            [](const colorCount& a, const colorCount& b) { return b < a; });
   //qDebug() << "Sort time:" << double(t.elapsed())/1000.;
   t.restart();
   QVector<QRgb> returnColors = seedColors;

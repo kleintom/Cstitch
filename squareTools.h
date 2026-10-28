@@ -41,7 +41,7 @@ struct changeOneDragCache {
   int labelWidth, labelHeight, imageWidth, imageHeight, squareDim;
   bool cacheIsActive; // true if this cache is currently being used
   QSet<pairOfInts> squaresVisited; // squares we've already drawn on
-  QMatrix matrix; // scaling matrix between displayed and original images
+  QTransform matrix; // scaling matrix between displayed and original images
 };
 
 // raw data structure for caching of data needed during a detailing drag
@@ -164,7 +164,7 @@ class detailTool : public squareTool {
     dragCache_.clear();
   }
   QList<pixel> coordinates() const {
-    return dragCache_.squaresVisited.toList();
+    return dragCache_.squaresVisited.values();
   }
   void setMouseHint();
  private:

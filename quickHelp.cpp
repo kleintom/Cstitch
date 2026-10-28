@@ -67,7 +67,7 @@ quickHelp::quickHelp(QWidget* parent)
   iconLabel_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   // setFrameStyle + setStyleSheet is broken until 4.5...
-  textLabel_->setStyleSheet("QLabel { background-color : white; border: 1px solid black; }");
+  textLabel_->setStyleSheet("QLabel { background-color: palette(base); color: palette(text); border: 1px solid palette(text); }");
   //textLabel_->setFrameStyle(QFrame::Box | QFrame::Plain);
   textLabel_->setWordWrap(true);
   textLabel_->setTextFormat(Qt::RichText);

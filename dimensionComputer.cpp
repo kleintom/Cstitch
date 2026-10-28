@@ -66,7 +66,7 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   squareSizeBox_->setMinimum(SQUARE_SIZE_MIN);
   squareSizeBox_->setMaximum(SQUARE_SIZE_MAX);
   squareSizeBox_->setValue(startDimension);
-  connect(squareSizeBox_, SIGNAL(valueChanged(const QString& )),
+  connect(squareSizeBox_, SIGNAL(textChanged(const QString& )),
           this, SLOT(updateDims()));
   // label for the fabric dimensions
   outputLabel_ = new QLabel(this);
@@ -100,7 +100,7 @@ dimensionComputer::dimensionComputer(const QSize& imageSize,
   fabricCountBox_ = new QDoubleSpinBox(this);
   fabricCountBox_->setDecimals(1);
   fabricCountBox_->setRange(0, 99.5);
-  connect(fabricCountBox_, SIGNAL(valueChanged(const QString& )),
+  connect(fabricCountBox_, SIGNAL(textChanged(const QString& )),
           this, SLOT(updateDims()));
   fabricChooserLayout->addWidget(fabricChoiceLabelStart);
   fabricChooserLayout->addWidget(fabricCountBox_);

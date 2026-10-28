@@ -32,7 +32,7 @@ class pixel;
 class historyPixel;
 class pairOfInts;
 class QImage;
-template<class T> class QVector;
+#include <QtCore/QVector>
 template<class T> class QList;
 template<class T1, class T2> class QHash;
 

@@ -7,6 +7,8 @@ http://cstitch.sourceforge.net/
 
 See **INSTALL_linux.md** for linux compile instructions.
 
+See **INSTALL_mac.md** to install or build the macOS (Apple Silicon) version.
+
 ### Release Notes ###
 Beta version 0.9.8 released on March 20, 2017:
 * Added options during pattern saving for specifying the width of a color border

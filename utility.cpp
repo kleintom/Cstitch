@@ -106,7 +106,7 @@ int averageCharacterWidth(const QFont& font) {
   const QFontMetrics metrics(font);
   int totalWidth = 0;
   for (int i = 32; i < 128; ++i) {
-    totalWidth += metrics.width(QChar(i));
+    totalWidth += metrics.horizontalAdvance(QChar(i));
   }
   return qCeil(totalWidth/97.);
 }

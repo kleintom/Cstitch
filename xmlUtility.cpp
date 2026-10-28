@@ -19,6 +19,8 @@
 
 #include "xmlUtility.h"
 
+#include <QtCore/QRegularExpression>
+
 #include <QtCore/QDebug>
 
 #include <QtXml/QDomDocument>
@@ -115,11 +117,12 @@ QVector<pairOfInts> xmlToCoordinatesList(const QString& list) {
     return returnList;
   }
   QStringList coordinates = list.split(";");
-  QRegExp
+  const QRegularExpression
     regex("^\\((\\d+),(\\d+)\\)$");
   for (int i = 0, size = coordinates.size(); i < size; ++i) {
-    if (regex.indexIn(coordinates[i]) != -1) {
-      QStringList matches = regex.capturedTexts();
+    const QRegularExpressionMatch match = regex.match(coordinates[i]);
+    if (match.hasMatch()) {
+      QStringList matches = match.capturedTexts();
       if (matches.size() == 3) {
         QList<int> matchInts;
         // convert strings to ints!
@@ -165,11 +168,12 @@ QVector<pixel> xmlToPixelList(const QString& list) {
     return returnList;
   }
   const QStringList pixels = list.split(";");
-  QRegExp
+  const QRegularExpression
     regex("^\\[\\((\\d+),(\\d+)\\)\\.\\((\\d+),(\\d+),(\\d+)\\)\\]$");
   for (int i = 0, size = pixels.size(); i < size; ++i) {
-    if (regex.indexIn(pixels[i]) != -1) {
-      QStringList matches = regex.capturedTexts();
+    const QRegularExpressionMatch match = regex.match(pixels[i]);
+    if (match.hasMatch()) {
+      QStringList matches = match.capturedTexts();
       if (matches.size() == 6) {
         QList<int> matchInts;
         // convert strings to ints!
@@ -272,9 +276,10 @@ QString rgbToString(const triC& color) {
 
 QRgb xmlStringToRgb(const QString& string) {
 
-  QRegExp regex("^\\((\\d+),(\\d+),(\\d+)\\)$");
-  if (regex.indexIn(string) != -1) {
-    QStringList matches = regex.capturedTexts();
+  const QRegularExpression regex("^\\((\\d+),(\\d+),(\\d+)\\)$");
+  const QRegularExpressionMatch match = regex.match(string);
+  if (match.hasMatch()) {
+    QStringList matches = match.capturedTexts();
     // remember that matches[0] is the entire match
     return qRgb(matches[1].toInt(), matches[2].toInt(), matches[3].toInt());
   }
@@ -350,11 +355,12 @@ QVector<historyPixel> xmlToHistoryPixelList(const QString& list) {
     return returnList;
   }
   const QStringList stringList(list.split(";"));
-  QRegExp
+  const QRegularExpression
     regex("^\\{\\[\\((\\d+),(\\d+)\\)\\.\\((\\d+),(\\d+),(\\d+)\\)\\]:\\((\\d+),(\\d+),(\\d+)\\):(true|false)\\}$");
   for (int i = 0, size = stringList.size(); i < size; ++i) {
-    if (regex.indexIn(stringList[i]) != -1) {
-      QStringList matches = regex.capturedTexts();
+    const QRegularExpressionMatch match = regex.match(stringList[i]);
+    if (match.hasMatch()) {
+      QStringList matches = match.capturedTexts();
       if (matches.size() == 10) {
         QList<int> matchInts;
         // convert strings to ints!

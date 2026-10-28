@@ -25,7 +25,7 @@
 #include "triC.h"
 #include "constWidthDock.h"
 
-template<class T1, class T2> struct QPair;
+#include <QtCore/QPair>
 class QPixmap;
 class QListWidget;
 class QLabel;

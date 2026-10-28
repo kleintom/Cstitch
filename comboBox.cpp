@@ -22,11 +22,11 @@
 void comboBox::moveToPreviousItem() {
 
   setCurrentIndex((currentIndex() + count() - 1)%count());
-  emit activated(currentText());
+  emit textActivated(currentText());
 }
 
 void comboBox::moveToNextItem() {
 
   setCurrentIndex((currentIndex() + 1)%count());
-  emit activated(currentText());
+  emit textActivated(currentText());
 }

@@ -20,7 +20,7 @@
 #ifndef SQUAREDOCKTOOLS_H
 #define SQUAREDOCKTOOLS_H
 
-#include <QtWidgets/QAction>
+#include <QtGui/QAction>
 #include <QtWidgets/QToolButton>
 
 #include "utility.h"

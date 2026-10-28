@@ -32,7 +32,7 @@
 #include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpinBox>
 #include <QPainter>
-#include <QDesktopWidget>
+#include <QScreen>
 
 #include "imageUtility.h"
 #include "symbolChooser.h"
@@ -169,7 +169,7 @@ patternMetadata::patternMetadata(int pdfWidth, int titleFontSize,
   // the scroll area (which looks silly), so we'll give the scroll widget a max
   // width to avoid that.  Yuk.
   scroll->setWidgetResizable(true);
-  const QRect screenSize = QApplication::desktop()->availableGeometry();
+  const QRect screenSize = screen()->availableGeometry();
   scroll->setMinimumWidth(qMin(screenSize.width() - 100, inputFieldWidth + 100));
   scroll->setMinimumHeight(qMin(screenSize.height() - 100, 600));
   scroll->setAlignment(Qt::AlignHCenter);

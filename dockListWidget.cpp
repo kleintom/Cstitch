@@ -48,13 +48,8 @@ dockListWidget::dockListWidget(QWidget* parent)
   // See http://www.cfcl.com/vlb/h/fontmono.html for many more options
   font.setFixedPitch(true);
   colorList_->setFont(font);
+  // (the style's alternate row color works in both light and dark mode)
   colorList_->setAlternatingRowColors(true);
-  // (I thought "show-decoration-selected: 0;" would highlight the text only,
-  // but in fact it highlights/tints the icon as well (which it took me a while
-  // to recognize).)
-  // (It would be nice to add a little top/bottom margin/padding to the list
-  // items as well, but all the ways I tried to do so only added bottom (5.8).)
-  setStyleSheet(" QListWidget { alternate-background-color: #ecebea; }");
 
   //// a label for the number of colors in the list
   const QFontMetrics fontMetric(font);

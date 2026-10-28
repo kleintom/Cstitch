@@ -23,7 +23,7 @@
 #include <algorithm>
 
 #include <QtCore/QAbstractEventDispatcher>
-#include <QtWidgets/QAction>
+#include <QtGui/QAction>
 #include <QtWidgets/QProgressDialog>
 #include <QCloseEvent>
 
@@ -64,9 +64,7 @@ inline void clearEventQueue() {
   QAbstractEventDispatcher* dispatcher =
     QAbstractEventDispatcher::instance();
   if (dispatcher) {
-    if (dispatcher->hasPendingEvents()) {
-      dispatcher->processEvents(QEventLoop::AllEvents);
-    }
+    dispatcher->processEvents(QEventLoop::AllEvents);
   }
 }
 

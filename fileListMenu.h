@@ -22,7 +22,7 @@
 
 #include <QtWidgets/QMenu>
 
-class QStringList;
+#include <QtCore/QStringList>
 class QString;
 class QAction;
 

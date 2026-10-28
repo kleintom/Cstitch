@@ -978,7 +978,7 @@ helpMode squareWindow::getHelpMode() const {
 void squareWindow::setScaledImageWidth(int width, imageLabelBase* label,
                                        imagePtr image) {
 
-  squareImagePtr squareImage = (image == leftImage_) ?
+  squareImagePtr squareImage = (image.data() == leftImage_.data()) ?
     leftImage_ : rightImage_;
   label->setImageSize(squareImage->setScaledWidth(width));
   updateZoomValues();
@@ -987,7 +987,7 @@ void squareWindow::setScaledImageWidth(int width, imageLabelBase* label,
 void squareWindow::setScaledImageHeight(int height, imageLabelBase* label,
                                         imagePtr image) {
 
-  squareImagePtr squareImage = (image == leftImage_) ?
+  squareImagePtr squareImage = (image.data() == leftImage_.data()) ?
     leftImage_ : rightImage_;
   label->setImageSize(squareImage->setScaledHeight(height));
   updateZoomValues();

@@ -19,6 +19,8 @@
 
 #include "rareColorsDialog.h"
 
+#include <QtCore/QRegularExpression>
+
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QHBoxLayout>
@@ -57,7 +59,7 @@ rareColorsDialog::rareColorsDialog(const QHash<QRgb, int>& colorCounts)
   // dialog (and I don't trust sizePolicy()s that I've never been able to
   // get to do what I expect)
   const QFontMetrics fontMetrics(font());
-  minCountBox_->setFixedWidth(fontMetrics.width(::itoqs(rangeMax)) + 30);
+  minCountBox_->setFixedWidth(fontMetrics.horizontalAdvance(::itoqs(rangeMax)) + 30);
   connect(minCountBox_, SIGNAL(valueChanged(int )),
           this, SLOT(processNewMin(int )));
 
@@ -75,12 +77,12 @@ rareColorsDialog::rareColorsDialog(const QHash<QRgb, int>& colorCounts)
   //property or sub-control is customized, all the other properties or
   //sub-controls must be customized as well.
 //  scroll_->setStyleSheet("QWidget { background-color: white; }");
-  scroll_->viewport()->setStyleSheet("background-color: white;");
+  scroll_->viewport()->setStyleSheet("background-color: palette(base);");
   // make the scroll as wide as the widest possible row
   const QString testString(::itoqs(rangeMax) +
                            " squares (255, 255, 255) --> (255, 255, 255)");
   // PM_IndicatorWidth is the width of a checkbox
-  const int maxWidth = fontMetrics.width(testString) +
+  const int maxWidth = fontMetrics.horizontalAdvance(testString) +
     scroll_->style()->pixelMetric(QStyle::PM_IndicatorWidth) +
     ::scrollbarWidth() + ICON_SIZE + 35;
   scroll_->setMinimumWidth(maxWidth);
@@ -209,11 +211,11 @@ void rareColorsDialog::checkUncheckCheckboxes(const QString& checkOrUncheck) {
 QList<QRgbPair> rareColorsDialog::colorsToChange() const {
 
   QList<QRgbPair> returnPairs;
-  QRegExp regex("\\((\\d+), (\\d+), (\\d+)\\).*\\((\\d+), (\\d+), (\\d+)\\)");
+  const QRegularExpression regex("\\((\\d+), (\\d+), (\\d+)\\).*\\((\\d+), (\\d+), (\\d+)\\)");
   for (int i = 0, size = checkboxes_.size(); i < size; ++i) {
-    if (checkboxes_[i]->isChecked() &&
-        regex.indexIn(checkboxes_[i]->text()) != -1) {
-      QStringList matches = regex.capturedTexts();
+    const QRegularExpressionMatch match = regex.match(checkboxes_[i]->text());
+    if (checkboxes_[i]->isChecked() && match.hasMatch()) {
+      QStringList matches = match.capturedTexts();
       // remember that matches[0] is the entire match
       returnPairs.push_back(QRgbPair(qRgb(matches[1].toInt(),
                                           matches[2].toInt(),

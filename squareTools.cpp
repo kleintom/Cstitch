@@ -48,7 +48,7 @@ void inactiveImageClickBase::inactiveImageClick(QMouseEvent* event) {
   const int h = label->height();
   const int x = event->x();
   const int y = event->y();
-  if (event->button() == Qt::MidButton) {
+  if (event->button() == Qt::MiddleButton) {
     const QImage& image = parent()->curImage_->image();
     const int originalX = (x*image.width())/w;
     const int originalY = (y*image.height())/h;
@@ -115,7 +115,7 @@ void changeOneTool::activeImageClick(QMouseEvent* event) {
     dragCache_.imageHeight = originalImageHeight;
     dragCache_.squareDim = originalDimension;
     // this won't be used until we actually drag
-    QMatrix matrix;
+    QTransform matrix;
     matrix.scale(static_cast<qreal>(labelWidth)/originalImageWidth,
                  static_cast<qreal>(labelHeight)/originalImageHeight);
     matrix = QImage::trueMatrix(matrix,
@@ -130,7 +130,7 @@ void changeOneTool::activeImageClick(QMouseEvent* event) {
     const int d = parent()->roughCurDim();
     label->update(x-d, y-d, 2*d, 2*d);
   }
-  else if (mouseButton == Qt::MidButton) {
+  else if (mouseButton == Qt::MiddleButton) {
     // make originals upper left corner of the square clicked
     originalX = boxX * originalDimension;
     originalY = boxY * originalDimension;
@@ -186,7 +186,7 @@ void changeAllTool::activeImageClick(QMouseEvent* event) {
     parent()->processChangeAll(oldColor,
                                parent()->toolDock_->getToolLabelColor());
   }
-  else if (mouseButton == Qt::MidButton) {
+  else if (mouseButton == Qt::MiddleButton) {
     const int originalImageWidth = parent()->curImage_->originalWidth();
     const int originalImageHeight = parent()->curImage_->originalHeight();
     const int originalX = (x * originalImageWidth)/labelWidth;
@@ -221,7 +221,7 @@ void fillTool::activeImageClick(QMouseEvent* event) {
       parent()->curImage_->fillRegion(originalX, originalY, newColor);
     parent()->curImageUpdated(update);
   }
-  else if (mouseButton == Qt::MidButton) {
+  else if (mouseButton == Qt::MiddleButton) {
     const int originalDimension = parent()->curImage_->originalDimension();
     parent()->requestSquareColor(originalX, originalY,
                                  originalDimension, oldColor);
@@ -263,7 +263,7 @@ void changeOneTool::activeMouseMove(QMouseEvent* event) {
       const int xstart = boxX*squareDim;
       const int ystart = boxY*squareDim;
       int sxstart, sxend, systart, syend;
-      const QMatrix& matrix = dragCache_.matrix;
+      const QTransform& matrix = dragCache_.matrix;
       matrix.map(xstart, ystart, &sxstart, &systart);
       matrix.map(xstart + squareDim, ystart + squareDim, &sxend, &syend);
       const int dx = sxend - sxstart;

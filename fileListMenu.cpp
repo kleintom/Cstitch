@@ -24,7 +24,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDebug>
 
-#include <QtWidgets/QAction>
+#include <QtGui/QAction>
 
 #include "utility.h"
 

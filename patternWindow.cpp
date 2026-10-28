@@ -81,8 +81,8 @@ patternWindow::patternWindow(windowManager* winMgr)
           this, SLOT(processDockImageUpdate(qreal , qreal, bool , bool )));
 
   const QFontMetrics metrics(font());
-  basePatternDim_ = (metrics.width("@") > metrics.height()) ?
-    metrics.width("@") : metrics.height();
+  basePatternDim_ = (metrics.horizontalAdvance("@") > metrics.height()) ?
+    metrics.horizontalAdvance("@") : metrics.height();
   basePatternDim_ = qMax(basePatternDim_, 30);
   listDock_ = new patternDockWidget(basePatternDim_, this);
   setListDockWidget(listDock_);
@@ -172,7 +172,7 @@ void patternWindow::constructToolbar() {
   connect(saveToPdfButton_, SIGNAL(clicked()),
           this, SLOT(saveSlot()));
   imageListBox_ = new comboBox(this);
-  connect(imageListBox_, SIGNAL(activated(const QString& )),
+  connect(imageListBox_, SIGNAL(textActivated(const QString& )),
           this, SLOT(processImageBox(const QString& )));
   addToolbarSeparator();
   addToolbarSeparator();

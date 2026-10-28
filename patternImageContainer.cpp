@@ -19,6 +19,8 @@
 
 #include "patternImageContainer.h"
 
+#include <QtCore/QRegularExpression>
+
 #include <QtCore/QDebug>
 
 #include <QtWidgets/QMessageBox>
@@ -46,9 +48,10 @@ QString historyIndex::toString() const {
 historyIndex::historyIndex(const QDomElement& xmlIndex) {
 
   QString item(xmlIndex.text());
-  QRegExp regex("^\\[\\((\\d+),(\\d+),(\\d+)\\),(\\d+),(\\d+)\\]$");
-  if (regex.indexIn(item) != -1) {
-    QStringList matches = regex.capturedTexts();
+  const QRegularExpression regex("^\\[\\((\\d+),(\\d+),(\\d+)\\),(\\d+),(\\d+)\\]$");
+  const QRegularExpressionMatch match = regex.match(item);
+  if (match.hasMatch()) {
+    QStringList matches = match.capturedTexts();
     QList<int> matchInts;
     // convert strings to ints!
     // NOTE that this switches the indices down by one from matches

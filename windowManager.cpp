@@ -19,6 +19,8 @@
 
 #include "windowManager.h"
 
+#include <QtCore/QRegularExpression>
+
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QDateTime>
@@ -475,7 +477,7 @@ void windowManager::saveAs(const QString projectFilename) {
   QFile outFile(projectFilename_);
   outFile.open(QIODevice::WriteOnly);
   QTextStream textStream(&outFile);
-  textStream << xmlString << endl;
+  textStream << xmlString << Qt::endl;
   textStream.flush();
   outFile.close();
 
@@ -539,9 +541,8 @@ bool windowManager::openProject(const QString& projectFile) {
   inString = textInStream.readLine() + "\n";
   // (A day after the initial release I changed the program name from
   // stitch to cstitch, so check for either...)
-  QRegExp rx("^<(cstitch|stitch) version=");
-  rx.indexIn(inString);
-  const QString programName = rx.cap(1);
+  const QRegularExpression rx("^<(cstitch|stitch) version=");
+  const QString programName = rx.match(inString).captured(1);
   if (programName != "cstitch" && programName != "stitch") { // uh oh
     QMessageBox::critical(NULL, tr("Bad project file"),
                           tr("Sorry, %1 is not a valid project file "
@@ -567,7 +568,7 @@ bool windowManager::openProject(const QString& projectFile) {
   } while (thisString != endTag);
 
   QDomDocument doc;
-  const bool xmlLoadSuccess = doc.setContent(inString);
+  const bool xmlLoadSuccess = static_cast<bool>(doc.setContent(inString));
   if (!xmlLoadSuccess) {
     QMessageBox::critical(NULL, tr("Bad project file"),
                           tr("Sorry, %1 appears to be corrupted "

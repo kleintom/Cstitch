@@ -175,7 +175,7 @@ void squareToolDock::processToolLabelMousePressed() {
 
 flossColor squareToolDock::getToolLabelColor() const {
 
-  const QRgb color = toolColorLabel_->pixmap()->toImage().pixel(1, 1);
+  const QRgb color = toolColorLabel_->pixmap().toImage().pixel(1, 1);
   return flossColor(color, getFlossType());
 }
 

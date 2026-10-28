@@ -100,6 +100,30 @@ updateNeeded = updateNeeded or xmlWriteNeeded
                                                 'RC_FILE += cstitch.rc\n',)
 updateNeeded = updateNeeded or iconWriteNeeded
 
+# the program version lives in VERSION.txt (vYY.MM.PATCH release tags drop the v)
+versionFile = open('VERSION.txt')
+version = versionFile.read().strip()
+versionFile.close()
+versionString = ("VERSION = " + version + "\n" +
+                 "DEFINES += CSTITCH_VERSION=\\\\\\\"" + version + "\\\\\\\"\n")
+(versionWriteNeeded, projectString) = insertString(projectString,
+                                                   r'CSTITCH_VERSION',
+                                                   insertionPointRE,
+                                                   versionString)
+updateNeeded = updateNeeded or versionWriteNeeded
+
+macString = ("macx {\n"
+             "  ICON = icons/cstitch.icns\n"
+             "  QMAKE_MACOSX_DEPLOYMENT_TARGET = 14.4\n"
+             "  QMAKE_APPLE_DEVICE_ARCHS = arm64\n"
+             "  QMAKE_TARGET_BUNDLE_PREFIX = net.sourceforge.cstitch\n"
+             "}\n")
+(macWriteNeeded, projectString) = insertString(projectString,
+                                               r'macx \{',
+                                               insertionPointRE,
+                                               macString)
+updateNeeded = updateNeeded or macWriteNeeded
+
 if updateNeeded:
     projectFile = open(proFilename, 'w')
     projectFile.write(projectString)

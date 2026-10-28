@@ -51,7 +51,7 @@ class constWidthDock : public QWidget {
     const int scrollBarWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent);
     width_ = leftPadding +
       /* icon */ partsSpacing + iconSize_.width() + partsSpacing +
-      /* dmc text */ metric.width("1234567890123456") + partsSpacing +
+      /* dmc text */ metric.horizontalAdvance("1234567890123456") + partsSpacing +
       scrollBarWidth + rightPadding;
     setFixedWidth(width_);
   }

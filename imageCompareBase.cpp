@@ -123,7 +123,7 @@ void imageCompareBase::setConnections() {
           this, SLOT(focusLeft()));
   connect(leftImageMenu_, SIGNAL(triggered(QAction* )),
           this, SLOT(processLeftImageMenuTrigger(QAction* )));
-  connect(leftImageListBox_, SIGNAL(activated(const QString& )),
+  connect(leftImageListBox_, SIGNAL(textActivated(const QString& )),
           this, SLOT(processLeftBox(const QString& )));
   connect(leftShowHide_, SIGNAL(triggered(bool )),
           this, SLOT(showHideLeft(bool )));
@@ -133,7 +133,7 @@ void imageCompareBase::setConnections() {
           this, SLOT(focusRight()));
   connect(rightImageMenu_, SIGNAL(triggered(QAction* )),
           this, SLOT(processRightImageMenuTrigger(QAction* )));
-  connect(rightImageListBox_, SIGNAL(activated(const QString& )),
+  connect(rightImageListBox_, SIGNAL(textActivated(const QString& )),
           this, SLOT(processRightBox(const QString& )));
   connect(rightShowHide_, SIGNAL(triggered(bool )),
           this, SLOT(showHideRight(bool )));

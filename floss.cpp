@@ -20,6 +20,7 @@
 #include "floss.h"
 
 #include <QtCore/QList>
+#include <QtCore/QObject>
 #include <QtCore/QVector>
 #include <QtCore/QDebug>
 

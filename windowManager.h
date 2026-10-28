@@ -24,7 +24,7 @@
 #include <QtCore/QFuture>
 
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QAction>
+#include <QtGui/QAction>
 
 #include "windowSavers.h"
 

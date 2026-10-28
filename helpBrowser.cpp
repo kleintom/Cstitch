@@ -19,12 +19,14 @@
 
 #include "helpBrowser.h"
 
+#include <QtCore/QRegularExpression>
+
 #include <QtCore/QtDebug>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
-#include <QtWidgets/QAction>
+#include <QtGui/QAction>
 
 #include "utility.h"
 
@@ -88,18 +90,18 @@ void helpBrowser::processPrintAll() {
 
   // to print all we prune the individual html help files by hand and then
   // concatenate them
-  QRegExp head("<html>.*</head>");
-  QRegExp next("Next: *<a.*\\n");
-  next.setMinimal(true);
-  QRegExp top("Top: *<a.*\\n");
-  top.setMinimal(true);
-  QRegExp previous("Previous: *<a.*\\n");
-  previous.setMinimal(true);
-  QRegExp foot("</body>.*");
-  QRegExp newUser("<h1>New User.*</p>");
-  newUser.setMinimal(true);
-  QRegExp dmc("<h1>A Note On DMC.*</p>");
-  dmc.setMinimal(true);
+  // . needs to match newlines in the html
+  const QRegularExpression::PatternOptions greedy =
+    QRegularExpression::DotMatchesEverythingOption;
+  const QRegularExpression::PatternOptions minimal =
+    greedy | QRegularExpression::InvertedGreedinessOption;
+  const QRegularExpression head("<html>.*</head>", greedy);
+  const QRegularExpression next("Next: *<a.*\\n", minimal);
+  const QRegularExpression top("Top: *<a.*\\n", minimal);
+  const QRegularExpression previous("Previous: *<a.*\\n", minimal);
+  const QRegularExpression foot("</body>.*", greedy);
+  const QRegularExpression newUser("<h1>New User.*</p>", minimal);
+  const QRegularExpression dmc("<h1>A Note On DMC.*</p>", minimal);
 
   QString overview(::readTextFile(":/overview.html"));
   overview.replace(next, "").replace(top, "").replace(previous, "").replace(foot, "");

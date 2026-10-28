@@ -26,7 +26,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QMouseEvent>
-#include <QDesktopWidget> 
+#include <QScreen>
 
 #include "triC.h"
 #include "imageUtility.h"
@@ -68,7 +68,7 @@ int buttonGrid::getDescriptionWidth(const QString& text) {
   QPainter painter(&testImage);
   painter.setPen(descriptionsPen());
   const QFontMetrics metrics(painter.font());
-  return metrics.width(text);
+  return metrics.horizontalAdvance(text);
 }
 
 void buttonGrid::createIconsDrawSwatches(const QVector<QPixmap>& swatches) {
